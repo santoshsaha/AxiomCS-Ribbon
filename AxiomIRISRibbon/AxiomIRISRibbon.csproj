@@ -435,7 +435,6 @@
     <None Include="AxiomIRISRibbon_2_TemporaryKey.pfx" />
     <None Include="AxiomIRISRibbon_3_TemporaryKey.pfx" />
     <None Include="AxiomIRISRibbon_4_TemporaryKey.pfx" />
-    <None Include="AxiomIRISRibbon_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="PES New.pfx" />
     <None Include="PES.pfx" />

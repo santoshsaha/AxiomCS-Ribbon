@@ -52,7 +52,6 @@
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="AxiomIRIS.Ribbon.pfx" />
     <None Include="AxiomIRIS.Ribbon1.pfx" />
     <None Include="AxiomIRISRibbon_4_TemporaryKey.pfx" />
   </ItemGroup>

@@ -262,7 +262,7 @@
 		<row><td>NewBinary16</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\InstallFirstUse.ico</td></row>
 		<row><td>NewBinary17</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\InstallPartial.ico</td></row>
 		<row><td>NewBinary18</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\InstallStateMenu.ico</td></row>
-		<row><td>NewBinary19</td><td/><td>C:\AXIOM\CS\Source Code\AxiomIRISRibbonSource\axiom-law-logo.png</td></row>
+		<row><td>NewBinary19</td><td/><td>&lt;ISProductFolder&gt;\Support\Themes\InstallShield Blue Theme\banner.jpg</td></row>
 		<row><td>NewBinary2</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\New.ibd</td></row>
 		<row><td>NewBinary3</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\Up.ibd</td></row>
 		<row><td>NewBinary4</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\WarningIcon.ibd</td></row>
@@ -1883,9 +1883,9 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
-		<row><td>axiomirisribbon.dll.manifest</td><td>ISX_DEFAULTCOMPONENT1</td><td>AXIOMI~1.MAN|AxiomIRISRibbon.dll.manifest</td><td>0</td><td/><td/><td/><td>1</td><td>C:\AXIOM\CS\Source Code\AxiomIRISRibbonSource\AxiomIRISRibbon\bin\Release\AxiomIRISRibbon.dll.manifest</td><td>1</td><td/></row>
+		<row><td>axiomirisribbon.dll.manifest</td><td>ISX_DEFAULTCOMPONENT1</td><td>AXIOMI~1.MAN|AxiomIRISRibbon.dll.manifest</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Axiom\AxiomCS-Ribbon\AxiomIRISRibbon\bin\Release\AxiomIRISRibbon.dll.manifest</td><td>1</td><td/></row>
 		<row><td>axiomirisribbon.primary_outp</td><td>AxiomIRISRibbon.Primary_output</td><td>AxiomIRISRibbon.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AxiomIRISRibbon&gt;|Built</td><td>3</td><td/></row>
-		<row><td>axiomirisribbon.vsto</td><td>ISX_DEFAULTCOMPONENT1</td><td>AXIOMI~1.VST|AxiomIRISRibbon.vsto</td><td>0</td><td/><td/><td/><td>1</td><td>C:\AXIOM\CS\Source Code\AxiomIRISRibbonSource\AxiomIRISRibbon\bin\Release\AxiomIRISRibbon.vsto</td><td>1</td><td/></row>
+		<row><td>axiomirisribbon.vsto</td><td>ISX_DEFAULTCOMPONENT1</td><td>AXIOMI~1.VST|AxiomIRISRibbon.vsto</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Axiom\AxiomCS-Ribbon\AxiomIRISRibbon\bin\Release\AxiomIRISRibbon.vsto</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
@@ -3972,7 +3972,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{988B8E33-95E0-41D0-9A26-27CE3A7F5DE5}</td></row>
 		<row><td>ISUSSignature</td><td>{3C8298FB-288B-4183-A03B-4C6CFA9F6F4C}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject,viewRelease,viewRegistry,viewUI,viewISToday,viewUpgradePaths</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject,viewRelease,viewRegistry,viewUI,viewISToday,viewUpgradePaths,viewAppFiles</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>

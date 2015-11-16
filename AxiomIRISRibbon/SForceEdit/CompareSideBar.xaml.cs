@@ -34,6 +34,13 @@ namespace AxiomIRISRibbon.SForceEdit
         static Word.Document _source;
         private string _fileName;
 
+        private string _matterid;
+        private string _versionid;
+        private string _templateid;
+        private string _versionName;
+        private string _versionNumber;
+        private string _attachmentid;
+        private Word.Document _doc;
 
         public CompareSideBar()
         {
@@ -45,9 +52,15 @@ namespace AxiomIRISRibbon.SForceEdit
            LoadTemplatesDLL();
         
         }
-        public void Create(string filename)
+        public void Create(string filename, string versionid, string matterid, string templateid, string versionName, string versionNumber, string attachmentid)
         {
             _fileName = filename;
+            _matterid = matterid;
+               _versionid = versionid;
+               _templateid = templateid;
+               _versionName = versionName;
+               _versionNumber = versionNumber;
+               _attachmentid = attachmentid;
         
         }
         private void LoadTemplatesDLL()
@@ -108,24 +121,13 @@ namespace AxiomIRISRibbon.SForceEdit
                      //   _source = app.Documents.Open(filename);
                         
                         
-                    }
-                ////    object o = (object)file2name;
-                ////    tempDoc = app.Documents.Open(_fileName);
-                //    Word.Document doc1 = Globals.ThisAddIn.Application.Documents.Open(_fileName);
-                //   //object doc2 = Globals.ThisAddIn.Application.Documents.Open(file2name);
-                //   //doc1.Windows.CompareSideBySideWith(ref doc2);
-                //    doc1.Compare(file2name, missing, Microsoft.Office.Interop.Word.WdCompareTarget.wdCompareTargetCurrent, true, false, false, false, false);
-
-                // //   doc1.Windows.CompareSideBySideWith(ref o);
-                //    // MessageBox.Show(TemplateId);
-
-
+                    }      
 
                     Microsoft.Office.Interop.Word.Document tempDoc1;
                     Microsoft.Office.Interop.Word.Document tempDoc2;
                     Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
 
-
+                 
 
                     object newFilenameObject2 = file2name;
                     tempDoc2 = app.Documents.Open(ref newFilenameObject2, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
@@ -135,9 +137,13 @@ namespace AxiomIRISRibbon.SForceEdit
                     tempDoc1 = app.Documents.Open(ref newFilenameObject1, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                    ref missing, ref missing);
+                    //Compare
+                    Globals.ThisAddIn.AddDocId(tempDoc1, "Compare", "");
 
                     object o = tempDoc2;
                     tempDoc1.Windows.CompareSideBySideWith(ref o);
+
+                    Globals.Ribbons.Ribbon1.CloseWindows();
 
                 }
                 else
@@ -150,6 +156,50 @@ namespace AxiomIRISRibbon.SForceEdit
             {
                 Logger.Log(ex, "Clone");
             }
+        }
+        public bool SaveContract(bool ForceSave, bool SaveDoc)
+        {
+            string strFileAttached = _fileName;
+            //Save the Contract    
+            Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
+     
+            Globals.ThisAddIn.ProcessingStart("Save Contract");
+            DataReturn dr;
+          _doc = Globals.ThisAddIn.Application.ActiveDocument;
+
+            dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveVersion(_versionid, _matterid, _templateid, _versionName, _versionNumber));
+            if (!dr.success) return false;
+            _versionid = dr.id;
+
+            if (SaveDoc)
+            {        
+
+                //Save the file as an attachment
+                //save this to a scratch file
+                Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
+             //   string filename = AxiomIRISRibbon.Utility.SaveTempFile(_versionid);
+                _doc.SaveAs2(FileName: strFileAttached, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+
+                //Save a copy!
+                Globals.ThisAddIn.ProcessingUpdate("Save Copy");
+                string filenamecopy =  AxiomIRISRibbon.Utility.SaveTempFile(_versionid + "X");
+                Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(strFileAttached, Visible: false);
+                dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+
+                var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
+                docclose.Close();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
+
+                //Now save the file - change this to always save as the version name
+
+                Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
+                string vfilename = _versionName.Replace(" ", "_") + ".docx";         
+                dr = AxiomIRISRibbon.Utility.HandleData(_d.UpdateFile(_attachmentid, vfilename, filenamecopy));
+           
+            }
+            Globals.ThisAddIn.AddSaveHandler(); // add it back in
+            Globals.ThisAddIn.ProcessingStop("End");
+            return true;
         }
 
 

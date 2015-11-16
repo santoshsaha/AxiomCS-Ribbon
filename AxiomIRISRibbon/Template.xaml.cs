@@ -29,7 +29,7 @@ namespace AxiomIRISRibbon
         {
             InitializeComponent();
             Utility.setTheme(this);
-            
+
 
             d = Globals.ThisAddIn.getData();
 
@@ -43,22 +43,23 @@ namespace AxiomIRISRibbon
             editmode = "edit";
 
             Utility.ReadOnlyForm(true, new Grid[] { formGrid1, formGrid2 });
-            
+
 
             if (!Globals.ThisAddIn.getDebug()) tbHidden.Visibility = System.Windows.Visibility.Hidden;
         }
 
-        public void Refresh(){
+        public void Refresh()
+        {
             RefreshTemplateList();
         }
 
 
         private void GetDropDown()
         {
-            DataTable dt = Utility.HandleData(d.GetPickListValues("RibbonTemplate__c", "Type__c",false)).dt;
-            
+            DataTable dt = Utility.HandleData(d.GetPickListValues("RibbonTemplate__c", "Type__c", false)).dt;
+
             ComboBoxItem i = new ComboBoxItem();
-            i.Content = "";            
+            i.Content = "";
             cbType.Items.Add(i);
 
             foreach (DataRow r in dt.Rows)
@@ -81,6 +82,36 @@ namespace AxiomIRISRibbon
                 cbState.Items.Add(i);
             }
 
+        }
+
+        private void LoadTemplatesDLL()
+        {
+            try
+            {
+                d = Globals.ThisAddIn.getData();
+                DataReturn dr = AxiomIRISRibbon.Utility.HandleData(d.GetTemplates(true));
+                if (!dr.success) return;
+
+                DataTable dt1 = dr.dt;
+                //cbAmendmewnt.Items.Clear();
+
+                ComboBoxItem i;
+
+                // RadComboBoxItem selected = null;
+                foreach (DataRow r in dt1.Rows)
+                {
+                    i = new ComboBoxItem();
+                    i.Tag = r["Id"].ToString();
+                    i.Content = r["Name"].ToString();
+                    this.cbAmendmewnt.Items.Add(i);
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         public void UpdateOptions(ComboBox c, string[] options)
@@ -108,7 +139,7 @@ namespace AxiomIRISRibbon
             //check the required fields
             if (tbName.Text == "")
             {
-                MessageBox.Show("Name field is required","Problem",MessageBoxButton.OK);
+                MessageBox.Show("Name field is required", "Problem", MessageBoxButton.OK);
                 return;
             }
 
@@ -117,10 +148,10 @@ namespace AxiomIRISRibbon
             DataRow drow;
 
             DataView dv = (DataView)dgTemplates.ItemsSource;
-            drow= dv.Table.NewRow();
+            drow = dv.Table.NewRow();
             //Update from the form
             Utility.UpdateRow(new Grid[] { formGrid1, formGrid2 }, drow);
-            
+
             //Save the values
             DataReturn dr = Utility.HandleData(d.SaveTemplate(drow));
             if (!dr.success) return;
@@ -129,7 +160,7 @@ namespace AxiomIRISRibbon
             Globals.ThisAddIn.ProcessingStart("Save Template Data");
 
             //Take the active doc and save it with the new id
-            if (editmode == "newfromdoc")            
+            if (editmode == "newfromdoc")
             {
                 // close the dialog
                 this.Hide();
@@ -154,7 +185,7 @@ namespace AxiomIRISRibbon
                     doc.SaveAs2("Dummy", Word.WdSaveFormat.wdFormatXMLDocument);
                 }
                 catch (Exception)
-                {                                            
+                {
                 }
 
                 Globals.ThisAddIn.ProcessingStart("Show Task Pane");
@@ -200,7 +231,7 @@ namespace AxiomIRISRibbon
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-           //If there is an id then reload from the grid - if not then just clear
+            //If there is an id then reload from the grid - if not then just clear
             if (tbId.Text == "")
             {
                 Utility.ClearForm(new Grid[] { formGrid1, formGrid2 });
@@ -214,7 +245,7 @@ namespace AxiomIRISRibbon
             btnCancel.IsEnabled = false;
         }
 
-     
+
 
         private void ClauseRowDoubleClick(object sender, RoutedEventArgs e)
         {
@@ -244,7 +275,7 @@ namespace AxiomIRISRibbon
                 btnOpen.IsEnabled = true;
                 tbXML.Text = "";
             }
-            else          
+            else
             {
                 Utility.ClearForm(new Grid[] { formGrid1, formGrid2 });
                 btnSave.IsEnabled = false;
@@ -252,11 +283,13 @@ namespace AxiomIRISRibbon
                 btnOpen.IsEnabled = false;
                 tbXML.Text = "";
             }
-            
+
+            LoadTemplatesDLL();
         }
 
 
-        private void formTextBoxChanged(object sender, TextChangedEventArgs e){
+        private void formTextBoxChanged(object sender, TextChangedEventArgs e)
+        {
             btnSave.IsEnabled = true;
             btnCancel.IsEnabled = true;
         }
@@ -312,7 +345,8 @@ namespace AxiomIRISRibbon
 
 
 
-        private void Open(){
+        private void Open()
+        {
             //Create new doc and insert the xml
             //string xml = HandleData(d.GetTemplateXML(tbId.Text)).strRtn;
 
@@ -332,12 +366,12 @@ namespace AxiomIRISRibbon
 
 
             DataReturn dr = Utility.HandleData(d.GetTemplateFile(tbId.Text, filename));
-            if(!dr.success) return;
+            if (!dr.success) return;
             filename = dr.strRtn;
 
             Globals.ThisAddIn.ProcessingUpdate("Got Template File From SForce");
 
-            Word.Document doc=null;
+            Word.Document doc = null;
             if (filename == "")
             {
                 doc = Globals.ThisAddIn.Application.Documents.Add();
@@ -403,7 +437,7 @@ namespace AxiomIRISRibbon
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            this.Hide();            
+            this.Hide();
         }
 
     }

@@ -25,7 +25,8 @@ using System.IO;
 namespace AxiomIRISRibbon.SForceEdit
 {
     /// <summary>
-    /// Interaction logic for NewFromTemplate.xaml
+    /// Interaction logic for Exsisting.xaml
+    /// NEW File Added by PES
     /// </summary>
     public partial class Exsisting : RadWindow
     {
@@ -131,121 +132,180 @@ namespace AxiomIRISRibbon.SForceEdit
         {
             try
             {
+                bsyIndc.IsBusy = true;
+                bsyIndc.BusyContent = "Cloning ...";
+              
+
                 if ((DataRowView)dgTemplates.SelectedItem == null)
                 {
                     MessageBox.Show("Select an item", "Alert");
                 }
                 else
                 {
-               //     bsyInd.IsBusy = true;
-                //    bsyInd.BusyContent = "Cloning ...";
+                        
                     double dVersionNumber = 0;
-                    string strFromAgreementId,strToAgreementId, strVersionId = string.Empty, strTemplate = string.Empty;
-                    strToAgreementId=_id;
+                    string strFromAgreementId, strToAgreementId, strVersionId = string.Empty, strTemplate = string.Empty;
+                    strToAgreementId = _id;
 
                     DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
-                  //  DataRow allDr;// = new DataRow();
+                    DataRow allDr;// = new DataRow();
 
                     strFromAgreementId = dtr["Id"].ToString();
 
                     //Get version from 
-                    
-                    DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementLatestVersion(strFromAgreementId));
-                    
+
+                    DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strFromAgreementId));
+
                     if (!dr.success) return;
-
-                    DataTable dt = dr.dt;
-                   // allDr = dt.NewRow();
-
-                    foreach (DataRow r in dt.Rows)
+                    if (dr.dt.Rows.Count == 0)
                     {
-                        strVersionId = r["Id"].ToString();
-                     //   dVersionNumber = Convert.ToDouble(r["version_number__c"]);
-                        strTemplate = Convert.ToString(r["Template__c"]);
+                        MessageBox.Show("Version not avilable in source Agreement");
                     }
-
-                    //Get version to 
-                    DataReturn drFrom = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementLatestVersion(strToAgreementId));
-                    DataTable dtrFrom = drFrom.dt;
-                    foreach (DataRow rw in dtrFrom.Rows)
+                    else
                     {
-                        //strVersionId = rw["Id"].ToString();
-                        dVersionNumber = Convert.ToDouble(rw["version_number__c"]);
-                       // strTemplate = Convert.ToString(r["Template__c"]);
+                        DataTable dt = dr.dt;
+                         allDr = dt.NewRow();
+
+                        foreach (DataRow r in dt.Rows)
+                        {
+                            strVersionId = r["Id"].ToString();
+                            //   dVersionNumber = Convert.ToDouble(r["version_number__c"]);
+                            strTemplate = Convert.ToString(r["Template__c"]);
+                        }
+                      
+
+                        //Get version to 
+                        DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId));
+                        DataTable dtrTo = drTo.dt;
+                        foreach (DataRow rw in dtrTo.Rows)
+                        {
+                            allDr = rw;
+                            //strVersionId = rw["Id"].ToString();
+                            dVersionNumber = Convert.ToDouble(rw["version_number__c"]);
+                            // strTemplate = Convert.ToString(r["Template__c"]);
+                        }
+                        double maxId;
+                        if (drTo.dt.Rows.Count == 0)
+                        {
+                            maxId = 0;
+                        }
+                        else
+                        {
+                            maxId = Convert.ToDouble(dVersionNumber + 1);
+                        }
+
+                        string VersionName = "Version " + (maxId).ToString();
+                        string VersionNumber = maxId.ToString();
+
+                        // Create Version 0 or lower version in To
+                         DataReturn drCreatev0 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr));
+                         string newV0VersionId = drCreatev0.id;
+                        // Create Version 1 or lower version +1 in To
+                       maxId = Convert.ToDouble(maxId + 1);
+                        VersionName = "Version " + (maxId).ToString();                        
+                        VersionNumber = maxId.ToString();
+
+                        DataReturn drCreateV1 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber,allDr));
+                        string newV1VersionId = drCreateV1.id;
+
+                        //Create attachments in To
+                        DataReturn drVersionAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(strVersionId));
+                        if (!drVersionAttachemnts.success) return;
+                        DataTable dtAttachments = drVersionAttachemnts.dt;
+
+                        if (dtAttachments.Rows.Count == 0)
+                        {
+                            MessageBox.Show("Attachments not avilable in source Version");
+                        }
+                        else
+                        {
+                            string filename = "";
+                            foreach (DataRow rw in dtAttachments.Rows)
+                            {
+                                filename = rw["Name"].ToString();
+                                string body = rw["body"].ToString();
+                                _d.saveAttachmentstoSF(newV0VersionId, filename, body);
+                                _d.saveAttachmentstoSF(newV1VersionId, filename, body);
+                            }
+
+                            //Get Attachments
+                            DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(newV1VersionId));
+                            if (!drAttachemnts.success) return;
+                            DataTable dtAllAttachments = drAttachemnts.dt;
+
+                            //Open attachment with compare screeen
+                            OpenAttachment(dtAllAttachments, newV1VersionId, strToAgreementId, strTemplate, VersionName, VersionNumber);
+                       //     _sDocumentObjectDef = new SForceEdit.SObjectDef("Version__c");
+                            Globals.Ribbons.Ribbon1.CloseWindows();
+                        }
                     }
-                    double maxId = Convert.ToDouble(dVersionNumber + 1);
-                    string VersionName = "Version " + (maxId).ToString();
-                    string VersionNumber = maxId.ToString();
-
-                    // Create Version in TO
-                    DataReturn drCreate = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber));
-                    string laterstVersionId = drCreate.id;
-
-                    //Create attachments in To
-                    DataReturn drVersionAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(strVersionId));
-                    if (!drVersionAttachemnts.success) return;
-                    DataTable dtAttachments = drVersionAttachemnts.dt;
-                    string filename = "";
-                    foreach (DataRow rw in dtAttachments.Rows)
-                    {
-                        filename = rw["Name"].ToString();
-                        string body = rw["body"].ToString();
-                        _d.saveAttachmentstoSF(laterstVersionId, filename, body);
-                    }
-
-                    //Get Attachments
-                    DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(laterstVersionId));
-                    if (!drAttachemnts.success) return;
-                    DataTable dtAllAttachments = drAttachemnts.dt;
-
-                    //Open attachment with compare screeen
-                    OpenAttachment(dtAllAttachments);
-                    _sDocumentObjectDef = new SForceEdit.SObjectDef("Version__c");
-                    Globals.Ribbons.Ribbon1.CloseWindows();
-
                 }
+                bsyIndc.IsBusy = false;
             }
             catch (Exception ex)
             {
                 Logger.Log(ex, "Clone");
             }
         }
-
-        private  void OpenAttachment(DataTable dt)
+       
+        private  void OpenAttachment(DataTable dt,string versionid, string matterid, string templateid, string versionName, string versionNumber)
         {
-            foreach (DataRow rw in dt.Rows)
+            try
             {
-                if (rw["Name"].ToString().Contains("Version"))
-                {
-                    byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
-                    string filename = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());             
+                    var res = from row in dt.AsEnumerable()
+                              where 
+                              (row.Field<string>("Name").Contains(".doc") ||
+                              row.Field<string>("ContentType").Contains("msword"))
+                              select row;
+                    if (res.Count() > 1)
+                    {
 
-                    File.WriteAllBytes(filename, toBytes);
-                    // _source = app.Documents.Open(filename);
+                        AttachmentsView attTemp = new AttachmentsView();
+                        attTemp.Create(dt,versionid, matterid, templateid, versionName, versionNumber);
+                        attTemp.Show();
+                    }
+                    else
+                    {
 
-                 
-                    Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);
-                    //     Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
-                    //     doc.Activate();
+                        string attachmentid;
+                        foreach (DataRow rw in dt.Rows)
+                        {
+                            if (rw["Name"].ToString().Contains(".doc"))
+                            {
+                                byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
+                                string filename = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
 
-                    //Right Panel
-                    System.Windows.Forms.Integration.ElementHost elHost = new System.Windows.Forms.Integration.ElementHost();
-                    SForceEdit.CompareSideBar csb = new SForceEdit.CompareSideBar();
-                    csb.Create(filename);
+                                File.WriteAllBytes(filename, toBytes);
+                                // _source = app.Documents.Open(filename);
 
-                    elHost.Child = csb;
-                    elHost.Dock = System.Windows.Forms.DockStyle.Fill;
-                    System.Windows.Forms.UserControl u = new System.Windows.Forms.UserControl();
-                    u.Controls.Add(elHost);
-                    Microsoft.Office.Tools.CustomTaskPane taskPaneValue = Globals.ThisAddIn.CustomTaskPanes.Add(u, "Axiom IRIS Compare", doc.ActiveWindow);
-                    taskPaneValue.Visible = true;
-                    taskPaneValue.Width = 400;
-                }
 
+                                Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);
+                                //     Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
+                                //     doc.Activate();
+
+                                attachmentid = rw["Id"].ToString();
+
+                                //Right Panel
+                                System.Windows.Forms.Integration.ElementHost elHost = new System.Windows.Forms.Integration.ElementHost();
+                                SForceEdit.CompareSideBar csb = new SForceEdit.CompareSideBar();
+                                csb.Create(filename, versionid, matterid, templateid, versionName, versionNumber, attachmentid);
+
+                                elHost.Child = csb;
+                                elHost.Dock = System.Windows.Forms.DockStyle.Fill;
+                                System.Windows.Forms.UserControl u = new System.Windows.Forms.UserControl();
+                                u.Controls.Add(elHost);
+                                Microsoft.Office.Tools.CustomTaskPane taskPaneValue = Globals.ThisAddIn.CustomTaskPanes.Add(u, "Axiom IRIS Compare", doc.ActiveWindow);
+                                taskPaneValue.Visible = true;
+                                taskPaneValue.Width = 400;
+                            }
+                        }
+                    }
             }
+            catch (Exception ex) { Logger.Log(ex, "OpenAttachment"); }
+           
         }
 
-       
+        
 
         //End Code PES
     }

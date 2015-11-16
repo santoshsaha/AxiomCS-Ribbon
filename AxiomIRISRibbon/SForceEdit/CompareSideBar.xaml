@@ -9,9 +9,9 @@
 
     <Grid Margin="0,0,0,0">
 
-        <telerik:RadComboBox Name="cbTemplates" HorizontalAlignment="Left" Margin="27,51,0,0" VerticalAlignment="Top" Width="276"/>
-        <telerik:RadButton Name="btnCompare" Content="Compare" HorizontalAlignment="Left" Margin="148,119,0,0" VerticalAlignment="Top" Width="75" Click="btnCompare_Click" />
-        <Label Content="Select Template" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="276"/>
+        <telerik:RadComboBox Name="cbTemplates" HorizontalAlignment="Left" Margin="14,41,0,0" VerticalAlignment="Top" Width="276"/>
+        <telerik:RadButton Name="btnCompare" Content="Compare" HorizontalAlignment="Left" Margin="211,90,0,0" VerticalAlignment="Top" Width="75" Click="btnCompare_Click" />
+        <Label Content="Select Template :" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="276"/>
 
 
     </Grid>

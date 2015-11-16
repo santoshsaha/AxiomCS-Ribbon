@@ -172,12 +172,12 @@ namespace AxiomIRISRibbon
             }
         }
         //Code PES
-        public DataReturn GetAgreementLatestVersion(string id)
+        public DataReturn GetAgreementsForVersion(string id)
         {
-            return _sf.RunSOQL("SELECT  version_number__c,Id,Template__c FROM version__c WHERE  matter__c='" + id + "' and version_number__c !=null order by version_number__c desc limit 1");
-           // return _sf.RunSOQL("SELECT  Name,Additional_Notes__c,Agreement_Number__c,Applicable_Change_of_Control__c,Assigned_ATM__c,Assignment_Addressed__c,Assignment_Express_Consent_Required__c,Assignment_Notice_Lead_Time_days__c,Assignment_Written_Notice_Required__c,Auto_Renewal_Notification_Days__c,Auto_Renewal_Option__c,Auto_Renewal_Term_Months__c,Auto_Renewal_Terms__c,Average_Annual_Contract_Value__c,Breach_Notice_Requirement__c,Breach_Termination_Notice_Days__c,Breach_Termination_Notice_Required__c,Change_Control_Express_Consent_Lead_Time__c,Conditions_to_Exception__c,Consent_Unreasonably_Withheld__c,Consequences_of_Violating_Assignment_Pro__c,Contract_End_Date__c,Contract_Start_Date_sec1__c,Convenience_Notice_Requirement__c,Convenience_Termination_Notice_Days__c,Convenience_Termination_Notice_Required__c,Date_Terminated__c,Exception_to_Consent__c,Exclusivity_Language__c,Expiration_Notification_Days__c,Explain_Exclusivity_Language__c,Explain_Non_Compete_Language__c,Explain_Terminated_for_Other__c,Explain_Termination_Right_Trggers__c,Express_Consent_Required__c,Express_Written_Contract_Lag_Time_Days__c,External_ID__c,Matter__c,Maximum_Contract_Value_if_capped__c,Non_Compete_Language__c,Non_Standard_Language__c,Num_Days_Notice_to_Initiate_Manual_Renew__c,Number_of_Days_Notice_to_Stop_Auto_Renew__c,Off_Playbook_Language__c,Other_Restrictions_Assign_or_Asset_Tran__c,Perpetual__c,Renewal_Type__c,Requires_Express_Consent__c,Require__c,Template__c,Risk_Rating__c,Status__c,Term_Months__c,Terminated_For__c,Termination_Comments__c,Termination_for_Breach_Option__c,Termination_for_Convenience_Option__c,Termination_Notes__c,Termination_Notice_Days__c,Termination_Notice_Issue_Datec__c,Termination_Notice_Required__c,Termination_Notice_Requirement__c,Termination_Option__c,Termination_Right_Triggers__c,Total_Contract_Value__c,TS_of_Axiom_Ack_to_Receipt_of_CC_s__c,TS_of_CC_s_Received_on_Draft__c,version_number__c,Written_Notice_Lead_Time_days__c,Id FROM version__c WHERE  matter__c='" + id + "' and version_number__c !=null order by version_number__c desc limit 1");
+            //  return _sf.RunSOQL("SELECT  version_number__c,Id,Template__c FROM version__c WHERE  matter__c='" + id + "' and version_number__c !=null order by version_number__c desc limit 1");
+            return _sf.RunSOQL("SELECT  matter__c,Name,Additional_Notes__c,Agreement_Number__c,Applicable_Change_of_Control__c,Assigned_ATM__c,Assignment_Addressed__c,Assignment_Express_Consent_Required__c,Assignment_Notice_Lead_Time_days__c,Assignment_Written_Notice_Required__c,Auto_Renewal_Notification_Days__c,Auto_Renewal_Option__c,Auto_Renewal_Term_Months__c,Auto_Renewal_Terms__c,Average_Annual_Contract_Value__c,Breach_Notice_Requirement__c,Breach_Termination_Notice_Days__c,Breach_Termination_Notice_Required__c,Change_Control_Express_Consent_Lead_Time__c,Conditions_to_Exception__c,Consent_Unreasonably_Withheld__c,Consequences_of_Violating_Assignment_Pro__c,Contract_End_Date__c,Contract_Start_Date_sec1__c,Convenience_Notice_Requirement__c,Convenience_Termination_Notice_Days__c,Convenience_Termination_Notice_Required__c,Date_Terminated__c,Exception_to_Consent__c,Exclusivity_Language__c,Expiration_Notification_Days__c,Explain_Exclusivity_Language__c,Explain_Non_Compete_Language__c,Explain_Terminated_for_Other__c,Explain_Termination_Right_Trggers__c,Express_Consent_Required__c,Express_Written_Contract_Lag_Time_Days__c,External_ID__c,Maximum_Contract_Value_if_capped__c,Non_Compete_Language__c,Non_Standard_Language__c,Num_Days_Notice_to_Initiate_Manual_Renew__c,Number_of_Days_Notice_to_Stop_Auto_Renew__c,Off_Playbook_Language__c,Other_Restrictions_Assign_or_Asset_Tran__c,Perpetual__c,Renewal_Type__c,Requires_Express_Consent__c,Require__c,Template__c,Risk_Rating__c,Status__c,Term_Months__c,Terminated_For__c,Termination_Comments__c,Termination_for_Breach_Option__c,Termination_for_Convenience_Option__c,Termination_Notes__c,Termination_Notice_Days__c,Termination_Notice_Issue_Datec__c,Termination_Notice_Required__c,Termination_Notice_Requirement__c,Termination_Option__c,Termination_Right_Triggers__c,Total_Contract_Value__c,TS_of_Axiom_Ack_to_Receipt_of_CC_s__c,TS_of_CC_s_Received_on_Draft__c,version_number__c,Written_Notice_Lead_Time_days__c,Id FROM version__c WHERE  matter__c='" + id + "' and version_number__c !=null order by version_number__c desc limit 1");
+        
         }
-
 
         public DataReturn GetAllAttachments(string VersionNumber)
         {
@@ -193,6 +193,12 @@ namespace AxiomIRISRibbon
 
             String soql = "select Id, Name, Body, ContentType from Attachment where parentId = '" + TemplateId + "'";
             return _sf.RunSOQL(soql);
+        }
+        public DataReturn GetAgreementType(string MatterId)
+        {
+
+            DataReturn dr = _sf.RunSOQL("select Id,Name,Master_Agreement_Type__c from Matter__c where id = '" + MatterId + "' and IsDeleted = false");
+            return dr;
         }
         //End Code PES
         public DataReturn GetTemplates(bool published)
@@ -662,40 +668,56 @@ namespace AxiomIRISRibbon
             return _sf.Save(table, rw);
         }
         //New PES
-        public DataReturn CreateVersion(string VersionId, string MatterId, string TemplateId, string Name, string Number)
+        public DataReturn CreateVersion(string VersionId, string MatterId, string TemplateId, string Name, string Number,DataRow dr)
         {
             // Save the Version - will create a new version if the VersionId is blank
 
-            DataTable dt = new DataTable();
-            dt.Columns.Add(new DataColumn("Id", typeof(String)));
-            dt.Columns.Add(new DataColumn("Name", typeof(String)));
-            dt.Columns.Add(new DataColumn("Version_Number__c", typeof(Double)));
-            dt.Columns.Add(new DataColumn("Template__c", typeof(String)));
+                    DataTable dt = new DataTable();
+                    dt.Columns.Add(new DataColumn("Id", typeof(String)));
+                    dt.Columns.Add(new DataColumn("Name", typeof(String)));
+                    dt.Columns.Add(new DataColumn("Version_Number__c", typeof(Double)));
+                    dt.Columns.Add(new DataColumn("Template__c", typeof(String)));
 
-            string parenttable = "Matter__c";
-            string table = this.version;
+                    string parenttable = "Matter__c";
+                    string table = this.version;
 
-            // get it to work when its straight from a request 
-            if (this.demoinstance == "general")
+                    // get it to work when its straight from a request 
+                    if (this.demoinstance == "general")
+                    {
+                        parenttable = "Request2__c";
+                    }
+                    else if (this.demoinstance == "isda")
+                    {
+                        parenttable = "Version__c";
+                        table = "Document__c";
+                    }
+
+                    if (VersionId == "") dt.Columns.Add(new DataColumn(parenttable, typeof(String)));
+                  //  DataRow rw = dr;
+                    DataRow rw = dt.NewRow();
+                    rw["Id"] = VersionId;
+                    rw["Name"] = Name;
+                    rw["Version_Number__c"] = (Number == "" ? "1" : Number);
+                    rw["Template__c"] = TemplateId;
+                    if (VersionId == "") rw[parenttable] = MatterId;
+
+                    return _sf.Save(table, rw);
+
+            /* *
+            for (int i = dr.Table.Columns.Count - 1; i >= 0; i--)
             {
-                parenttable = "Request2__c";
+                if (dr[i] == "" || dr[i] == null)
+                {
+                    dr.Table.Columns.RemoveAt(i);
+                }
             }
-            else if (this.demoinstance == "isda")
-            {
-                parenttable = "Version__c";
-                table = "Document__c";
-            }
-
-            if (VersionId == "") dt.Columns.Add(new DataColumn(parenttable, typeof(String)));
-          //  DataRow rw = dr;
-            DataRow rw = dt.NewRow();
-            rw["Id"] = VersionId;
-            rw["Name"] = Name;
-            rw["Version_Number__c"] = (Number == "" ? "1" : Number);
-            rw["Template__c"] = TemplateId;
-            if (VersionId == "") rw[parenttable] = MatterId;
-
-            return _sf.Save(table, rw);
+            dr["Id"] = "";
+            dr["Name"] = Name;
+            dr["Version_Number__c"] = (Number == "" ? "1" : Number);
+            dr["Template__c"] = TemplateId;
+            if (VersionId == "") dr["matter__c"] = MatterId;
+            return _sf.Save("Version__c", dr);
+             */
         }
         // End PES
 

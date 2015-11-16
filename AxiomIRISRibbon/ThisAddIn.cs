@@ -114,7 +114,7 @@ namespace AxiomIRISRibbon
 
             // ----------------------------------------------------------------------------------------------------------------------------------------------------
             // Change Nov : Auto Login
-            bool autologin = true;
+            bool autologin = false;
 
             if (autologin && _localSettings.Debug)
             {
@@ -694,19 +694,25 @@ namespace AxiomIRISRibbon
                 {
                     try
                     {
-                        if ((ctp.Title == "Axiom IRIS Template" || ctp.Title == "Axiom IRIS Contract") && ctp.Window == doc.ActiveWindow)
+                        if ((ctp.Title == "Axiom IRIS Template" || ctp.Title == "Axiom IRIS Contract" ) && ctp.Window == doc.ActiveWindow)
+                        {
+                            return ctp;
+                        }
+                        else if (ctp.Title == "Axiom IRIS Compare")
                         {
                             return ctp;
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Logger.Log(ex, "GetTaskPane-CustomTaskPanes");
                     }
 
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Log(ex, "GetTaskPane");
             }
             return null;
         }
@@ -732,6 +738,7 @@ namespace AxiomIRISRibbon
                 System.Windows.Forms.UserControl u = ctp.Control;
                 ElementHost elHost = (ElementHost)u.Controls[0];
                 if (elHost.Child.GetType().ToString() == "AxiomIRISRibbon.TemplateEdit.TEditSidebar") return ((TemplateEdit.TEditSidebar)elHost.Child);
+          
             }
             return null;
         }
@@ -745,11 +752,25 @@ namespace AxiomIRISRibbon
                 System.Windows.Forms.UserControl u = ctp.Control;
                 ElementHost elHost = (ElementHost)u.Controls[0];
                 if (elHost.Child.GetType().ToString() == "AxiomIRISRibbon.ContractEdit.SForceEditSideBar2") return ((ContractEdit.SForceEditSideBar2)elHost.Child);
+              
             }
             return null;
         }
         
-
+        //NEW PES
+       public SForceEdit.CompareSideBar GetTaskPaneControlCompare()
+       {
+           Word.Document doc = this.Application.ActiveDocument;
+           Microsoft.Office.Tools.CustomTaskPane ctp = GetTaskPane(doc);
+           if (ctp != null)
+           {
+               System.Windows.Forms.UserControl u = ctp.Control;
+               ElementHost elHost = (ElementHost)u.Controls[0];
+              if (elHost.Child.GetType().ToString() == "AxiomIRISRibbon.SForceEdit.CompareSideBar") return ((SForceEdit.CompareSideBar)elHost.Child);
+           }
+           return null;
+       }
+        //END PES
 
         // Update all the data controls on all the task panes - could get round doing this if we tied to a datatable
         // but this will do for now!
@@ -2438,6 +2459,17 @@ namespace AxiomIRISRibbon
                         SaveAsUI = false;
                         Cancel = true;
                     }
+
+                    if (propa[0] == "Compare")
+                    {
+                        //Save the doc and the data
+                        GetTaskPaneControlCompare().SaveContract(false, true);
+
+                        //Cancel the save
+                        SaveAsUI = false;
+                        Cancel = true;
+                    }
+
 
                     if (hidep)
                     {

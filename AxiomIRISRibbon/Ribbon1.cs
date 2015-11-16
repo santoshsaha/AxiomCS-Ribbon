@@ -35,14 +35,7 @@ namespace AxiomIRISRibbon
 
         public void Activate()
         {
-            try
-            {
-                this.RibbonUI.ActivateTabMso("TabAddIns");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(string.Format("Error occurred while activating Axiom IRIS Ribbon.\n{0}", ex.ToString()));
-            }
+            this.RibbonUI.ActivateTabMso("TabAddIns");
         }
 
 

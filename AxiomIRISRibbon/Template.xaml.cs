@@ -86,7 +86,7 @@ namespace AxiomIRISRibbon
 
         private void LoadTemplatesDLL()
         {
-            try
+          /*  try
             {
                 d = Globals.ThisAddIn.getData();
                 DataReturn dr = AxiomIRISRibbon.Utility.HandleData(d.GetTemplates(true));
@@ -111,7 +111,7 @@ namespace AxiomIRISRibbon
             catch (Exception ex)
             {
 
-            }
+            }*/
         }
 
         public void UpdateOptions(ComboBox c, string[] options)

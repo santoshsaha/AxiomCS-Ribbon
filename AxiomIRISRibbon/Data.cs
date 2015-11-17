@@ -668,10 +668,10 @@ namespace AxiomIRISRibbon
             return _sf.Save(table, rw);
         }
         //New PES
-        public DataReturn CreateVersion(string VersionId, string MatterId, string TemplateId, string Name, string Number,DataRow dr)
+        public DataReturn CreateVersion(string VersionId, string MatterId, string TemplateId, string Name, string Number,DataRow drs)
         {
             // Save the Version - will create a new version if the VersionId is blank
-
+         /*
                     DataTable dt = new DataTable();
                     dt.Columns.Add(new DataColumn("Id", typeof(String)));
                     dt.Columns.Add(new DataColumn("Name", typeof(String)));
@@ -702,23 +702,26 @@ namespace AxiomIRISRibbon
                     if (VersionId == "") rw[parenttable] = MatterId;
 
                     return _sf.Save(table, rw);
-
-            /* *
-            for (int i = dr.Table.Columns.Count - 1; i >= 0; i--)
+           */
+      
+            DataRow rws = drs;
+            for (int i = rws.Table.Columns.Count - 1; i >= 0; i--)
             {
-                if (dr[i] == "" || dr[i] == null)
+                if (rws[i].ToString() == "" || rws[i] == null)            
                 {
-                    dr.Table.Columns.RemoveAt(i);
+                    rws.Table.Columns.RemoveAt(i);
                 }
             }
-            dr["Id"] = "";
-            dr["Name"] = Name;
-            dr["Version_Number__c"] = (Number == "" ? "1" : Number);
-            dr["Template__c"] = TemplateId;
-            if (VersionId == "") dr["matter__c"] = MatterId;
-            return _sf.Save("Version__c", dr);
-             */
+            rws["Id"] = "";
+            rws["Name"] = Name;
+            rws["Version_Number__c"] = (Number == "" ? "1" : Number);
+            rws["Template__c"] = TemplateId;
+            if (VersionId == "") rws["matter__c"] = MatterId;
+            return _sf.Save("Version__c", rws);
+           
         }
+
+   
         // End PES
 
         public DataReturn SaveDocumentClause(string DocumentClauseId, string DocumentId, string ConceptId, string ClauseId, string Name, int Seq, string Text, bool unlock)

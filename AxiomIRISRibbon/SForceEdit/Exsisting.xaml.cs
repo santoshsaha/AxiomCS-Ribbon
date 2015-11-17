@@ -134,7 +134,7 @@ namespace AxiomIRISRibbon.SForceEdit
             {
                 bsyIndc.IsBusy = true;
                 bsyIndc.BusyContent = "Cloning ...";
-              
+
 
                 if ((DataRowView)dgTemplates.SelectedItem == null)
                 {
@@ -142,13 +142,13 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
                 else
                 {
-                        
+
                     double dVersionNumber = 0;
-                    string strFromAgreementId, strToAgreementId, strVersionId = string.Empty, strTemplate = string.Empty;
+                    string strFromAgreementId, strToAgreementId, strFromVersionId = string.Empty, strTemplate = string.Empty;
                     strToAgreementId = _id;
 
                     DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
-                    DataRow allDr;// = new DataRow();
+                    DataRow allDr0, allDr1;// = new DataRow();
 
                     strFromAgreementId = dtr["Id"].ToString();
 
@@ -163,27 +163,27 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
                     else
                     {
-                        DataTable dt = dr.dt;
-                         allDr = dt.NewRow();
+                        DataTable dtv0 = dr.dt;
+                        DataTable dtv1 = dr.dt;
+                        allDr0 = dtv0.NewRow();
+                        allDr1 = dtv1.NewRow();
 
-                        foreach (DataRow r in dt.Rows)
+                        foreach (DataRow rv in dtv0.Rows)
                         {
-                            strVersionId = r["Id"].ToString();
+                            strFromVersionId = rv["Id"].ToString();
                             //   dVersionNumber = Convert.ToDouble(r["version_number__c"]);
-                            strTemplate = Convert.ToString(r["Template__c"]);
+                            strTemplate = Convert.ToString(rv["Template__c"]);
                         }
-                      
+
 
                         //Get version to 
                         DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId));
                         DataTable dtrTo = drTo.dt;
-                        foreach (DataRow rw in dtrTo.Rows)
-                        {
-                            allDr = rw;
-                            //strVersionId = rw["Id"].ToString();
-                            dVersionNumber = Convert.ToDouble(rw["version_number__c"]);
-                            // strTemplate = Convert.ToString(r["Template__c"]);
-                        }
+                        allDr0 = dtrTo.Rows[0];
+                        dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
+
+                        allDr1.ItemArray = dtrTo.Rows[0].ItemArray.Clone() as object[];
+
                         double maxId;
                         if (drTo.dt.Rows.Count == 0)
                         {
@@ -198,18 +198,22 @@ namespace AxiomIRISRibbon.SForceEdit
                         string VersionNumber = maxId.ToString();
 
                         // Create Version 0 or lower version in To
-                         DataReturn drCreatev0 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr));
-                         string newV0VersionId = drCreatev0.id;
+                        DataReturn drCreatev0 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr0));
+                        string newV0VersionId = drCreatev0.id;
                         // Create Version 1 or lower version +1 in To
-                       maxId = Convert.ToDouble(maxId + 1);
-                        VersionName = "Version " + (maxId).ToString();                        
+                        maxId = Convert.ToDouble(maxId + 1);
+                        VersionName = "Version " + (maxId).ToString();
                         VersionNumber = maxId.ToString();
 
-                        DataReturn drCreateV1 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber,allDr));
+                        DataReturn drCreateV1 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr1));
                         string newV1VersionId = drCreateV1.id;
 
+
+
+
+
                         //Create attachments in To
-                        DataReturn drVersionAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(strVersionId));
+                        DataReturn drVersionAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(strFromVersionId));
                         if (!drVersionAttachemnts.success) return;
                         DataTable dtAttachments = drVersionAttachemnts.dt;
 
@@ -235,8 +239,9 @@ namespace AxiomIRISRibbon.SForceEdit
 
                             //Open attachment with compare screeen
                             OpenAttachment(dtAllAttachments, newV1VersionId, strToAgreementId, strTemplate, VersionName, VersionNumber);
-                       //     _sDocumentObjectDef = new SForceEdit.SObjectDef("Version__c");
+                            //     _sDocumentObjectDef = new SForceEdit.SObjectDef("Version__c");
                             Globals.Ribbons.Ribbon1.CloseWindows();
+                            this.Close();
                         }
                     }
                 }

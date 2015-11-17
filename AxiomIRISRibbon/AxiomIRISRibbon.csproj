@@ -434,15 +434,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="AxiomIRISRibbon_1_TemporaryKey.pfx" />
-    <None Include="AxiomIRISRibbon_2_TemporaryKey.pfx" />
     <None Include="AxiomIRISRibbon_3_TemporaryKey.pfx" />
     <None Include="AxiomIRISRibbon_TemporaryKey.pfx" />
     <None Include="packages.config" />
-    <None Include="PES New.pfx" />
-    <None Include="PES.pfx" />
-    <None Include="PES1.snk" />
-    <None Include="PESKey.snk" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

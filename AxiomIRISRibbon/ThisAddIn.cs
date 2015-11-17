@@ -114,7 +114,7 @@ namespace AxiomIRISRibbon
 
             // ----------------------------------------------------------------------------------------------------------------------------------------------------
             // Change Nov : Auto Login
-            bool autologin = false;
+            bool autologin = true;
 
             if (autologin && _localSettings.Debug)
             {

@@ -440,7 +440,7 @@ namespace AxiomIRISRibbon.ContractEdit
             }
         }
 
-        
+
         void Application_DocumentBeforeSave(Word.Document doc, ref bool SaveAsUI, ref bool Cancel)
         {
             if (Globals.ThisAddIn.GetDocId(Globals.ThisAddIn.Application.ActiveDocument) == _attachmentid)
@@ -478,7 +478,7 @@ namespace AxiomIRISRibbon.ContractEdit
 
             //Now 
             Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
-            DataReturn dr = _d.UpdateFile(_attachmentid,"", filenamecopy);
+            DataReturn dr = _d.UpdateFile(_attachmentid, "", filenamecopy);
 
             Globals.ThisAddIn.ProcessingStop("Stop");
         }
@@ -776,7 +776,7 @@ namespace AxiomIRISRibbon.ContractEdit
             private string _format;
 
             private string _default;
-           
+
             //Orignal Value
             private string _originalvalue;
 
@@ -972,7 +972,7 @@ namespace AxiomIRISRibbon.ContractEdit
         }
 
 
-        public void BuildSideBarNewVersion(string TemplateId, string TemplateName, string TemplatePlaybookLink,string MatterId, string MatterName)
+        public void BuildSideBarNewVersion(string TemplateId, string TemplateName, string TemplatePlaybookLink, string MatterId, string MatterName)
         {
             _matterid = MatterId;
             _templateid = TemplateId;
@@ -1009,7 +1009,7 @@ namespace AxiomIRISRibbon.ContractEdit
             _versionid = dr.id;
 
             this.LoadCompareMenu();
-            this.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink);            
+            this.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink);
             this.LoadDataTab(_d.contractfilename, "Version__c", _versionid);
 
             // once we have loaded the data tab populate the default element values - some of which may be read from the 
@@ -1037,7 +1037,7 @@ namespace AxiomIRISRibbon.ContractEdit
             this.tbVersionNumber.Text = "";
 
             this.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink);
-            
+
             // once we have loaded the data tab populate the default element values and default clauses
             // no DataTab so will show the first one or a blank value if they are formulas
             Globals.ThisAddIn.ProcessingUpdate("Set Default Clauses");
@@ -1053,11 +1053,11 @@ namespace AxiomIRISRibbon.ContractEdit
 
         }
 
-        public void BuildSideBarFromVersion(string VersionId,string AttachedMode,string AttachmentId)
+        public void BuildSideBarFromVersion(string VersionId, string AttachedMode, string AttachmentId)
         {
             this.SetAttachedMode(AttachedMode);
             _attachmentid = AttachmentId;
-            
+
             // get the required data from the version
             DataReturn dr = Utility.HandleData(_d.GetVersion(VersionId));
             if (!dr.success) return;
@@ -1086,6 +1086,21 @@ namespace AxiomIRISRibbon.ContractEdit
                 {
                     _matterid = dr.dt.Rows[0]["Matter__c"].ToString();
                     this.tbMatterName.Text = dr.dt.Rows[0]["Matter__r_Name"].ToString();
+
+                    //Code PES
+                   /* //Get Matter Agreement Type from matter__c to hide show button
+
+                    string a = _matterid;
+                    DataReturn dr1 = _d.GetAgreementType(a);
+                    if (!dr1.success) return;
+                    DataTable dt = dr1.dt;
+                    if (dt.Rows.Count == 0) return;
+                    if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() == "Amendment")
+                    {
+                        rbFullView.Visibility = System.Windows.Visibility.Visible;
+                        rbAmendmentView.Visibility = System.Windows.Visibility.Visible;
+                    }*/
+                    //END PES
                 }
                 else
                 {
@@ -1108,7 +1123,9 @@ namespace AxiomIRISRibbon.ContractEdit
                 }
                 this.LoadCompareMenu();
                 this.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink);
-            } else {
+            }
+            else
+            {
                 // we have no template - template could have been deleted
                 MessageBox.Show("The Template that this contract was based on has been removed.");
                 this._doc = Globals.ThisAddIn.Application.ActiveDocument;
@@ -1159,7 +1176,7 @@ namespace AxiomIRISRibbon.ContractEdit
 
                         }
                     }
-                    
+
                     mi.Header = versionnum + r["Name"].ToString();
 
                     mi.Tag = r["Id"].ToString();
@@ -2709,7 +2726,7 @@ namespace AxiomIRISRibbon.ContractEdit
 
                                 }
                             }
-                        }                        
+                        }
                     }
                 }
 
@@ -2858,7 +2875,7 @@ namespace AxiomIRISRibbon.ContractEdit
         }
 
 
-        public bool SaveContract(bool ForceSave,bool SaveDoc)
+        public bool SaveContract(bool ForceSave, bool SaveDoc)
         {
             //Save the Contract    
             Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
@@ -2905,11 +2922,11 @@ namespace AxiomIRISRibbon.ContractEdit
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
 
                 //Now save the file - change this to always save as the version name
-                
+
                 Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
                 string vfilename = this.tbVersionName.Text.Replace(" ", "_") + ".docx";
 
-                if (this._attachmentid==null || this._attachmentid == "")
+                if (this._attachmentid == null || this._attachmentid == "")
                 {
                     dr = Utility.HandleData(_d.AttachFile(_versionid, vfilename, filenamecopy));
                     _attachmentid = dr.id;
@@ -4173,7 +4190,7 @@ namespace AxiomIRISRibbon.ContractEdit
 
             if (dr.success)
             {
-                
+
                 // if this is to be unattached then unattach
                 if (this._versioncloneattachedmode)
                 {
@@ -4183,11 +4200,11 @@ namespace AxiomIRISRibbon.ContractEdit
 
                     // Save contract will save everything to the new versionid
                     // the true forces the save routine to save the clauses and elements even though they haven't changed
-                    this.SaveContract(true,true);
+                    this.SaveContract(true, true);
                     // Reload the Data and update the version values
                     this.LoadCompareMenu();
                     this.BuildSidebar();
-                    
+
                 }
                 else
                 {
@@ -4212,7 +4229,7 @@ namespace AxiomIRISRibbon.ContractEdit
         }
 
 
-        private void cloneWorkerDoWork(object sender, DoWorkEventArgs e,bool newversionattached)
+        private void cloneWorkerDoWork(object sender, DoWorkEventArgs e, bool newversionattached)
         {
 
             // do a save of the current doc
@@ -4300,7 +4317,7 @@ namespace AxiomIRISRibbon.ContractEdit
                 // or something!
 
                 //scratch do to hold the clause 
-                Word.Document scratch = Globals.ThisAddIn.Application.Documents.Add(this._versionclonenewdocpath,Visible: false);
+                Word.Document scratch = Globals.ThisAddIn.Application.Documents.Add(this._versionclonenewdocpath, Visible: false);
 
                 // hide the revisions
                 _doc.TrackRevisions = false;
@@ -4325,7 +4342,9 @@ namespace AxiomIRISRibbon.ContractEdit
 
                     _doc.Range().InsertXML(scratch.WordOpenXML);
 
-                } catch(Exception){
+                }
+                catch (Exception)
+                {
 
                 }
 
@@ -4427,7 +4446,7 @@ namespace AxiomIRISRibbon.ContractEdit
         private void NewVersionContent_ItemClick(object sender, Telerik.Windows.RadRoutedEventArgs e)
         {
             RadMenuItem mi = e.OriginalSource as RadMenuItem;
-     
+
             string menuheader = mi.Header.ToString();
             string menutag = mi.Tag.ToString();
 
@@ -4457,7 +4476,7 @@ namespace AxiomIRISRibbon.ContractEdit
                         _cloneBackgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(cloneBackgroundWorker_RunWorkerCompleted);
                         _cloneBackgroundWorker.RunWorkerAsync();
                     }
-                }                
+                }
             }
             else if (menutag == "UnAttached")
             {
@@ -4477,7 +4496,7 @@ namespace AxiomIRISRibbon.ContractEdit
                     _cloneBackgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(cloneBackgroundWorker_RunWorkerCompleted);
                     _cloneBackgroundWorker.RunWorkerAsync();
 
-                }                
+                }
 
             }
             else if (menutag == "NewDocument")
@@ -4516,14 +4535,15 @@ namespace AxiomIRISRibbon.ContractEdit
 
 
 
-                } 
+                }
             }
         }
 
 
         private void SetAttachedMode(string AttachedMode)
         {
-            if(AttachedMode.ToLower()=="Attached".ToLower() && !_attachedmode){
+            if (AttachedMode.ToLower() == "Attached".ToLower() && !_attachedmode)
+            {
                 _attachedmode = true;
                 this.imgAttached.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/locksmall.png", UriKind.Relative));
                 this.imgAttached.ToolTip = "Attached - Document is Locked to Template";
@@ -4532,7 +4552,9 @@ namespace AxiomIRISRibbon.ContractEdit
                 this.rmiTemplate.Visibility = System.Windows.Visibility.Visible;
 
 
-            } else if (AttachedMode.ToLower()=="UnAttached".ToLower() && _attachedmode){
+            }
+            else if (AttachedMode.ToLower() == "UnAttached".ToLower() && _attachedmode)
+            {
                 _attachedmode = false;
                 this.imgAttached.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/unlocksmall.png", UriKind.Relative));
                 this.imgAttached.ToolTip = "UnAttached - Document is NOT Locked to Template";
@@ -4541,7 +4563,7 @@ namespace AxiomIRISRibbon.ContractEdit
                 this.rmiTemplate.Visibility = System.Windows.Visibility.Collapsed;
 
             }
-            
+
         }
 
 
@@ -4559,7 +4581,7 @@ namespace AxiomIRISRibbon.ContractEdit
 
             if (menutag == "Word")
             {
-                
+
                 // take the doc, strip out the content controls and save as a regular word doc
                 Globals.ThisAddIn.ProcessingStart("Save as Static Word Doc");
 
@@ -4622,7 +4644,7 @@ namespace AxiomIRISRibbon.ContractEdit
                         }
                     }
 
-                   
+
                     // Switch of the element highliting
                     // Need to select somewhere editable!
                     newdoc.Characters.Last.Select();
@@ -4771,7 +4793,7 @@ namespace AxiomIRISRibbon.ContractEdit
                 p.Start();
 
                 Globals.ThisAddIn.ProcessingStop("End");
-                
+
             }
         }
 
@@ -4835,11 +4857,11 @@ namespace AxiomIRISRibbon.ContractEdit
             olddoc.Save();
 
             // now get a copy of the current doc - save it first as the id so we can then open it with the name
-            string newscratchfilename = Utility.SaveTempFile(_attachmentid);            
+            string newscratchfilename = Utility.SaveTempFile(_attachmentid);
             _doc.SaveAs2(FileName: newscratchfilename, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
 
             Word.Document newdoc = Globals.ThisAddIn.Application.Documents.Add(newscratchfilename);
-            newscratchfilename = Utility.SaveTempFile(_filename);            
+            newscratchfilename = Utility.SaveTempFile(_filename);
             newdoc.SaveAs2(FileName: newscratchfilename, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
 
             this.RemoveControls(newdoc);
@@ -4916,201 +4938,202 @@ namespace AxiomIRISRibbon.ContractEdit
         }
 
 
-            private void RemoveControls(Word.Document doc){
-                object start = doc.Content.Start;
-                object end = doc.Content.End;
-                Word.Range r = doc.Range(ref start, ref end);
+        private void RemoveControls(Word.Document doc)
+        {
+            object start = doc.Content.Start;
+            object end = doc.Content.End;
+            Word.Range r = doc.Range(ref start, ref end);
 
-                foreach (Word.ContentControl cc in r.ContentControls)
-                {
-                    string tag = cc.Tag;
-                    if (tag != null && tag != "" && cc.Tag.Contains('|'))
-                    {
-                        string[] taga = cc.Tag.Split('|');
-
-                        if (taga.Length > 1 && ((taga[0] == "Concept" && taga[1] != "") || (taga[0] == "Element" && taga[1] != "")))
-                        {
-                            Word.Range ccr = cc.Range;
-                            cc.LockContentControl = false;
-                            cc.LockContents = false;
-                            cc.Delete(false);
-
-                            // *TODO* if none selected we may want to delete the extra return
-
-                        }
-                    }
-                }
-
-                // Switch of the element highliting
-                // Need to select somewhere editable!
-                doc.Characters.Last.Select();
-
-                try
-                {
-                    Word.Style s = doc.Styles["ContentControl"];
-                    if (s.Shading.BackgroundPatternColor != Word.WdColor.wdColorAutomatic)
-                    {
-                        s.Shading.BackgroundPatternColor = Word.WdColor.wdColorAutomatic;
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-
-
-
-            private string GetFieldValue(string field)
+            foreach (Word.ContentControl cc in r.ContentControls)
             {
-                string val = "";
-                string[] dl = field.Split('.');
-                if (dl.Length == 2)
+                string tag = cc.Tag;
+                if (tag != null && tag != "" && cc.Tag.Contains('|'))
                 {
-                    if (dl[0] == "Version" || dl[0] == "Version__c")
+                    string[] taga = cc.Tag.Split('|');
+
+                    if (taga.Length > 1 && ((taga[0] == "Concept" && taga[1] != "") || (taga[0] == "Element" && taga[1] != "")))
                     {
-                        if (_DocumentRow != null)
-                        {
-                            if (_DocumentRow.Table.Columns.Contains(dl[1]))
-                            {
-                                val = _DocumentRow[dl[1]].ToString();
-                            }
-                        }
-                    }
-                    else if (dl[0] == "Matter" || dl[0] == "Matter__c")
-                    {
-                        if (_MatterRow != null)
-                        {
-                            if (_MatterRow.Table.Columns.Contains(dl[1]))
-                            {
-                                val = _MatterRow[dl[1]].ToString();
-                            }
-                        }
-                    }
-                    else if (dl[0] == "Request" || dl[0] == "Request__c")
-                    {
-                        if (_RequestRow != null)
-                        {
-                            if (_RequestRow.Table.Columns.Contains(dl[1]))
-                            {
-                                val = _RequestRow[dl[1]].ToString();
-                            }
-                        }
+                        Word.Range ccr = cc.Range;
+                        cc.LockContentControl = false;
+                        cc.LockContents = false;
+                        cc.Delete(false);
+
+                        // *TODO* if none selected we may want to delete the extra return
 
                     }
-                 
                 }
-                return val;
             }
 
+            // Switch of the element highliting
+            // Need to select somewhere editable!
+            doc.Characters.Last.Select();
 
-
-            private void LoadElementsFromDefault()
+            try
             {
-                try
+                Word.Style s = doc.Styles["ContentControl"];
+                if (s.Shading.BackgroundPatternColor != Word.WdColor.wdColorAutomatic)
                 {
-                    //Load the element values and update the element to have the instance id
-                    string formattedVal = "";
-                    foreach (string id in _elements.Keys)
+                    s.Shading.BackgroundPatternColor = Word.WdColor.wdColorAutomatic;
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+
+
+
+        private string GetFieldValue(string field)
+        {
+            string val = "";
+            string[] dl = field.Split('.');
+            if (dl.Length == 2)
+            {
+                if (dl[0] == "Version" || dl[0] == "Version__c")
+                {
+                    if (_DocumentRow != null)
                     {
-                        FrameworkElement f = _elements[id];
-                        Element el = (Element)f.Tag;
-
-                        // get the value
-                        string val = "";
-                        string dvalue = el.defaultvalue;
-
-                        if (dvalue.StartsWith("="))
+                        if (_DocumentRow.Table.Columns.Contains(dl[1]))
                         {
-                            string dlookup = dvalue.Substring(1, dvalue.Length - 1);
-                            val = GetFieldValue(dlookup);
-
-                            // special formulas
-                            if (dvalue.ToLower() == "=Now".ToLower())
-                            {
-                                val = DateTime.Now.ToLongDateString();
-                            }
+                            val = _DocumentRow[dl[1]].ToString();
                         }
-                        else
-                        {
-                            val = dvalue;
-                        }
-
-
-                        if (el.controltype == "TextBox")
-                        {
-
-                            TextBox tb = (TextBox)f;
-                            tb.TextChanged -= new TextChangedEventHandler(element_TextChanged);
-                            el.originalvalue = val;
-                            formattedVal = FormatElement(el, val);
-                            tb.Text = formattedVal;
-                            tb.TextChanged += new TextChangedEventHandler(element_TextChanged);
-                        }
-
-
-                        else if (el.controltype == "ComboBox")
-                        {
-                            ComboBox cb = (ComboBox)f;
-                            cb.SelectionChanged -= new SelectionChangedEventHandler(cb_SelectionChanged);
-                            el.originalvalue = val;
-                            formattedVal = FormatElement(el, val);
-                            cb.Text = val;
-                            cb.SelectionChanged += new SelectionChangedEventHandler(cb_SelectionChanged);
-                        }
-                        else if (el.controltype == "CheckBox")
-                        {
-                            CheckBox cbox = (CheckBox)f;
-                            cbox.Checked -= new RoutedEventHandler(cbox_Checked);
-                            cbox.Unchecked -= new RoutedEventHandler(cbox_Unchecked);
-                            cbox.IsChecked = Convert.ToBoolean(val);
-                            el.originalvalue = val;
-                            formattedVal = FormatElement(el, val);
-                            cbox.Checked += new RoutedEventHandler(cbox_Checked);
-                            cbox.Unchecked += new RoutedEventHandler(cbox_Unchecked);
-
-                        }
-                        else if (el.controltype == "DatePicker")
-                        {
-                            DatePicker dp = (DatePicker)f;
-                            dp.SelectedDateChanged -= new EventHandler<SelectionChangedEventArgs>(dp_SelectedDateChanged);
-                            el.originalvalue = val;
-                            formattedVal = FormatElement(el, dp.Text);
-                            dp.Text = val;
-                            dp.SelectedDateChanged += new EventHandler<SelectionChangedEventArgs>(dp_SelectedDateChanged);
-                        }
-
-
-                        //Update the doc
-                        if (_attachedmode)
-                        {
-                            Globals.ThisAddIn.UpdateElement(el.templateelementid, formattedVal, el.type);
-                        }
-
                     }
                 }
-                catch (Exception ex)
+                else if (dl[0] == "Matter" || dl[0] == "Matter__c")
                 {
-                    string message = "Sorry there has been an error - " + ex.Message;
-                    if (ex.InnerException != null) message += " " + ex.InnerException.Message;
-                    MessageBox.Show(message);
-                    // Globals.ThisAddIn.ProcessingStop("Finished");
+                    if (_MatterRow != null)
+                    {
+                        if (_MatterRow.Table.Columns.Contains(dl[1]))
+                        {
+                            val = _MatterRow[dl[1]].ToString();
+                        }
+                    }
                 }
-                return;
-            }
+                else if (dl[0] == "Request" || dl[0] == "Request__c")
+                {
+                    if (_RequestRow != null)
+                    {
+                        if (_RequestRow.Table.Columns.Contains(dl[1]))
+                        {
+                            val = _RequestRow[dl[1]].ToString();
+                        }
+                    }
 
-            private void btnReset_Click(object sender, RoutedEventArgs e)
+                }
+
+            }
+            return val;
+        }
+
+
+
+        private void LoadElementsFromDefault()
+        {
+            try
             {
-                MessageBoxResult rtn = MessageBox.Show("Are you sure, this will reset the Clause selection and Elements to the default values?", "Are you sure?", MessageBoxButton.OKCancel);
-                if (rtn == MessageBoxResult.OK)
+                //Load the element values and update the element to have the instance id
+                string formattedVal = "";
+                foreach (string id in _elements.Keys)
                 {
-                    // get the default clauses
-                    this.SetDefaultClauses();
+                    FrameworkElement f = _elements[id];
+                    Element el = (Element)f.Tag;
 
-                    // populate the elements!
-                    this.LoadElementsFromDefault();
+                    // get the value
+                    string val = "";
+                    string dvalue = el.defaultvalue;
+
+                    if (dvalue.StartsWith("="))
+                    {
+                        string dlookup = dvalue.Substring(1, dvalue.Length - 1);
+                        val = GetFieldValue(dlookup);
+
+                        // special formulas
+                        if (dvalue.ToLower() == "=Now".ToLower())
+                        {
+                            val = DateTime.Now.ToLongDateString();
+                        }
+                    }
+                    else
+                    {
+                        val = dvalue;
+                    }
+
+
+                    if (el.controltype == "TextBox")
+                    {
+
+                        TextBox tb = (TextBox)f;
+                        tb.TextChanged -= new TextChangedEventHandler(element_TextChanged);
+                        el.originalvalue = val;
+                        formattedVal = FormatElement(el, val);
+                        tb.Text = formattedVal;
+                        tb.TextChanged += new TextChangedEventHandler(element_TextChanged);
+                    }
+
+
+                    else if (el.controltype == "ComboBox")
+                    {
+                        ComboBox cb = (ComboBox)f;
+                        cb.SelectionChanged -= new SelectionChangedEventHandler(cb_SelectionChanged);
+                        el.originalvalue = val;
+                        formattedVal = FormatElement(el, val);
+                        cb.Text = val;
+                        cb.SelectionChanged += new SelectionChangedEventHandler(cb_SelectionChanged);
+                    }
+                    else if (el.controltype == "CheckBox")
+                    {
+                        CheckBox cbox = (CheckBox)f;
+                        cbox.Checked -= new RoutedEventHandler(cbox_Checked);
+                        cbox.Unchecked -= new RoutedEventHandler(cbox_Unchecked);
+                        cbox.IsChecked = Convert.ToBoolean(val);
+                        el.originalvalue = val;
+                        formattedVal = FormatElement(el, val);
+                        cbox.Checked += new RoutedEventHandler(cbox_Checked);
+                        cbox.Unchecked += new RoutedEventHandler(cbox_Unchecked);
+
+                    }
+                    else if (el.controltype == "DatePicker")
+                    {
+                        DatePicker dp = (DatePicker)f;
+                        dp.SelectedDateChanged -= new EventHandler<SelectionChangedEventArgs>(dp_SelectedDateChanged);
+                        el.originalvalue = val;
+                        formattedVal = FormatElement(el, dp.Text);
+                        dp.Text = val;
+                        dp.SelectedDateChanged += new EventHandler<SelectionChangedEventArgs>(dp_SelectedDateChanged);
+                    }
+
+
+                    //Update the doc
+                    if (_attachedmode)
+                    {
+                        Globals.ThisAddIn.UpdateElement(el.templateelementid, formattedVal, el.type);
+                    }
+
                 }
             }
+            catch (Exception ex)
+            {
+                string message = "Sorry there has been an error - " + ex.Message;
+                if (ex.InnerException != null) message += " " + ex.InnerException.Message;
+                MessageBox.Show(message);
+                // Globals.ThisAddIn.ProcessingStop("Finished");
+            }
+            return;
+        }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult rtn = MessageBox.Show("Are you sure, this will reset the Clause selection and Elements to the default values?", "Are you sure?", MessageBoxButton.OKCancel);
+            if (rtn == MessageBoxResult.OK)
+            {
+                // get the default clauses
+                this.SetDefaultClauses();
+
+                // populate the elements!
+                this.LoadElementsFromDefault();
+            }
+        }
     }
 
 

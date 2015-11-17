@@ -7,8 +7,9 @@
              d:DesignHeight="550" d:DesignWidth="400" ResizeMode="NoResize" ShowInTaskbar="True" WindowStartupLocation="CenterScreen"  Title="Template" WindowStyle="ToolWindow" Width="739" Height="380" Icon="/AxiomIRISRibbon;component/Resources/Iris-Logo-Solo-Orange-40.png" Closing="Window_Closing">
     <Grid Margin="0,0,0,-73">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200*"/>
-            <ColumnDefinition Width="247*"/>
+            <ColumnDefinition Width="328*"/>
+            <ColumnDefinition Width="397*"/>
+            <ColumnDefinition Width="8*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="306*" />
@@ -41,7 +42,7 @@
             </Button>
         </Grid>
 
-        <TabControl Margin="0,7,10,3" Grid.Column="1" Name="tcTab" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  TabStripPlacement="Top" VerticalAlignment="Stretch">
+        <TabControl Margin="0,7,2,3" Grid.Column="1" Name="tcTab" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"  TabStripPlacement="Top" VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="395">
             <TabItem Header="Template" Name="tabItem1">
                 <Grid Name="formGrid1" Margin="0,-5,0,5">
                     <Grid.ColumnDefinitions>
@@ -52,7 +53,7 @@
                         <RowDefinition Height="267*" />
                         <RowDefinition Height="50*" />
                     </Grid.RowDefinitions>
-                    <Label Content="Name:" Height="27" HorizontalAlignment="Left" Margin="6,9,0,0" Name="label1" VerticalAlignment="Top" />
+                    <Label Content="Name:" Height="27" HorizontalAlignment="Left" Margin="10,9,0,0" Name="label1" VerticalAlignment="Top" />
                     <TextBox Height="20" Margin="89,9,6,0" Name="tbName" VerticalAlignment="Top" Width="Auto" TextChanged="formTextBoxChanged" MaxLength="80" Grid.ColumnSpan="2"/>
 
                     <Label Content="Type:" Height="26" HorizontalAlignment="Left" Margin="10,36,0,0" Name="label2" VerticalAlignment="Top" />
@@ -60,22 +61,22 @@
 
                     <Label Content="State:" Height="35" HorizontalAlignment="Left" Margin="118,36,0,0" Name="label3" VerticalAlignment="Top" Grid.Column="1" />
                     <ComboBox Height="20" Margin="163,39,0,0" HorizontalAlignment="Left"  Width="100"  Name="cbState" VerticalAlignment="Top" SelectionChanged="formComboChanged" Grid.Column="1" />
-
+                    <!-- Code PES
                     <Label Content="Amendment:" Height="25" HorizontalAlignment="Left" Margin="6,102,0,0" Name="label4" VerticalAlignment="Top" />
                     <ComboBox Height="20" Margin="89,100,0,0" HorizontalAlignment="Left"  Width="281"  Name="cbAmendmewnt" VerticalAlignment="Top" SelectionChanged="formComboChanged" Grid.ColumnSpan="2" />
 
                     <Label Content="Master Amendment Template:" Height="25" HorizontalAlignment="Left" Margin="6,133,0,0" Name="label5" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="171" />
                     <CheckBox Height="20" Margin="85,138,0,0" HorizontalAlignment="Left"  Width="88"  Name="chkAmendmewnt" VerticalAlignment="Top" Grid.Column="1"  />
-
+            End Code PES  -->
 
                     <ScrollViewer Margin="10,158,-10,36" Grid.ColumnSpan="2" Grid.RowSpan="2">
-                        <TextBox AcceptsReturn="True" Name="tbDescription" TextChanged="formTextBoxChanged" VerticalContentAlignment="Top" Height="98" MaxLength="32768"/>
+                        <TextBox AcceptsReturn="True" Name="tbDescription" TextChanged="formTextBoxChanged" VerticalContentAlignment="Top" Height="108" MaxLength="32768"/>
                     </ScrollViewer>
                     <Button Grid.Row="1" Content="Save" Height="23" HorizontalAlignment="Left"  Name="btnSave" VerticalAlignment="Top" Width="75" Click="btnSave_Click" Margin="107,11,0,0" Grid.Column="1" />
                     <Button Grid.Row="1" Content="Cancel" Height="23" Name="btnCancel" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="btnCancel_Click" Margin="0,11,6,0" Grid.Column="1" />
 
                     <Grid Grid.ColumnSpan="2" Margin="-10,-10,10,10" />
-                    <Label Content="Playbook:" HorizontalAlignment="Left" Margin="0,67,0,130" x:Name="lblPlaybookLink" Width="66" />
+                    <Label Content="Playbook:" HorizontalAlignment="Left" Margin="10,67,0,130" x:Name="lblPlaybookLink" Width="66" />
                     <TextBox Height="20" Margin="89,70,6,0" x:Name="tbPlaybookLink__c" VerticalAlignment="Top" Width="Auto" TextChanged="formTextBoxChanged" MaxLength="255" Grid.ColumnSpan="2"/>
 
                 </Grid>
@@ -97,8 +98,8 @@
         </TabControl>
         <Button Content="Add" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="6,7,0,0" Name="btnAdd" VerticalAlignment="Top" Width="75" Click="btnAdd_Click" />
         <Button Content="Delete" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="87,7,0,0" Name="btnDelete" VerticalAlignment="Top" Width="75" Click="btnDelete_Click" />
-        <Button Content="Open" Height="23" HorizontalAlignment="Right" Margin="0,7,86,0" Name="btnOpen" VerticalAlignment="Top" Width="75" Grid.Column="1" Grid.Row="1" Click="btnOpen_Click" />
-        <Button Content="Close" Height="23" HorizontalAlignment="Right" Margin="0,7,5,0" Name="btnClose" VerticalAlignment="Top" Width="75" Grid.Column="1" Grid.Row="1" Click="btnClose_Click" />
+        <Button Content="Open" Height="23" HorizontalAlignment="Right" Margin="0,7,78.358,0" Name="btnOpen" VerticalAlignment="Top" Width="75" Grid.Column="1" Grid.Row="1" Click="btnOpen_Click" />
+        <Button Content="Close" Height="23" HorizontalAlignment="Right" Margin="0,7,5,0" Name="btnClose" VerticalAlignment="Top" Width="75" Grid.Column="1" Grid.Row="1" Click="btnClose_Click" Grid.ColumnSpan="2" />
     </Grid>
 </Window>
 

@@ -149,7 +149,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
                     DataRow allDr0, allDr1;// = new DataRow();
-
+                    DataRow  drSupersede, drSuperseded;// = new DataRow();
                     strFromAgreementId = dtr["Id"].ToString();
 
                     //Get version from 
@@ -207,6 +207,34 @@ namespace AxiomIRISRibbon.SForceEdit
 
                         DataReturn drCreateV1 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr1));
                         string newV1VersionId = drCreateV1.id;
+
+
+                        //Code to update supersede and superseded by
+                        //call query method
+                        DataReturn dreturnSupersede = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedes(strFromAgreementId));
+                        DataTable dtSupersede = new DataTable();
+                        dtSupersede = dreturnSupersede.dt;
+                        //drSupersede = new DataRow();
+                        drSupersede = dtSupersede.NewRow();
+                        foreach (DataRow r in dtSupersede.Rows)
+                        {
+                            drSupersede = r;
+                        }
+                        drSupersede["Supersedes__c"] = strToAgreementId;
+                        //call save method
+                        _d.SaveMatter(drSupersede);
+                        //call query method
+                        DataReturn dreturnSuperseded = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedeby(strToAgreementId));
+                        DataTable dtSuperseded = dreturnSuperseded.dt;
+                        drSuperseded = dtSuperseded.NewRow();
+                        //call save method
+                        foreach (DataRow r in dtSuperseded.Rows)
+                        {
+                            drSuperseded = r;
+                        }
+                        drSuperseded["Superseded_By__c"] = strFromAgreementId;
+                        //call save method
+                        _d.SaveMatter(drSuperseded);
 
 
 

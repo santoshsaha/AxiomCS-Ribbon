@@ -179,6 +179,23 @@ namespace AxiomIRISRibbon
         
         }
 
+        public DataReturn GetAgreementSupersedeby(string id)
+        {
+            return _sf.RunSOQL("SELECT  Name,Id,Superseded_By__c,CNID__c,Agreement_Number__c,Request__c FROM matter__c WHERE  id='" + id + "' limit 1");
+        }
+
+        public DataReturn GetAgreementSupersedes(string id)
+        {
+            return _sf.RunSOQL("SELECT  Name,Id,Supersedes__c,CNID__c,Agreement_Number__c,Request__c FROM matter__c WHERE  id='" + id + "' limit 1");
+            //return _sf.RunSOQL("SELECT  Name,Id FROM matter__c WHERE  id='" + id + "' limit 1");
+        }
+
+        public DataReturn SaveMatter(DataRow dr)
+        {
+            return _sf.Save("matter__c", dr);
+        }
+
+
         public DataReturn GetAllAttachments(string VersionNumber)
         {
             

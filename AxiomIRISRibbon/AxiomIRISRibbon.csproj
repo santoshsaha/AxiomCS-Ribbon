@@ -368,6 +368,9 @@
     <Compile Include="SForceEdit\AxSearchBox.xaml.cs">
       <DependentUpon>AxSearchBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SForceEdit\CompareAmendment.xaml.cs">
+      <DependentUpon>CompareAmendment.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SForceEdit\CompareSideBar.xaml.cs">
       <DependentUpon>CompareSideBar.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -705,6 +708,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SForceEdit\CompareAmendment.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SForceEdit\CompareSideBar.xaml">
       <SubType>Designer</SubType>

@@ -154,7 +154,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     //Get version from 
 
-                    DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strFromAgreementId));
+                    DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strFromAgreementId,""));
 
                     if (!dr.success) return;
                     if (dr.dt.Rows.Count == 0)
@@ -177,7 +177,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
 
                         //Get version to 
-                        DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId));
+                        DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId,""));
                         DataTable dtrTo = drTo.dt;
                         allDr0 = dtrTo.Rows[0];
                         dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
@@ -267,7 +267,6 @@ namespace AxiomIRISRibbon.SForceEdit
 
                             //Open attachment with compare screeen
                             OpenAttachment(dtAllAttachments, newV1VersionId, strToAgreementId, strTemplate, VersionName, VersionNumber);
-                            //     _sDocumentObjectDef = new SForceEdit.SObjectDef("Version__c");
                             Globals.Ribbons.Ribbon1.CloseWindows();
                             this.Close();
                         }
@@ -296,6 +295,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         AttachmentsView attTemp = new AttachmentsView();
                         attTemp.Create(dt,versionid, matterid, templateid, versionName, versionNumber);
                         attTemp.Show();
+                        attTemp.Focus();
                     }
                     else
                     {
@@ -309,7 +309,6 @@ namespace AxiomIRISRibbon.SForceEdit
                                 string filename = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
 
                                 File.WriteAllBytes(filename, toBytes);
-                                // _source = app.Documents.Open(filename);
 
 
                                 Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);

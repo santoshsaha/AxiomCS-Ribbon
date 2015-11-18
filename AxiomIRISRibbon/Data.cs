@@ -172,11 +172,17 @@ namespace AxiomIRISRibbon
             }
         }
         //Code PES
-        public DataReturn GetAgreementsForVersion(string id)
+        public DataReturn GetAgreementsForVersion(string agreementId,string versionId)
         {
-            //  return _sf.RunSOQL("SELECT  version_number__c,Id,Template__c FROM version__c WHERE  matter__c='" + id + "' and version_number__c !=null order by version_number__c desc limit 1");
-            return _sf.RunSOQL("SELECT  matter__c,Name,Additional_Notes__c,Agreement_Number__c,Applicable_Change_of_Control__c,Assigned_ATM__c,Assignment_Addressed__c,Assignment_Express_Consent_Required__c,Assignment_Notice_Lead_Time_days__c,Assignment_Written_Notice_Required__c,Auto_Renewal_Notification_Days__c,Auto_Renewal_Option__c,Auto_Renewal_Term_Months__c,Auto_Renewal_Terms__c,Average_Annual_Contract_Value__c,Breach_Notice_Requirement__c,Breach_Termination_Notice_Days__c,Breach_Termination_Notice_Required__c,Change_Control_Express_Consent_Lead_Time__c,Conditions_to_Exception__c,Consent_Unreasonably_Withheld__c,Consequences_of_Violating_Assignment_Pro__c,Contract_End_Date__c,Contract_Start_Date_sec1__c,Convenience_Notice_Requirement__c,Convenience_Termination_Notice_Days__c,Convenience_Termination_Notice_Required__c,Date_Terminated__c,Exception_to_Consent__c,Exclusivity_Language__c,Expiration_Notification_Days__c,Explain_Exclusivity_Language__c,Explain_Non_Compete_Language__c,Explain_Terminated_for_Other__c,Explain_Termination_Right_Trggers__c,Express_Consent_Required__c,Express_Written_Contract_Lag_Time_Days__c,External_ID__c,Maximum_Contract_Value_if_capped__c,Non_Compete_Language__c,Non_Standard_Language__c,Num_Days_Notice_to_Initiate_Manual_Renew__c,Number_of_Days_Notice_to_Stop_Auto_Renew__c,Off_Playbook_Language__c,Other_Restrictions_Assign_or_Asset_Tran__c,Perpetual__c,Renewal_Type__c,Requires_Express_Consent__c,Require__c,Template__c,Risk_Rating__c,Status__c,Term_Months__c,Terminated_For__c,Termination_Comments__c,Termination_for_Breach_Option__c,Termination_for_Convenience_Option__c,Termination_Notes__c,Termination_Notice_Days__c,Termination_Notice_Issue_Datec__c,Termination_Notice_Required__c,Termination_Notice_Requirement__c,Termination_Option__c,Termination_Right_Triggers__c,Total_Contract_Value__c,TS_of_Axiom_Ack_to_Receipt_of_CC_s__c,TS_of_CC_s_Received_on_Draft__c,version_number__c,Written_Notice_Lead_Time_days__c,Id FROM version__c WHERE  matter__c='" + id + "' and version_number__c !=null order by version_number__c desc limit 1");
-        
+            if (agreementId != "")
+            {
+                //  return _sf.RunSOQL("SELECT  version_number__c,Id,Template__c FROM version__c WHERE  matter__c='" + id + "' and version_number__c !=null order by version_number__c desc limit 1");
+                return _sf.RunSOQL("SELECT  matter__c,Name,Additional_Notes__c,Agreement_Number__c,Applicable_Change_of_Control__c,Assigned_ATM__c,Assignment_Addressed__c,Assignment_Express_Consent_Required__c,Assignment_Notice_Lead_Time_days__c,Assignment_Written_Notice_Required__c,Auto_Renewal_Notification_Days__c,Auto_Renewal_Option__c,Auto_Renewal_Term_Months__c,Auto_Renewal_Terms__c,Average_Annual_Contract_Value__c,Breach_Notice_Requirement__c,Breach_Termination_Notice_Days__c,Breach_Termination_Notice_Required__c,Change_Control_Express_Consent_Lead_Time__c,Conditions_to_Exception__c,Consent_Unreasonably_Withheld__c,Consequences_of_Violating_Assignment_Pro__c,Contract_End_Date__c,Contract_Start_Date_sec1__c,Convenience_Notice_Requirement__c,Convenience_Termination_Notice_Days__c,Convenience_Termination_Notice_Required__c,Date_Terminated__c,Exception_to_Consent__c,Exclusivity_Language__c,Expiration_Notification_Days__c,Explain_Exclusivity_Language__c,Explain_Non_Compete_Language__c,Explain_Terminated_for_Other__c,Explain_Termination_Right_Trggers__c,Express_Consent_Required__c,Express_Written_Contract_Lag_Time_Days__c,External_ID__c,Maximum_Contract_Value_if_capped__c,Non_Compete_Language__c,Non_Standard_Language__c,Num_Days_Notice_to_Initiate_Manual_Renew__c,Number_of_Days_Notice_to_Stop_Auto_Renew__c,Off_Playbook_Language__c,Other_Restrictions_Assign_or_Asset_Tran__c,Perpetual__c,Renewal_Type__c,Requires_Express_Consent__c,Require__c,Template__c,Risk_Rating__c,Status__c,Term_Months__c,Terminated_For__c,Termination_Comments__c,Termination_for_Breach_Option__c,Termination_for_Convenience_Option__c,Termination_Notes__c,Termination_Notice_Days__c,Termination_Notice_Issue_Datec__c,Termination_Notice_Required__c,Termination_Notice_Requirement__c,Termination_Option__c,Termination_Right_Triggers__c,Total_Contract_Value__c,TS_of_Axiom_Ack_to_Receipt_of_CC_s__c,TS_of_CC_s_Received_on_Draft__c,version_number__c,Written_Notice_Lead_Time_days__c,Id FROM version__c WHERE  matter__c='" + agreementId + "' and version_number__c !=null order by version_number__c desc limit 1");
+            }
+            else //if (versionId!="")
+            {
+                return _sf.RunSOQL("SELECT  matter__c,Name,Additional_Notes__c,Agreement_Number__c,Applicable_Change_of_Control__c,Assigned_ATM__c,Assignment_Addressed__c,Assignment_Express_Consent_Required__c,Assignment_Notice_Lead_Time_days__c,Assignment_Written_Notice_Required__c,Auto_Renewal_Notification_Days__c,Auto_Renewal_Option__c,Auto_Renewal_Term_Months__c,Auto_Renewal_Terms__c,Average_Annual_Contract_Value__c,Breach_Notice_Requirement__c,Breach_Termination_Notice_Days__c,Breach_Termination_Notice_Required__c,Change_Control_Express_Consent_Lead_Time__c,Conditions_to_Exception__c,Consent_Unreasonably_Withheld__c,Consequences_of_Violating_Assignment_Pro__c,Contract_End_Date__c,Contract_Start_Date_sec1__c,Convenience_Notice_Requirement__c,Convenience_Termination_Notice_Days__c,Convenience_Termination_Notice_Required__c,Date_Terminated__c,Exception_to_Consent__c,Exclusivity_Language__c,Expiration_Notification_Days__c,Explain_Exclusivity_Language__c,Explain_Non_Compete_Language__c,Explain_Terminated_for_Other__c,Explain_Termination_Right_Trggers__c,Express_Consent_Required__c,Express_Written_Contract_Lag_Time_Days__c,External_ID__c,Maximum_Contract_Value_if_capped__c,Non_Compete_Language__c,Non_Standard_Language__c,Num_Days_Notice_to_Initiate_Manual_Renew__c,Number_of_Days_Notice_to_Stop_Auto_Renew__c,Off_Playbook_Language__c,Other_Restrictions_Assign_or_Asset_Tran__c,Perpetual__c,Renewal_Type__c,Requires_Express_Consent__c,Require__c,Template__c,Risk_Rating__c,Status__c,Term_Months__c,Terminated_For__c,Termination_Comments__c,Termination_for_Breach_Option__c,Termination_for_Convenience_Option__c,Termination_Notes__c,Termination_Notice_Days__c,Termination_Notice_Issue_Datec__c,Termination_Notice_Required__c,Termination_Notice_Requirement__c,Termination_Option__c,Termination_Right_Triggers__c,Total_Contract_Value__c,TS_of_Axiom_Ack_to_Receipt_of_CC_s__c,TS_of_CC_s_Received_on_Draft__c,version_number__c,Written_Notice_Lead_Time_days__c,Id FROM version__c WHERE  Id='" + versionId + "' and version_number__c !=null order by version_number__c desc limit 1");
+            }
         }
 
         public DataReturn GetAgreementSupersedeby(string id)
@@ -217,12 +223,7 @@ namespace AxiomIRISRibbon
             DataReturn dr = _sf.RunSOQL("select Id,Name,Master_Agreement_Type__c from Matter__c where id = '" + MatterId + "' and IsDeleted = false");
             return dr;
         }
-        //End Code PES
-        public DataReturn GetTemplates(bool published)
-        {
-            return _sf.RunSOQL("SELECT Id,Name,Description__c,Type__c,State__c,PlaybookLink__c FROM " + this.ribbontemplate + (published ? " where State__c='Published'" : "") + " order by Name ");
-        }
-        //Code PES
+     
         public DataReturn GetTemplatesFromExsisting(bool published)
         {
             return _sf.RunSOQL("SELECT  Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " order by Name ");
@@ -250,8 +251,21 @@ namespace AxiomIRISRibbon
             return _sf.RunSOQL(query);
 
         }
-
+        public DataReturn GetTemplateForVersion(string Id)
+        {
+            return _sf.RunSOQL("select Id,Name,Template__c,version_number__c from Version__c where Id = '" + Id + "'");
+        }
+        public DataReturn GetamendmentTemplate(string Id)
+        {
+            return _sf.RunSOQL("SELECT Id,Name,Amendment__c ,State__c,AgreementTemplate__c FROM RibbonTemplate__c where State__c='Published' AND Amendment__c = true AND AgreementTemplate__c= '" + Id + "'  order by Name");
+        }
         //End Code PES
+
+
+        public DataReturn GetTemplates(bool published)
+        {
+            return _sf.RunSOQL("SELECT Id,Name,Description__c,Type__c,State__c,PlaybookLink__c FROM " + this.ribbontemplate + (published ? " where State__c='Published'" : "") + " order by Name ");
+        }
         public DataReturn GetTemplate(string Id)
         {
             return _sf.RunSOQL("SELECT Id,Name,Description__c,Type__c,State__c,PlaybookLink__c FROM " + this.ribbontemplate + " where Id = '" + Id + "'");

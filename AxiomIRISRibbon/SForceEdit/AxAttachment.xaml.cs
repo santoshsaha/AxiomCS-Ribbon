@@ -592,6 +592,24 @@ namespace AxiomIRISRibbon.SForceEdit
             }
         }
 
+        //Code PES
+        private void Amendment_Click(object sender, RoutedEventArgs e)
+        {
+            //Open The Document
+            if (radGridView1.SelectedItem != null)
+            {
+                DataRow r = ((DataRowView)radGridView1.SelectedItem).Row;
+
+                CompareAmendment amend = new CompareAmendment();
+                amend.Create(r["Id"].ToString(), _sObjectDef.ParentId);
+                amend.Focus();
+                amend.Show();
+            }
+
+        }
+
+        //END PES
+
 
     }
 }

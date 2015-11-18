@@ -61,32 +61,35 @@ namespace AxiomIRISRibbon.SForceEdit
 
 
 
-            cbAttachments.Items.Clear();
+            radComboAttachments.Items.Clear();
 
             RadComboBoxItem i;
             foreach (DataRow r in dt.Rows)
             {
+              
+
                 if (r["Name"].ToString().Contains(".doc"))
                 {
                     i = new RadComboBoxItem();
                     i.Tag = r["Id"].ToString();
                     i.Content = r["Name"].ToString();
-                    this.cbAttachments.Items.Add(i);
+                    this.radComboAttachments.Items.Add(i);
                 }
             }
+         
         }
 
         private void btnOpen_Click(object sender, RoutedEventArgs e)
         {
 
-            if (this.cbAttachments.SelectedItem == null)
+            if (this.radComboAttachments.SelectedItem == null)
             {
                 MessageBox.Show("Select one document");
             }
             else
             {
 
-                string attachmentid = ((RadComboBoxItem)(this.cbAttachments.SelectedItem)).Tag.ToString();
+                string attachmentid = ((RadComboBoxItem)(this.radComboAttachments.SelectedItem)).Tag.ToString();
 
                 DataRow rw = _dt.AsEnumerable().Where(p => p.Field<string>("Id") == attachmentid).FirstOrDefault();
                 byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());

@@ -51,9 +51,11 @@
                         <telerik:RadButton Name="Edit" BorderThickness="0" Height="22" Margin="3,0,3,0" Click="Edit_Click">
                             Edit
                         </telerik:RadButton>
+                    <telerik:RadButton Name="Amendment" BorderThickness="0" Height="22" Margin="3,0,3,0" Click="Amendment_Click">
+                        Amendment
+                    </telerik:RadButton>
 
-
-                        <telerik:RadToolBarSeparator/>
+                    <telerik:RadToolBarSeparator/>
 
 
                     </StackPanel>

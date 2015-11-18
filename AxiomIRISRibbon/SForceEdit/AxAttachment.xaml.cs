@@ -601,7 +601,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 DataRow r = ((DataRowView)radGridView1.SelectedItem).Row;
 
                 CompareAmendment amend = new CompareAmendment();
-                amend.Create(r["Id"].ToString(), _sObjectDef.ParentId);
+                amend.Create(r["Id"].ToString(), _sObjectDef.ParentId,r["Name"].ToString());
                 amend.Focus();
                 amend.Show();
             }

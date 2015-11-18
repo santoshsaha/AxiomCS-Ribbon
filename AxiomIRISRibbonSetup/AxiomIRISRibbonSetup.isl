@@ -1893,8 +1893,10 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
+		<row><td>axiomirisribbon.dll.manifest</td><td>ISX_DEFAULTCOMPONENT1</td><td>AXIOMI~1.MAN|AxiomIRISRibbon.dll.manifest</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Axiom\AxiomCS-Ribbon\AxiomIRISRibbon\bin\Release\AxiomIRISRibbon.dll.manifest</td><td>1</td><td/></row>
 		<row><td>axiomirisribbon.log</td><td>ISX_DEFAULTCOMPONENT4</td><td>AXIOMI~1.LOG|AxiomIRISRibbon.log</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Axiom\AxiomCS-Ribbon\AxiomIRISRibbon\bin\Release\Logs\AxiomIRISRibbon.log</td><td>1</td><td/></row>
 		<row><td>axiomirisribbon.primary_outp</td><td>AxiomIRISRibbon.Primary_output</td><td>AxiomIRISRibbon.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AxiomIRISRibbon&gt;|Built</td><td>3</td><td/></row>
+		<row><td>axiomirisribbon.vsto</td><td>ISX_DEFAULTCOMPONENT1</td><td>AXIOMI~1.VST|AxiomIRISRibbon.vsto</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Axiom\AxiomCS-Ribbon\AxiomIRISRibbon\bin\Release\AxiomIRISRibbon.vsto</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">

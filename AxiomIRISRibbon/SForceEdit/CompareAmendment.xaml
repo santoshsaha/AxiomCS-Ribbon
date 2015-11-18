@@ -1,0 +1,19 @@
+﻿<telerik:RadWindow x:Class="AxiomIRISRibbon.SForceEdit.CompareAmendment"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+             WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Header="Axiom IRIS" Name="windowAttachmentsView" Height="200" Width="481.25">
+    <Grid>
+        <telerik:RadComboBox Height="20" Margin="191,42,22,0"  Name="radComboAmendment" VerticalAlignment="Top"  SelectionChanged="cbAmendment_SelectionChanged"/>
+
+        <Label Content="Master Amendment Template:" Height="25" HorizontalAlignment="Left" Margin="10,76,0,0" Name="label5" VerticalAlignment="Top" Width="171" />
+        <CheckBox Height="20" Margin="191,81,0,0" HorizontalAlignment="Left"  Width="88"  Name="chkMaster" VerticalAlignment="Top" Checked="chkMaster_checked" />
+        <Label Content="Select Amendment :" HorizontalAlignment="Left" Margin="10,43,0,0" VerticalAlignment="Top" Width="127"/>
+        <telerik:RadButton Name="btnOpen" Content="Open" HorizontalAlignment="Left" Margin="376,126,0,0" VerticalAlignment="Top" Width="75" Click="btnOpen_Click"/>
+
+
+    </Grid>
+</telerik:RadWindow>

@@ -15,8 +15,6 @@ using System.Data;
 using Word = Microsoft.Office.Interop.Word;
 using Telerik.Windows.Controls;
 using System.ComponentModel;
-
-using AxiomIRISRibbon.Core;
 using System.IO;
 
 
@@ -89,7 +87,7 @@ namespace AxiomIRISRibbon.SForceEdit
             }
             catch (Exception ex)
             {
-                Logger.Log(ex, "Clone");
+                //Logger.Log(ex, "Clone");
             }
         }
 
@@ -112,12 +110,12 @@ namespace AxiomIRISRibbon.SForceEdit
 
                      
                     DataTable dtAttachments = drAttachemnts.dt;
-                    string file2name = "";
+                    string fileTemplate = "";
                     foreach (DataRow rw in dtAttachments.Rows)
                     {
                         byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
-                        file2name = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
-                        File.WriteAllBytes(file2name, toBytes);
+                        fileTemplate = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
+                        File.WriteAllBytes(fileTemplate, toBytes);
                      //   _source = app.Documents.Open(filename);
                         
                         
@@ -127,9 +125,9 @@ namespace AxiomIRISRibbon.SForceEdit
                     Microsoft.Office.Interop.Word.Document tempDoc2;
                     Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
 
-                 
 
-                    object newFilenameObject2 = file2name;
+
+                    object newFilenameObject2 = fileTemplate;
                     tempDoc2 = app.Documents.Open(ref newFilenameObject2, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
@@ -154,7 +152,7 @@ namespace AxiomIRISRibbon.SForceEdit
             }
             catch (Exception ex)
             {
-                Logger.Log(ex, "Clone");
+                //Logger.Log(ex, "Clone");
             }
         }
         public bool SaveContract(bool ForceSave, bool SaveDoc)

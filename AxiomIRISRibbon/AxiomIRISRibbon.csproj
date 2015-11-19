@@ -899,12 +899,6 @@
   <ItemGroup>
     <None Include="Resources\C__RusselStuff_Code_VisualStudio_AxiomIRISRibbon_AxiomIRISRibbon_Resources_pencil.png.bmp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AxiomIRISRibbon.Core\AxiomIRISRibbon.Core.csproj">
-      <Project>{b6a7dbee-2045-41d4-9a7f-ebcaba088506}</Project>
-      <Name>AxiomIRISRibbon.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
   <!-- Include the build rules for a C# project. -->
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

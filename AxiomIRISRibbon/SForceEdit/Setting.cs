@@ -39,6 +39,25 @@ namespace AxiomIRISRibbon.SForceEdit
             }
         }
 
+        public String GetGeneralSettingString(string key)
+        {
+            if (this.RibbonSettings["General"] != null)
+            {
+                if (this.RibbonSettings["General"][key] != null)
+                {
+                    return this.RibbonSettings["General"][key].ToString();
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            else
+            {
+                return "";
+            }
+        } 
+
         public string GetSetting(string sObject, string key)
         {
             return GetSetting(sObject, key, "");

@@ -15,7 +15,6 @@ using Telerik.Windows.Controls;
 using Word = Microsoft.Office.Interop.Word;
 using Office = Microsoft.Office.Core;
 using System.Data;
-using AxiomIRISRibbon.Core;
 using AxiomIRISRibbon.sfPartner;
 using System.IO;
 
@@ -114,7 +113,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(ex, "btnSearch_Click");
+                    //Logger.Log(ex, "btnSearch_Click");
                     MessageBoxResult result = MessageBox.Show("Error text here", "Caption", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
@@ -276,7 +275,7 @@ namespace AxiomIRISRibbon.SForceEdit
             }
             catch (Exception ex)
             {
-                Logger.Log(ex, "Clone");
+                //Logger.Log(ex, "Clone");
             }
         }
        
@@ -333,7 +332,8 @@ namespace AxiomIRISRibbon.SForceEdit
                         }
                     }
             }
-            catch (Exception ex) { Logger.Log(ex, "OpenAttachment"); }
+            catch (Exception ex) { //Logger.Log(ex, "OpenAttachment"); 
+            }
            
         }
 

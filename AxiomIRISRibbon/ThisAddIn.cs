@@ -17,7 +17,6 @@ using System.IO;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using AxiomIRISRibbon.Core;
 
 
 namespace AxiomIRISRibbon
@@ -52,7 +51,7 @@ namespace AxiomIRISRibbon
         {
            
             // get the local settings and set the theme
-            Logger.Log("get the local settings and set the theme");
+            //Logger.Log("get the local settings and set the theme");
             _localSettings = new LocalSettings();
             this.SetTheme();
 
@@ -705,14 +704,14 @@ namespace AxiomIRISRibbon
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log(ex, "GetTaskPane-CustomTaskPanes");
+                        //Logger.Log(ex, "GetTaskPane-CustomTaskPanes");
                     }
 
                 }
             }
             catch (Exception ex)
             {
-                Logger.Log(ex, "GetTaskPane");
+                //Logger.Log(ex, "GetTaskPane");
             }
             return null;
         }
@@ -2854,7 +2853,7 @@ namespace AxiomIRISRibbon
         /// </summary>
         private void InternalStartup()
         {
-            Logger.Init();
+            //Logger.Init();
             this.Startup += new System.EventHandler(ThisAddIn_Startup);
             this.Shutdown += new System.EventHandler(ThisAddIn_Shutdown);
         }

@@ -353,7 +353,7 @@ namespace AxiomIRISRibbon
             ContractEdit.SForceEditSideBar2 u = Globals.ThisAddIn.GetTaskPaneControlContract();
             if (u != null)
             {
-                u.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink);
+                u.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink,false); // Given 4th param as false as it was showing error
 
                 //TODO load the values from the document
                 u.LoadContractDataFromNegotiatedDoc(ContractId, dr.dt.Rows[0]["Name"].ToString());

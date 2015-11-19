@@ -75,6 +75,7 @@ namespace AxiomIRISRibbon.ContractEdit
         private bool _versioncloneattachedmode;
 
         private bool _attachedmode;
+        private bool _firstsave;
 
         //a dictionary with pointer to the clauses 
         private Dictionary<string, FrameworkElement> _clauses;
@@ -137,7 +138,7 @@ namespace AxiomIRISRibbon.ContractEdit
 
             _filename = System.IO.Path.GetFileName(FileName);
 
-            BuildSidebar();
+            BuildDataSidebar();
             this.SizeChanged += new SizeChangedEventHandler(Fields_SizeChanged);
         }
 
@@ -186,7 +187,7 @@ namespace AxiomIRISRibbon.ContractEdit
 
 
 
-            BuildSidebar();
+            BuildDataSidebar();
             this.SizeChanged += new SizeChangedEventHandler(Fields_SizeChanged);
 
             Globals.ThisAddIn.Application.DocumentBeforeSave += new Word.ApplicationEvents4_DocumentBeforeSaveEventHandler(Application_DocumentBeforeSave);
@@ -209,7 +210,7 @@ namespace AxiomIRISRibbon.ContractEdit
             Globals.ThisAddIn.Application.DocumentBeforeSave -= new Word.ApplicationEvents4_DocumentBeforeSaveEventHandler(Application_DocumentBeforeSave);
         }
 
-        private void BuildSidebar()
+        private void BuildDataSidebar()
         {
 
             //Create an Expander for Document/Matter/Request - do them in order so we know the Id of the next one ...
@@ -876,10 +877,13 @@ namespace AxiomIRISRibbon.ContractEdit
             private bool _unlock;
             private string _unlockapprover;
 
+            private string _description;
+            private string _text;
+
             //Contract Fields            
             private string _documentclauseid;
 
-            public ClauseRadio(string id, string name, string conceptid, string conceptname, int number, DataRow dr, string xml, string lastmodified, string approver, bool unlock, string unlockapprover, string description)
+            public ClauseRadio(string id, string name, string conceptid, string conceptname, int number, DataRow dr, string xml, string lastmodified, string approver, bool unlock, string unlockapprover, string description, string text)
             {
                 _id = id;
                 _name = name;
@@ -896,7 +900,27 @@ namespace AxiomIRISRibbon.ContractEdit
                 _unlockapprover = unlockapprover;
 
                 Content = name;
-                ToolTip = description;
+
+
+                TextBlock tb = new TextBlock();
+                tb.Text = text;
+                tb.TextWrapping = TextWrapping.Wrap;
+                tb.Width = 480;
+
+
+                System.Windows.Controls.ToolTip tt = new System.Windows.Controls.ToolTip();
+                tt.MaxWidth = 500;
+                tt.MaxHeight = 500;
+                tt.Content = tb;
+                tt.BorderThickness = new Thickness(1);
+
+                ToolTip = tt;
+
+
+                _description = description;
+                _text = text;
+
+
                 Margin = new Thickness(30, 5, 0, 5);
             }
             public string id
@@ -969,6 +993,18 @@ namespace AxiomIRISRibbon.ContractEdit
                 get { return _unlockapprover; }
                 set { _unlockapprover = value; }
             }
+
+            public string description
+            {
+                get { return _description; }
+                set { _description = value; }
+            }
+
+            public string text
+            {
+                get { return _text; }
+                set { _text = value; }
+            }
         }
 
 
@@ -978,6 +1014,7 @@ namespace AxiomIRISRibbon.ContractEdit
             _templateid = TemplateId;
             _versionid = "";
             _attachmentid = "";
+            _firstsave = false;
 
             // Get the new Version Name and Number
             string VersionName = "";
@@ -1009,7 +1046,7 @@ namespace AxiomIRISRibbon.ContractEdit
             _versionid = dr.id;
 
             this.LoadCompareMenu();
-            this.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink);
+            this.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink, false);
             this.LoadDataTab(_d.contractfilename, "Version__c", _versionid);
 
             // once we have loaded the data tab populate the default element values - some of which may be read from the 
@@ -1020,6 +1057,12 @@ namespace AxiomIRISRibbon.ContractEdit
             this.LoadElementsFromDefault();
             Globals.ThisAddIn.ProcessingUpdate("Initiate Elements");
             this.InitiateElements();
+
+            // Russel Nov 11, v1.2 Demo Changes
+            // need to save the elements when creating a new version so the first set get saved
+            // *but* this is too slow - better to do when you hit save the first time
+            // this.SaveContract(true, true);
+            _firstsave = true;
 
         }
 
@@ -1036,7 +1079,7 @@ namespace AxiomIRISRibbon.ContractEdit
             this.tbVersionName.Text = "";
             this.tbVersionNumber.Text = "";
 
-            this.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink);
+            this.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink, false);
 
             // once we have loaded the data tab populate the default element values and default clauses
             // no DataTab so will show the first one or a blank value if they are formulas
@@ -1057,6 +1100,8 @@ namespace AxiomIRISRibbon.ContractEdit
         {
             this.SetAttachedMode(AttachedMode);
             _attachmentid = AttachmentId;
+
+            _firstsave = false;
 
             // get the required data from the version
             DataReturn dr = Utility.HandleData(_d.GetVersion(VersionId));
@@ -1088,18 +1133,18 @@ namespace AxiomIRISRibbon.ContractEdit
                     this.tbMatterName.Text = dr.dt.Rows[0]["Matter__r_Name"].ToString();
 
                     //Code PES
-                   /* //Get Matter Agreement Type from matter__c to hide show button
+                    /* //Get Matter Agreement Type from matter__c to hide show button
 
-                    string a = _matterid;
-                    DataReturn dr1 = _d.GetAgreementType(a);
-                    if (!dr1.success) return;
-                    DataTable dt = dr1.dt;
-                    if (dt.Rows.Count == 0) return;
-                    if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() == "Amendment")
-                    {
-                        rbFullView.Visibility = System.Windows.Visibility.Visible;
-                        rbAmendmentView.Visibility = System.Windows.Visibility.Visible;
-                    }*/
+                     string a = _matterid;
+                     DataReturn dr1 = _d.GetAgreementType(a);
+                     if (!dr1.success) return;
+                     DataTable dt = dr1.dt;
+                     if (dt.Rows.Count == 0) return;
+                     if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() == "Amendment")
+                     {
+                         rbFullView.Visibility = System.Windows.Visibility.Visible;
+                         rbAmendmentView.Visibility = System.Windows.Visibility.Visible;
+                     }*/
                     //END PES
                 }
                 else
@@ -1122,7 +1167,7 @@ namespace AxiomIRISRibbon.ContractEdit
                     }
                 }
                 this.LoadCompareMenu();
-                this.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink);
+                this.BuildSideBar(TemplateId, TemplateName, TemplatePlaybookLink, false);
             }
             else
             {
@@ -1197,10 +1242,16 @@ namespace AxiomIRISRibbon.ContractEdit
 
 
 
-        public void BuildSideBar(string TemplateId, string TemplateName, string TemplatePlaybookLink)
+        public void BuildSideBar(string TemplateId, string TemplateName, string TemplatePlaybookLink, bool GetAllClauses)
         {
 
             Globals.ThisAddIn.ProcessingStart("Build Side Bar");
+
+            // Russel Nov 11, 2015 - Demo v1.2.0 make teh Client/Info labels a setting
+            string PlaybookInfoLabel = Globals.ThisAddIn.GetSettings().GetGeneralSettingString("PlaybookInfoLabel");
+            if (PlaybookInfoLabel == "") PlaybookInfoLabel = "Info";
+            string PlaybookClientLabel = Globals.ThisAddIn.GetSettings().GetGeneralSettingString("PlaybookClientLabel");
+            if (PlaybookClientLabel == "") PlaybookClientLabel = "Client";
 
             try
             {
@@ -1347,7 +1398,7 @@ namespace AxiomIRISRibbon.ContractEdit
                             if (pbInfo == "") lExp1.Foreground = new SolidColorBrush(Color.FromRgb(176, 196, 222));
                             lExp1.Margin = new Thickness(0, 8, paddingforlockbutton, 0);
                             lExp1.ToolTip = ConvertHTMLToToolTip(pbInfo);
-                            lExp1.Content = "Info";
+                            lExp1.Content = PlaybookInfoLabel;
                             lExp1.Height = 28;
 
                             PlaybookTag pb = new PlaybookTag();
@@ -1363,9 +1414,13 @@ namespace AxiomIRISRibbon.ContractEdit
                             Button lExp2 = new Button();
                             lExp2.Style = style;
                             if (pbClient == "") lExp2.Foreground = new SolidColorBrush(Color.FromRgb(176, 196, 222));
-                            lExp2.Margin = new Thickness(0, 8, paddingforlockbutton + 30, 0);
+
+                            // rough spacing 
+                            double spacing = (PlaybookInfoLabel.Length * 6) + 8;
+                            lExp2.Margin = new Thickness(0, 8, paddingforlockbutton + spacing, 0);
+
                             lExp2.ToolTip = ConvertHTMLToToolTip(pbClient);
-                            lExp2.Content = "Client";
+                            lExp2.Content = PlaybookClientLabel;
 
                             pb = new PlaybookTag();
                             pb.id = conceptid;
@@ -1435,7 +1490,9 @@ namespace AxiomIRISRibbon.ContractEdit
                                         }
                                     }
 
-                                    if (selectedclause)
+
+                                    // Russel Nov 11 V1.2- add option to getallclauses - need this for demo where we load from a negotiated version
+                                    if (selectedclause && !GetAllClauses)
                                     {
                                         Globals.ThisAddIn.ProcessingUpdate("Take XML from Doc");
                                         // get the xml from the doc
@@ -1489,9 +1546,13 @@ namespace AxiomIRISRibbon.ContractEdit
 
                                 //Approval over ---
 
+                                // Russel 11 Nov 2015 V1.2.0 - Requests for Demo
+                                // Get the text to show in the tooltip
+                                string text = r["Clause__r_Text__c"].ToString();
+
                                 //Add in the radio button header
 
-                                ClauseRadio rb1 = new ClauseRadio(Convert.ToString(r["Clause__r_Id"]), r["Clause__r_Name"].ToString(), conceptid, conceptname, num, r, xml, lastmodified, approver, false, unlockapprover, desc);
+                                ClauseRadio rb1 = new ClauseRadio(Convert.ToString(r["Clause__r_Id"]), r["Clause__r_Name"].ToString(), conceptid, conceptname, num, r, xml, lastmodified, approver, false, unlockapprover, desc, text);
                                 rb1.GroupName = conceptname;
                                 rb1.Checked += new RoutedEventHandler(rb1_Checked);
                                 rb1.GotFocus += new RoutedEventHandler(rb1_GotFocus);
@@ -1513,7 +1574,7 @@ namespace AxiomIRISRibbon.ContractEdit
                                 ApprovalButton.Click += new RoutedEventHandler(ApprovalButton_Click);
 
                                 System.Windows.Controls.Label lbl = new System.Windows.Controls.Label();
-                                lbl.Content = "This Clause Requires Approval from: " + approver;
+                                lbl.Content = "Requires Approval from: " + approver;
                                 lbl.Margin = new Thickness(4, 4 + (num * 27), 10, 0);
                                 lbl.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
                                 //lbl.Width = 120;
@@ -1612,6 +1673,7 @@ namespace AxiomIRISRibbon.ContractEdit
 
                                         if (er["Element__r_Type__c"].ToString() == "Picklist")
                                         {
+
                                             ComboBox cb = new ComboBox();
                                             //cb.Width = 200;
                                             cb.Height = 23;
@@ -1649,6 +1711,7 @@ namespace AxiomIRISRibbon.ContractEdit
                                             cb.GotFocus += new RoutedEventHandler(cb_GotFocus);
                                             cb.SelectionChanged += new SelectionChangedEventHandler(cb_SelectionChanged);
                                             cb.LostFocus += new RoutedEventHandler(cb_LostFocus);
+                                            cb.DropDownOpened += cb_DropDownOpened;
 
                                             _elements.Add(e.templateclauseelementid, cb);
 
@@ -1827,7 +1890,7 @@ namespace AxiomIRISRibbon.ContractEdit
                                     if (pbInfo == "") lExp1.Foreground = new SolidColorBrush(Color.FromRgb(176, 196, 222));
                                     lExp1.Margin = new Thickness(0, 8, 10, 0);
                                     lExp1.ToolTip = ConvertHTMLToToolTip(pbInfo);
-                                    lExp1.Content = "Info";
+                                    lExp1.Content = PlaybookInfoLabel;
                                     lExp1.Height = 28;
 
                                     pb = new PlaybookTag();
@@ -1843,9 +1906,13 @@ namespace AxiomIRISRibbon.ContractEdit
                                     lExp2 = new Button();
                                     lExp2.Style = style;
                                     if (pbClient == "") lExp2.Foreground = new SolidColorBrush(Color.FromRgb(176, 196, 222));
-                                    lExp2.Margin = new Thickness(0, 8, 40, 0);
+
+                                    // rough spacing 
+                                    spacing = (PlaybookInfoLabel.Length * 6) + 10;
+
+                                    lExp2.Margin = new Thickness(0, 8, spacing, 0);
                                     lExp2.ToolTip = ConvertHTMLToToolTip(pbClient);
-                                    lExp2.Content = "Client";
+                                    lExp2.Content = PlaybookClientLabel;
 
                                     pb = new PlaybookTag();
                                     pb.id = conceptid;
@@ -1869,7 +1936,7 @@ namespace AxiomIRISRibbon.ContractEdit
                                 spElNone.Margin = new Thickness(35, 5, 5, 5);
                                 StackPanel spRbNone = new StackPanel();
                                 spRbNone.Tag = "rbsp";
-                                ClauseRadio rb1 = new ClauseRadio("", "None", conceptid, conceptname, num, null, "", "", "", false, "", "");
+                                ClauseRadio rb1 = new ClauseRadio("", "None", conceptid, conceptname, num, null, "", "", "", false, "", "", "");
                                 rb1.GroupName = conceptname;
                                 rb1.Checked += new RoutedEventHandler(rb1_Checked);
                                 rb1.GotFocus += new RoutedEventHandler(rb1_GotFocus);
@@ -1892,7 +1959,7 @@ namespace AxiomIRISRibbon.ContractEdit
                                 ApprovalButton.Click += new RoutedEventHandler(ApprovalButton_Click);
 
                                 System.Windows.Controls.Label lbl = new System.Windows.Controls.Label();
-                                lbl.Content = "This Clause Requires Approval from: " + "";
+                                lbl.Content = "Requires Approval from: " + "";
                                 lbl.Margin = new Thickness(4, 4 + (num * 27), 10, 0);
                                 lbl.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
                                 //lbl.Width = 120;
@@ -1937,6 +2004,44 @@ namespace AxiomIRISRibbon.ContractEdit
                 if (e.InnerException != null) message += " " + e.InnerException.Message;
                 MessageBox.Show(message);
                 // Globals.ThisAddIn.ProcessingStop("Finished");
+            }
+        }
+
+        void cb_DropDownOpened(object sender, EventArgs e)
+        {
+            ComboBox cb = (ComboBox)sender;
+
+            // Get the position of the combobox relative to the top of the Questions panel
+            Point p = cb.TransformToAncestor(this.Questions).Transform(new Point(0, 0));
+            Double DropdownOffest = p.Y;
+
+            // Get the Scroll parent of the Question Panel
+            ScrollViewer Scroll = (ScrollViewer)this.Questions.Parent;
+
+            // Get the position of the combox box to the top of the scroll view
+            Double DropdownPosition = DropdownOffest - Scroll.ContentVerticalOffset;
+
+            // get the actual height of the scroll view
+            Double ViewHeight = ((ScrollViewer)this.Questions.Parent).ActualHeight;
+
+            // get the aprox height of the drop down popup - add 5 for a bit of clearance 
+            Double DropDownHeight = (cb.Items.Count * cb.FontSize);
+            if (DropDownHeight > cb.MaxDropDownHeight) DropDownHeight = cb.MaxDropDownHeight;
+            DropDownHeight = DropDownHeight + 5;
+
+            // ok now get the popup and if the Position plus the Height of the dropdown puts us below the bottom of the view then open upwards
+            ControlTemplate ct = cb.Template;
+            System.Windows.Controls.Primitives.Popup popup = ct.FindName("PART_Popup", cb) as System.Windows.Controls.Primitives.Popup;
+            if (popup != null)
+            {
+                if (DropdownPosition + DropDownHeight > ViewHeight)
+                {
+                    popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+                }
+                else
+                {
+                    popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                }
             }
         }
 
@@ -2021,6 +2126,7 @@ namespace AxiomIRISRibbon.ContractEdit
 
         }
 
+
         void ApprovalButton_Click(object sender, RoutedEventArgs e)
         {
             Button b = (Button)sender;
@@ -2028,7 +2134,6 @@ namespace AxiomIRISRibbon.ContractEdit
             string conceptid = tag[0];
             string conceptname = tag[1];
             string approver = tag[2];
-
 
             SaveAndSendApproval(conceptid, conceptname, approver);
         }
@@ -2539,6 +2644,26 @@ namespace AxiomIRISRibbon.ContractEdit
 
                         string dtval = "";
                         string dtnoformattext = "";
+
+
+                        // Russel 11 Nov 2015 V1.2.0 - Requests for Demo            
+                        // hack to get the demo dates to work - when demoing we use an previously saved contract
+                        // want to pretend that it was created today *so* update the =Now fields to today 
+                        // in both the doc and the saved value
+                        if (el.defaultvalue.ToLower() == "=Now".ToLower())
+                        {
+                            val = DateTime.Now.ToLongDateString();
+                            noformattext = val;
+
+                            // and update the document - switch off updating so it isn't redlined
+                            bool track = _doc.TrackRevisions;
+                            if (track) _doc.TrackRevisions = false;
+                            Globals.ThisAddIn.UpdateElement(el.templateelementid, val, el.type);
+                            if (track) _doc.TrackRevisions = true;
+                        }
+
+
+
                         try
                         {
                             DateTime dt = Convert.ToDateTime(noformattext);
@@ -2559,7 +2684,6 @@ namespace AxiomIRISRibbon.ContractEdit
                         {
 
                         }
-
 
                         dp.SelectedDateChanged += new EventHandler<SelectionChangedEventArgs>(dp_SelectedDateChanged);
 
@@ -2607,6 +2731,27 @@ namespace AxiomIRISRibbon.ContractEdit
                 Image icon = (Image)b.Content;
                 icon.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/locksmall.png", UriKind.Relative));
                 rb1.unlock = false;
+
+
+                // Russel 11 Nov 2015 V1.2.0 - Requests for Demo
+                // Automatically Unlock a concept if a specific clause is selected
+                // specified by having *AutoUnlock* in the description
+                if (rb1.description.Contains("*AutoUnlock*"))
+                {
+                    rb1.unlock = true;
+                    spRb = (StackPanel)rb1.Parent;
+                    spCl = (StackPanel)spRb.Parent;
+                    b = (Button)((Grid)((Expander)spCl.Parent).Parent).Children[3];
+                    icon = (Image)b.Content;
+                    icon.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/unlocksmall.png", UriKind.Relative));
+                    b.ToolTip = "Revert Clause back to default and lock";
+
+                    //Now unlock the content control in the doc
+                    Globals.ThisAddIn.UnlockContractConcept(rb1.conceptid, _doc);
+
+                }
+
+
             }
 
             CheckApproval();
@@ -2764,13 +2909,15 @@ namespace AxiomIRISRibbon.ContractEdit
                     }
                 }
             }
-
         }
+
+
 
         private void CheckApproval()
         {
             //Check through all the clauses and see if we need Approval
             bool approval = false;
+            bool anyapprovals = false;
             foreach (object o in Questions.Children)
             {
                 //StackPanel spCL = (StackPanel)((Expander)o).Content;
@@ -2807,7 +2954,7 @@ namespace AxiomIRISRibbon.ContractEdit
                             if (approval)
                             {
                                 System.Windows.Controls.Label l = (System.Windows.Controls.Label)appGrid.Children[0];
-                                l.Content = "This Clause Requires Approval from: " + (rb1.unlock ? rb1.unlockapprover : rb1.approver);
+                                l.Content = "Requires Approval from: " + (rb1.unlock ? rb1.unlockapprover : rb1.approver);
                                 appGrid.Visibility = System.Windows.Visibility.Visible;
                             }
                             else
@@ -2819,9 +2966,10 @@ namespace AxiomIRISRibbon.ContractEdit
                         }
                     }
                 }
+                if (approval) anyapprovals = true;
             }
 
-            if (approval)
+            if (anyapprovals)
             {
                 lbApprovals.Visibility = System.Windows.Visibility.Visible;
                 btnApprovals.Visibility = System.Windows.Visibility.Visible;
@@ -2888,6 +3036,12 @@ namespace AxiomIRISRibbon.ContractEdit
                 return false;
             }
 
+
+            // Russel Nov 11, v1.2 Demo Changes
+            // if this is the first save - then save everything
+            if (_firstsave) ForceSave = true;
+
+
             Globals.ThisAddIn.ProcessingStart("Save Contract");
             DataReturn dr;
 
@@ -2944,7 +3098,6 @@ namespace AxiomIRISRibbon.ContractEdit
             //First the clause selection
             foreach (object o in Questions.Children)
             {
-                //StackPanel spCL = (StackPanel)((Expander)o).Content;
                 StackPanel spCL = (StackPanel)((Expander)((Grid)o).Children[0]).Content;
                 string clauseid = "";
                 string conceptid = "";
@@ -3189,6 +3342,8 @@ namespace AxiomIRISRibbon.ContractEdit
                 }
             }
 
+            _firstsave = false;
+
             Globals.ThisAddIn.AddSaveHandler(); // add it back in
             Globals.ThisAddIn.ProcessingStop("End");
             return true;
@@ -3320,6 +3475,7 @@ namespace AxiomIRISRibbon.ContractEdit
                 //Get the Range from the document and strip out the elements
                 Word.Range NegRange = Globals.ThisAddIn.GetContractClauseRange(_doc, conceptid);
                 scratch.Range(0, scratch.Content.End).InsertXML(NegRange.WordOpenXML);
+                scratch.AcceptAllRevisions();
                 string NegRangeNoElementsText = Utility.RemoveElements(scratch.Content).Text.Trim();
 
                 //Now step through the options and pick the right one
@@ -3844,10 +4000,12 @@ namespace AxiomIRISRibbon.ContractEdit
 
             Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;
 
+            string mailto = this.GetFieldValue("Request.RibbonApprover__c");
+            if (mailto == "") mailto = "approver@demo.com";
+
             //Have a look for the clause text if we are approving this concept
             string mailsubject = "Approval Required";
             if (approver != "") mailsubject = approver + " " + "Approval Required";
-            string mailto = "approver.test@axiomlaw.com";
             string mailbody = "<p style=\"font-family: Calibri; font-size: 14px; color: black\">Please find the attached document for your approval.<br><br><a href='http://www.axiomlaw.com'>Approve Change</a>&nbsp;<a href='http://www.axiomlaw.com'>Deny Change</a><br><br>";
 
             if (conceptid != "")
@@ -3938,11 +4096,11 @@ namespace AxiomIRISRibbon.ContractEdit
 
             Globals.ThisAddIn.ProcessingStart("Save Copy");
 
-
+            string mailto = this.GetFieldValue("Request.RibbonNegotiator__c");
+            if (mailto == "") mailto = "negotiator@demo.com";
 
             //Have a look for the clause text if we are approving this concept
             string mailsubject = tbVersionName.Text + " document to review";
-            string mailto = "negotiator@besthedgefunever.com";
             string mailbody = "<Font face='Calibri' size='10px'>Please find the attached document for your approval.<br><br>Please response with any comments.";
 
             //Save a copy!
@@ -4009,15 +4167,7 @@ namespace AxiomIRISRibbon.ContractEdit
 
         }
 
-        private void btnApprovals_Click(object sender, RoutedEventArgs e)
-        {
-            //Dummy Approve!
-            Globals.Ribbons.Ribbon1.Approval(false);
-            lbApprovals.Visibility = System.Windows.Visibility.Hidden;
-            btnApprovals.Visibility = System.Windows.Visibility.Hidden;
-            this.rdTopPanel.Height = new GridLength(85);
-            Globals.Ribbons.Ribbon1.Approval(false);
-        }
+
 
 
         //temp thing to get the element values as a dictionary - should maintain this throughout
@@ -4203,7 +4353,7 @@ namespace AxiomIRISRibbon.ContractEdit
                     this.SaveContract(true, true);
                     // Reload the Data and update the version values
                     this.LoadCompareMenu();
-                    this.BuildSidebar();
+                    this.BuildDataSidebar();
 
                 }
                 else
@@ -4216,7 +4366,7 @@ namespace AxiomIRISRibbon.ContractEdit
                     this.SaveContract(true, false);
                     // Reload the Data and update the version values
                     this.LoadCompareMenu();
-                    this.BuildSidebar();
+                    this.BuildDataSidebar();
                     this.UnAttach();
                 }
 
@@ -4411,6 +4561,9 @@ namespace AxiomIRISRibbon.ContractEdit
 
         private void RemoveLockButton()
         {
+            string PlaybookInfoLabel = Globals.ThisAddIn.GetSettings().GetGeneralSettingString("PlaybookInfoLabel");
+            double spacing = (PlaybookInfoLabel.Length * 6) + 16;
+
             //Check through all the clauses and see if we need Approval            
             foreach (object o in Questions.Children)
             {
@@ -4433,8 +4586,9 @@ namespace AxiomIRISRibbon.ContractEdit
                         Button b1 = (Button)((Grid)((Expander)spCL.Parent).Parent).Children[1];
                         b1.Margin = new Thickness(0, 8, 6, 0);
 
+                        // rough spacing                    
                         Button b2 = (Button)((Grid)((Expander)spCL.Parent).Parent).Children[2];
-                        b2.Margin = new Thickness(0, 8, 36, 0);
+                        b2.Margin = new Thickness(0, 8, spacing, 0);
 
 
                     }
@@ -5086,7 +5240,18 @@ namespace AxiomIRISRibbon.ContractEdit
                         CheckBox cbox = (CheckBox)f;
                         cbox.Checked -= new RoutedEventHandler(cbox_Checked);
                         cbox.Unchecked -= new RoutedEventHandler(cbox_Unchecked);
-                        cbox.IsChecked = Convert.ToBoolean(val);
+
+                        cbox.IsChecked = false;
+                        if (val != "")
+                        {
+                            if (val.ToLower() == "y" || val.ToLower() == "yes" || val.ToLower() == "true" || val.ToLower() == "t" || val.ToLower() == el.option1.ToLower())
+                            {
+                                cbox.IsChecked = true;
+                            }
+                        }
+
+                        ///cbox.IsChecked = Convert.ToBoolean(val);
+
                         el.originalvalue = val;
                         formattedVal = FormatElement(el, val);
                         cbox.Checked += new RoutedEventHandler(cbox_Checked);
@@ -5134,6 +5299,199 @@ namespace AxiomIRISRibbon.ContractEdit
                 this.LoadElementsFromDefault();
             }
         }
+
+
+
+        // Russel 11 Nov 2015 V1.2.0 - Requests for Demo
+        // add a routine to select the concept if the user clicks on it in the document
+        public void SelectConcept(string conceptid)
+        {
+            foreach (object o in Questions.Children)
+            {
+                StackPanel spCL = (StackPanel)((Expander)((Grid)o).Children[0]).Content;
+
+                for (int i1 = 0; i1 < spCL.Children.Count; i1++)
+                {
+                    Object o1 = spCL.Children[i1];
+                    StackPanel sp = (StackPanel)o1;
+                    if ((string)sp.Tag == "rbsp")
+                    {
+                        // this is the radiobutton stack panel                                                      
+                        ClauseRadio rb1 = (ClauseRadio)sp.Children[0];
+                        if (rb1.IsChecked == true && rb1.conceptid == conceptid)
+                        {
+                            ScrollViewer scroll = (ScrollViewer)Questions.Parent;
+                            ((Grid)o).BringIntoView();
+                            this.SelectClause(rb1);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        // same as above but works if you pass the clauseid
+        public void SelectConceptFromClause(string clauseid)
+        {
+            foreach (object o in Questions.Children)
+            {
+                StackPanel spCL = (StackPanel)((Expander)((Grid)o).Children[0]).Content;
+
+                for (int i1 = 0; i1 < spCL.Children.Count; i1++)
+                {
+                    Object o1 = spCL.Children[i1];
+                    StackPanel sp = (StackPanel)o1;
+                    if ((string)sp.Tag == "rbsp")
+                    {
+                        // this is the radiobutton stack panel                                                      
+                        ClauseRadio rb1 = (ClauseRadio)sp.Children[0];
+                        if (rb1.IsChecked == true && rb1.id == clauseid)
+                        {
+                            ScrollViewer scroll = (ScrollViewer)Questions.Parent;
+                            ((Grid)o).BringIntoView();
+                            this.SelectClause(rb1);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        public void SelectElement(string elementid, string clauseid)
+        {
+
+            // step through the dictionary - select the concept and the element
+            foreach (string id in _elements.Keys)
+            {
+                FrameworkElement f = _elements[id];
+                Element el = (Element)f.Tag;
+
+                if (el.templateelementid == elementid)
+                {
+                    this.SelectConceptFromClause(clauseid);
+
+                    // cant focus or that will take away the focus from the document control
+                    //f.Focus();                        
+                }
+            }
+
+        }
+
+
+
+        // Russel 11 Nov 2015 V1.2.0 - Requests for Demo
+        // Add a full document approval
+        private void btnApprovals_Click(object sender, RoutedEventArgs e)
+        {
+
+            /* old code
+            //Dummy Approve!
+            Globals.Ribbons.Ribbon1.Approval(false);
+            lbApprovals.Visibility = System.Windows.Visibility.Hidden;
+            btnApprovals.Visibility = System.Windows.Visibility.Hidden;
+            this.rdTopPanel.Height = new GridLength(85);
+            Globals.Ribbons.Ribbon1.Approval(false);
+             * */
+
+            //Check we have a name - TODO check name doesn't exist already
+            if (tbVersionName.Text == "")
+            {
+                MessageBox.Show("Please enter a name for the document");
+                tbVersionName.Focus();
+                return;
+            }
+
+            // always save
+            try
+            {
+                //Always fails cause the handler returns an error to stop the normal save
+                Globals.ThisAddIn.Application.ActiveDocument.Save();
+            }
+            catch (Exception)
+            {
+            }
+
+
+            Globals.ThisAddIn.ProcessingStart("Save Copy");
+
+            string mailto = this.GetFieldValue("Request.RibbonApprover__c");
+            if (mailto == "") mailto = "approver@demo.com";
+
+            //Have a look for the clause text if we are approving this concept
+            string mailsubject = "Approval Required";
+            string mailbody = "<p style=\"font-family: Calibri; font-size: 14px; color: black\">Please find the attached document for your approval.<br><br><a href='http://www.axiomlaw.com'>Approve Change</a>&nbsp;<a href='http://www.axiomlaw.com'>Deny Change</a><br><br>";
+
+
+            //Save a copy!
+            Globals.ThisAddIn.ProcessingUpdate("Save Copy");
+            Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;
+            string filenamecopy = Utility.SaveTempFile(tbVersionName.Text);
+            Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(doc.FullName, Visible: false);
+
+            //Need to take out the docid!
+            Globals.ThisAddIn.DeleteDocId(dcopy);
+            Globals.ThisAddIn.AddDocId(dcopy, "ExportContract", _versionid);
+
+            //make the clauses editable
+            //Now step through the doc and update the concept if it matches the one we just updated
+            object start = dcopy.Content.Start;
+            object end = dcopy.Content.End;
+            Word.Range r = doc.Range(ref start, ref end);
+
+            // Step through and select the one passed
+            foreach (Word.ContentControl cc in r.ContentControls)
+            {
+                string tag = cc.Tag;
+                if (tag != null && tag != "" && cc.Tag.Contains('|'))
+                {
+                    string[] taga = cc.Tag.Split('|');
+                    if (taga[0] == "Concept" || taga[0] == "Element")
+                    {
+                        cc.LockContents = false;
+                    }
+                }
+            }
+
+            //switch on redlining
+            doc.TrackRevisions = true;
+            doc.ShowRevisions = true;
+
+            dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+
+
+            var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
+            docclose.Close();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
+
+            Outlook.Application o = new Outlook.Application();
+
+            Outlook.MailItem mailItem = o.CreateItem(Outlook.OlItemType.olMailItem);
+            mailItem.Subject = mailsubject;
+            mailItem.To = mailto;
+            mailItem.HTMLBody = mailbody;
+            //mailItem.BodyFormat = Outlook.OlBodyFormat.olFormatPlain;
+            mailItem.Attachments.Add(filenamecopy);
+            Globals.ThisAddIn.ProcessingStop("End");
+
+
+            try
+            {
+                mailItem.Display(true);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Please close the active message and try again");
+            }
+
+
+
+        }
+
+
+
+
+
+
     }
 
 

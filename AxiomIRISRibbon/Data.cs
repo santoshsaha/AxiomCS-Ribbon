@@ -255,9 +255,15 @@ namespace AxiomIRISRibbon
         {
             return _sf.RunSOQL("select Id,Name,Template__c,version_number__c from Version__c where Id = '" + Id + "'");
         }
-        public DataReturn GetamendmentTemplate(string Id)
+        public DataReturn GetAmendmentTemplate(string Id,bool IsMaster)
         {
-            return _sf.RunSOQL("SELECT Id,Name,Amendment__c ,State__c,AgreementTemplate__c FROM RibbonTemplate__c where State__c='Published' AND Amendment__c = true AND AgreementTemplate__c= '" + Id + "'  order by Name");
+            if (IsMaster) {
+                return _sf.RunSOQL("SELECT Id,Name,Description__c,Amendment__c ,Type__c,State__c,PlaybookLink__c,AgreementTemplate__c,Generic_Master_Agreement__c FROM RibbonTemplate__c where State__c='Published' AND Generic_Master_Agreement__c = true  order by Name");
+            }
+            else
+            {
+                return _sf.RunSOQL("SELECT Id,Name,Amendment__c ,State__c,AgreementTemplate__c FROM RibbonTemplate__c where State__c='Published' AND Amendment__c = true AND AgreementTemplate__c= '" + Id + "'  order by Name");
+            }
         }
         //End Code PES
 

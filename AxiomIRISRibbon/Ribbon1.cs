@@ -36,7 +36,13 @@ namespace AxiomIRISRibbon
 
         public void Activate()
         {
-            this.RibbonUI.ActivateTabMso("TabAddIns");
+            try
+            {
+                this.RibbonUI.ActivateTabMso("TabAddIns");
+            }
+            catch(Exception ex){
+
+            }
         }
 
 

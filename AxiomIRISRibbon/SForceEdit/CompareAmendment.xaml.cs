@@ -336,7 +336,6 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 object o = tempDoc1;
                 tempDoc2.Windows.CompareSideBySideWith(ref o);
-                MessageBox.Show("Process complete");
                 tempDoc2.AcceptAllRevisions();
                 tempDoc2.TrackRevisions = true;
 

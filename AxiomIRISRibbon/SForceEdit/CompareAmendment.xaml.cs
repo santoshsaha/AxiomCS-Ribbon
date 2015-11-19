@@ -39,6 +39,11 @@ namespace AxiomIRISRibbon.SForceEdit
         RadComboBoxItem selected = null;
         private Word.Document _doc;
         private string _fileToSaveAsAgreement;
+        private static string _RightFilePath;
+        private string _LeftFilePath;
+
+        static Microsoft.Office.Interop.Word.Document tempDoc1;
+       static  Microsoft.Office.Interop.Word.Document tempDoc2;
 
         public CompareAmendment()
         {
@@ -283,8 +288,8 @@ namespace AxiomIRISRibbon.SForceEdit
                         }
                     }
                 }
-
-                Microsoft.Office.Interop.Word.Document tempDoc1;
+                CompareSideBySide(fileAmendmentDocument, fileAmendmentTemplate);
+              /*  Microsoft.Office.Interop.Word.Document tempDoc1;
                 Microsoft.Office.Interop.Word.Document tempDoc2;
                 Microsoft.Office.Interop.Word.Application appl = Globals.ThisAddIn.Application;
 
@@ -301,10 +306,70 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 object o = tempDoc2;
                 tempDoc1.Windows.CompareSideBySideWith(ref o);
-
+                */
             }
         }
 
+        public void CompareSideBySide(string fileAmendmentDocumentPath, string fileAmendmentTemplatePath)
+        {
+            try
+            {
+                _RightFilePath = fileAmendmentTemplatePath;
+                _LeftFilePath = fileAmendmentDocumentPath;
+
+                object start = 0;
+                object end = 0;
+                object missing = System.Reflection.Missing.Value;
+
+             
+                Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
+
+                object newFilenameObject1 = fileAmendmentTemplatePath;
+                tempDoc1 = app.Documents.Open(ref newFilenameObject1, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                ref missing, ref missing);
+
+                object newFilenameObject2 = fileAmendmentDocumentPath;
+                tempDoc2 = app.Documents.Open(ref newFilenameObject2, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
+
+
+                object o = tempDoc1;
+                tempDoc2.Windows.CompareSideBySideWith(ref o);
+                MessageBox.Show("Process complete");
+                tempDoc2.AcceptAllRevisions();
+                tempDoc2.TrackRevisions = true;
+
+                /*  foreach (Microsoft.Office.Interop.Word.Section s in tempDoc2.Sections)
+                  {
+                      foreach (Microsoft.Office.Interop.Word.Revision r in s.Range.Revisions)
+                      {
+                          counter += r.Range.Words.Count;
+                          if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionDelete) // Deleted
+                              delcnt += r.Range.Words.Count;
+                          if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionInsert) // Inserted
+                              inscnt += r.Range.Words.Count;
+                          wr = r.Range.Text;
+                          //  r.Range.AutoFormat();
+                          // wr = r.Range.AutoFormat();
+                          Microsoft.Office.Interop.Word.Range rng = tempDoc1.Range(0, 0);
+                          rng.Text = wr;
+                          rng.Bold = 1;
+                          if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Formatting (bold,italics)
+                              inscnt += r.Range.Words.Count;
+                          //object o = tempDoc1;
+                          //_source1.Windows.CompareSideBySideWith(ref o);
+
+                      }
+                  } */
+            }
+
+            catch (Exception exe)
+            {
+                MessageBox.Show(exe.ToString());
+            }
+
+        }
         private void CombineDocs(string fileAmendmentDocumentPath, string fileAmendmentTemplatePath, string newAttachmentId)
         {
             Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
@@ -338,7 +403,63 @@ namespace AxiomIRISRibbon.SForceEdit
           
         }
 
+        public static void TrackDocument()
+        {
 
+            object missing = System.Reflection.Missing.Value;
+            Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
+            Object destFile = _RightFilePath;
+            object start = 0;
+            object end = 0;
+            int counter = 0;
+            int delcnt = 0;
+            int inscnt = 0;
+            String wr = null;
+            // Document leftDoc = app.Documents.Add(templateDoc);
+            // Document leftDoc = app.Documents.Open(ref destFile, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+            //ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+            //ref missing, ref missing);
+            // tempDoc2.AcceptAllRevisions();
+            foreach (Microsoft.Office.Interop.Word.Section s in tempDoc2.Sections)
+            {
+                for (int rnumber = s.Range.Revisions.Count; rnumber > 0; rnumber--)
+                {
+
+
+                    //foreach (Microsoft.Office.Interop.Word.Revision r in s.Range.Revisions)
+                    //{
+                    Microsoft.Office.Interop.Word.Revision r = s.Range.Revisions[rnumber];
+                    counter += r.Range.Sections.Count;
+                    counter += s.Range.Sections.Count;
+                    if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionDelete) // Deleted
+                    {
+                        delcnt += r.Range.Words.Count;
+                        wr = r.Range.Text;
+                        Microsoft.Office.Interop.Word.Range rng = tempDoc1.Range(0, 0);
+                        rng.Text = wr;
+                    }
+                    if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionInsert) // Inserted
+                    {
+                        inscnt += r.Range.Words.Count;
+                        wr = r.Range.Text;
+
+                        //  r.Range.AutoFormat();
+                        // wr = r.Range.AutoFormat();
+                        Microsoft.Office.Interop.Word.Range rng = tempDoc1.Range(0, 0);
+                        rng.Text = wr;
+                        rng.Bold = 1;
+                    }
+                    if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Formatting (bold,italics)
+                    {
+                        inscnt += r.Range.Words.Count;
+                        Microsoft.Office.Interop.Word.Range rng = tempDoc1.Range(0, 0);
+                        rng.Text = wr;
+                        //object o = tempDoc1;
+                        //_source1.Windows.CompareSideBySideWith(ref o);
+                    }
+                }
+            }
+        }
 
 
         public DataReturn SaveContract(string newAttachmentId, string fileAmendmentTemplatePath)

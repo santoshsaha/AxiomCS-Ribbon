@@ -53,7 +53,6 @@
             this.gpAdmin = this.Factory.CreateRibbonGroup();
             this.btnTemplate = this.Factory.CreateRibbonSplitButton();
             this.btnNewTemplate = this.Factory.CreateRibbonButton();
-            this.btnNewFromExsisting = this.Factory.CreateRibbonButton(); //Jyoti
             this.btnBlankTemplate = this.Factory.CreateRibbonButton();
             this.btnConcepts = this.Factory.CreateRibbonButton();
             this.btnClauses = this.Factory.CreateRibbonSplitButton();
@@ -65,7 +64,7 @@
             this.btnOpenContract = this.Factory.CreateRibbonButton();
             this.btnSendForApproval = this.Factory.CreateRibbonButton();
             this.btnSendForNeg = this.Factory.CreateRibbonButton();
-            this.gpDebug = this.Factory.CreateRibbonGroup();
+            this.btnTrack = this.Factory.CreateRibbonGroup();
             this.lbSFCount = this.Factory.CreateRibbonLabel();
             this.lbSFLast = this.Factory.CreateRibbonLabel();
             this.gSFDebug = this.Factory.CreateRibbonGallery();
@@ -73,13 +72,17 @@
             this.btnReports = this.Factory.CreateRibbonButton();
             this.btnSettings = this.Factory.CreateRibbonButton();
             this.btnAbout = this.Factory.CreateRibbonButton();
+            this.group2 = this.Factory.CreateRibbonGroup();
+            this.button4 = this.Factory.CreateRibbonButton();
+            this.btnNewFromExsisting = this.Factory.CreateRibbonButton();
             this.tbMain.SuspendLayout();
             this.group1.SuspendLayout();
             this.gpData.SuspendLayout();
             this.gpAdmin.SuspendLayout();
             this.gpDraft.SuspendLayout();
-            this.gpDebug.SuspendLayout();
+            this.btnTrack.SuspendLayout();
             this.group3.SuspendLayout();
+            this.group2.SuspendLayout();
             // 
             // tbMain
             // 
@@ -88,7 +91,8 @@
             this.tbMain.Groups.Add(this.gpData);
             this.tbMain.Groups.Add(this.gpAdmin);
             this.tbMain.Groups.Add(this.gpDraft);
-            this.tbMain.Groups.Add(this.gpDebug);
+            this.tbMain.Groups.Add(this.btnTrack);
+            this.tbMain.Groups.Add(this.group2);
             this.tbMain.Groups.Add(this.group3);
             this.tbMain.Label = "AxiomIRIS";
             this.tbMain.Name = "tbMain";
@@ -261,16 +265,6 @@
             this.btnNewTemplate.Name = "btnNewTemplate";
             this.btnNewTemplate.ShowImage = true;
             this.btnNewTemplate.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnNewTemplate_Click);
-
-            // 
-            // btnNewFromExsisting
-            // 
-            this.btnNewFromExsisting.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.btnNewFromExsisting.Image = global::AxiomIRISRibbon.Properties.Resources.document;
-            this.btnNewFromExsisting.Label = "New From Current Document";
-            this.btnNewFromExsisting.Name = "btnNewFromExsisting";
-            this.btnNewFromExsisting.ShowImage = true;
-            this.btnNewFromExsisting.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnNewFromExsisting_Click);
             // 
             // btnBlankTemplate
             // 
@@ -372,13 +366,14 @@
             this.btnSendForNeg.ShowImage = true;
             this.btnSendForNeg.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnSendForNeg_Click);
             // 
-            // gpDebug
+            // btnTrack
             // 
-            this.gpDebug.Items.Add(this.lbSFCount);
-            this.gpDebug.Items.Add(this.lbSFLast);
-            this.gpDebug.Items.Add(this.gSFDebug);
-            this.gpDebug.Label = "Debug";
-            this.gpDebug.Name = "gpDebug";
+            this.btnTrack.Items.Add(this.lbSFCount);
+            this.btnTrack.Items.Add(this.lbSFLast);
+            this.btnTrack.Items.Add(this.gSFDebug);
+            this.btnTrack.Label = "Debug";
+            this.btnTrack.Name = "btnTrack";
+            this.btnTrack.DialogLauncherClick += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnTrack_DialogLauncherClick);
             // 
             // lbSFCount
             // 
@@ -429,6 +424,29 @@
             this.btnAbout.ShowImage = true;
             this.btnAbout.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnAbout_Click);
             // 
+            // group2
+            // 
+            this.group2.Items.Add(this.button4);
+            this.group2.Label = "IRIS - Track";
+            this.group2.Name = "group2";
+            // 
+            // button4
+            // 
+            this.button4.Image = global::AxiomIRISRibbon.Properties.Resources.Iris_Logo_Solo_Orange_40;
+            this.button4.Label = "Track";
+            this.button4.Name = "button4";
+            this.button4.ShowImage = true;
+            this.button4.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnTrack_DialogLauncherClick);
+            // 
+            // btnNewFromExsisting
+            // 
+            this.btnNewFromExsisting.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.btnNewFromExsisting.Image = global::AxiomIRISRibbon.Properties.Resources.document;
+            this.btnNewFromExsisting.Label = "New From Current Document";
+            this.btnNewFromExsisting.Name = "btnNewFromExsisting";
+            this.btnNewFromExsisting.ShowImage = true;
+            this.btnNewFromExsisting.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnNewFromExsisting_Click);
+            // 
             // Axiom
             // 
             this.Name = "Axiom";
@@ -445,10 +463,12 @@
             this.gpAdmin.PerformLayout();
             this.gpDraft.ResumeLayout(false);
             this.gpDraft.PerformLayout();
-            this.gpDebug.ResumeLayout(false);
-            this.gpDebug.PerformLayout();
+            this.btnTrack.ResumeLayout(false);
+            this.btnTrack.PerformLayout();
             this.group3.ResumeLayout(false);
             this.group3.PerformLayout();
+            this.group2.ResumeLayout(false);
+            this.group2.PerformLayout();
 
         }
 
@@ -478,7 +498,7 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn2;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn3;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn4;
-        internal Microsoft.Office.Tools.Ribbon.RibbonGroup gpDebug;
+        internal Microsoft.Office.Tools.Ribbon.RibbonGroup btnTrack;
         internal Microsoft.Office.Tools.Ribbon.RibbonLabel lbSFCount;
         internal Microsoft.Office.Tools.Ribbon.RibbonLabel lbSFLast;
         internal Microsoft.Office.Tools.Ribbon.RibbonGallery gSFDebug;
@@ -493,6 +513,8 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnLoginProd;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnReports;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn5;
+        internal Microsoft.Office.Tools.Ribbon.RibbonGroup group2;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton button4;
     }
 
     partial class ThisRibbonCollection

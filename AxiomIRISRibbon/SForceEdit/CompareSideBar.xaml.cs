@@ -31,7 +31,6 @@ namespace AxiomIRISRibbon.SForceEdit
         static Microsoft.Office.Interop.Word.Application app;
         static Word.Document _source;
         private string _fileName;
-
         private string _matterid;
         private string _versionid;
         private string _templateid;
@@ -146,7 +145,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
                 else
                 {
-                    MessageBox.Show("Select a template");
+                    MessageBox.Show("Select one template");
 
                 }
             }
@@ -155,6 +154,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 //Logger.Log(ex, "Clone");
             }
         }
+     
         public bool SaveContract(bool ForceSave, bool SaveDoc)
         {
             string strFileAttached = _fileName;

@@ -17,6 +17,7 @@ using System.IO;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AxiomIRISRibbon.SForceEdit;
 
 
 namespace AxiomIRISRibbon
@@ -96,7 +97,7 @@ namespace AxiomIRISRibbon
 
             if (_localSettings.Debug)
             {
-                Globals.Ribbons.Ribbon1.gpDebug.Visible = true;
+                Globals.Ribbons.Ribbon1.btnTrack.Visible = true;
 
                 // switch on normal login
                 Globals.Ribbons.Ribbon1.btnLogin.Visible = true;
@@ -105,7 +106,7 @@ namespace AxiomIRISRibbon
             }
             else
             {
-                Globals.Ribbons.Ribbon1.gpDebug.Visible = false;
+                Globals.Ribbons.Ribbon1.btnTrack.Visible = false;
             }
 
 
@@ -167,7 +168,7 @@ namespace AxiomIRISRibbon
                     
                     DataReturn dr = Utility.HandleData(_d.LoadDefinitions());
                     Globals.Ribbons.Ribbon1.LoginOK();
-                    Globals.Ribbons.Ribbon1.gpDebug.Visible = true;
+                    Globals.Ribbons.Ribbon1.btnTrack.Visible = true;
                     
                  
                 }
@@ -474,6 +475,8 @@ namespace AxiomIRISRibbon
             _ucConcept._editmode = "";
             return _ucConcept;
         }
+
+      
 
         //------------------ Task Pane Stuff
 

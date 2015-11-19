@@ -9,6 +9,7 @@ using Telerik.Windows.Controls;
 using Word = Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AxiomIRISRibbon.SForceEdit;
 
 namespace AxiomIRISRibbon
 {
@@ -24,7 +25,7 @@ namespace AxiomIRISRibbon
             gpDraft.Visible = false;
             btnLogout.Enabled = false;
             btnLogin.Enabled = true;
-            gpDebug.Visible = false;
+            btnTrack.Visible = false;
 
             btnReports.Enabled = false;
 
@@ -197,7 +198,7 @@ namespace AxiomIRISRibbon
 
             if (Globals.ThisAddIn.getDebug())
             {
-                gpDebug.Visible = true;
+                btnTrack.Visible = true;
             }
 
         }
@@ -375,7 +376,7 @@ namespace AxiomIRISRibbon
 
         public void SFDebug(string desc,string sql)
         {
-            if (gpDebug.Visible)
+            if (btnTrack.Visible)
             {
                 _sfcount++;
                 lbSFCount.Label = _sfcount.ToString();
@@ -467,6 +468,13 @@ namespace AxiomIRISRibbon
             CloseWindows();
             Globals.ThisAddIn.HideWindows();
             Globals.ThisAddIn.OpenAbout();
+        }
+             
+
+        private void btnTrack_DialogLauncherClick(object sender, RibbonControlEventArgs e)
+        {
+       
+            CompareAmendment.TrackDocument();
         }
 
 

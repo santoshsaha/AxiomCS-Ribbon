@@ -99,13 +99,13 @@ namespace AxiomIRISRibbon
                 Globals.Ribbons.Ribbon1.btnLoginSSO.Visible = true;
                 Globals.Ribbons.Ribbon1.btnLoginSSO.Label = "SSO";
 
-                Globals.Ribbons.Ribbon1.gpDebug.Visible = true;
+                Globals.Ribbons.Ribbon1.btnTrack.Visible = true;
             }
             else
             {
                
                 Globals.Ribbons.Ribbon1.btnLoginSSO.Label = "Login";
-                Globals.Ribbons.Ribbon1.gpDebug.Visible = false;
+                Globals.Ribbons.Ribbon1.btnTrack.Visible = false;
 
 
                 LocalSettings ls = (LocalSettings)propertyGrid.Item;

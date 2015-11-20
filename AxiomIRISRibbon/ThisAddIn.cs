@@ -2461,7 +2461,7 @@ namespace AxiomIRISRibbon
                         SaveAsUI = false;
                         Cancel = true;
                     }
-
+                    //Code PES
                     if (propa[0] == "Compare")
                     {
                         //Save the doc and the data
@@ -2471,8 +2471,28 @@ namespace AxiomIRISRibbon
                         SaveAsUI = false;
                         Cancel = true;
                     }
+                    else if (propa[0] == "AmendmentDocument")
+                    {
+                        //Save the doc and the data
+                        CompareAmendment.SaveContract(false, true, false);
+
+                        //Cancel the save
+                        SaveAsUI = false;
+                        Cancel = true;
+                    }
+
+                    else if (propa[0] == "AmendmentTemplate")
+                    {
+                        //Save the doc and the data
+                        CompareAmendment.SaveContract(false, true, true);
+
+                        //Cancel the save
+                        SaveAsUI = false;
+                        Cancel = true;
+                    }
 
 
+                        //End Code
                     if (hidep)
                     {
                         Globals.ThisAddIn.ProcessingStop("Stop");

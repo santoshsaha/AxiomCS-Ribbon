@@ -347,48 +347,61 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
                 objtempDocAmendment.AcceptAllRevisions();
                 objtempDocAmendment.TrackRevisions = true;
+                objtempAmendmentTemplate.TrackRevisions = true;
             }
         }
 
         public static void TrackDocument()
         {
-            Object destFile = _strAmendmentTemplatePath;
-            int counter = 0;
-            int delcnt = 0;
-            int inscnt = 0;
-            string wr = string.Empty;
-            foreach (Microsoft.Office.Interop.Word.Section s in objtempDocAmendment.Sections)
+            try
             {
-                for (int rnumber = s.Range.Revisions.Count; rnumber > 0; rnumber--)
+                Object destFile = _strAmendmentTemplatePath;
+                int delcnt = 0;
+                int inscnt = 0;
+                string wrInsert = string.Empty;
+                string wrOthers = string.Empty;
+                Microsoft.Office.Interop.Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
+                Microsoft.Office.Interop.Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
+                objtempAmendmentTemplate.RejectAllRevisions();
+
+                foreach (Microsoft.Office.Interop.Word.Section s in objtempDocAmendment.Sections)
                 {
-                    Microsoft.Office.Interop.Word.Revision r = s.Range.Revisions[rnumber];
-                    counter += r.Range.Sections.Count;
-                    counter += s.Range.Sections.Count;
-                    if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionDelete) // Deleted
+                    for (int rnumber = 1; rnumber <= s.Range.Revisions.Count; rnumber++)
                     {
-                        delcnt += r.Range.Words.Count;
-                        wr = r.Range.Text;
-                        Microsoft.Office.Interop.Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
-                        rng.Text = wr;
-                    }
-                    if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionInsert) // Inserted
-                    {
-                        inscnt += r.Range.Words.Count;
-                        wr = r.Range.Text;
-                        Microsoft.Office.Interop.Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
-                        rng.Text = wr;
-                        rng.Bold = 1;
-                    }
-                    if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Formatting (bold,italics)
-                    {
-                        inscnt += r.Range.Words.Count;
-                        Microsoft.Office.Interop.Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
-                        rng.Text = wr;
+                        Microsoft.Office.Interop.Word.Revision r = s.Range.Revisions[rnumber];
+
+                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionInsert) // Inserted
+                        {
+                            rngInsert.Font.StrikeThrough = 0;
+                            inscnt += r.Range.Words.Count;
+                            wrInsert = r.Range.Text;
+                            rngInsert.Text += wrInsert;
+                            rngInsert.Text += "\u000A";
+                            rngInsert.Bold = 1;
+                            rngInsert.Font.StrikeThrough = 0;
+                        }
+                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionDelete) // Deleted
+                        {
+                            delcnt += r.Range.Words.Count;
+                            wrOthers = r.Range.Text;
+                            //Microsoft.Office.Interop.Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
+                            rngDelete.Font.StrikeThrough = 0;
+                            rngDelete.Text += wrOthers;
+                            rngDelete.Text += "\u000A";
+                            rngDelete.Font.StrikeThrough = 1;
+
+                        }
+                        /*  if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Formatting (bold,italics)
+                          {
+                              inscnt += r.Range.Words.Count;
+                             // Microsoft.Office.Interop.Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
+                              rngInsert.Text = wr;
+                          }*/
                     }
                 }
             }
+            catch (Exception ex) { }
         }
-
 
         public DataReturn SaveContract(string newAttachmentId, string fileAmendmentTemplatePath)
         {

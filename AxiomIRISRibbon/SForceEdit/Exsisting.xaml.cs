@@ -148,12 +148,12 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
                     DataRow allDr0, allDr1;// = new DataRow();
-                    DataRow  drSupersede, drSuperseded;// = new DataRow();
+                    DataRow drSupersede, drSuperseded;// = new DataRow();
                     strFromAgreementId = dtr["Id"].ToString();
 
                     //Get version from 
 
-                    DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strFromAgreementId,""));
+                    DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strFromAgreementId, ""));
 
                     if (!dr.success) return;
                     if (dr.dt.Rows.Count == 0)
@@ -162,26 +162,27 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
                     else
                     {
-                        DataTable dtv0 = dr.dt;
-                        DataTable dtv1 = dr.dt;
-                        allDr0 = dtv0.NewRow();
-                        allDr1 = dtv1.NewRow();
+                        DataTable dtv = dr.dt;
+                        //  DataTable dtv1 = dr.dt;
+                        allDr0 = dtv.NewRow();
+                        allDr1 = dtv.NewRow();
 
-                        foreach (DataRow rv in dtv0.Rows)
+                        foreach (DataRow rv in dtv.Rows)
                         {
                             strFromVersionId = rv["Id"].ToString();
                             //   dVersionNumber = Convert.ToDouble(r["version_number__c"]);
                             strTemplate = Convert.ToString(rv["Template__c"]);
                         }
-
+                        allDr0 = dtv.Rows[0];
+                        allDr1.ItemArray = dtv.Rows[0].ItemArray.Clone() as object[];
 
                         //Get version to 
-                        DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId,""));
-                        DataTable dtrTo = drTo.dt;
-                        allDr0 = dtrTo.Rows[0];
-                        dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
+                        DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId, ""));
+                     //   DataTable dtrTo = drTo.dt;
+                        //   allDr0 = dtv.Rows[0];
+                       // dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
 
-                        allDr1.ItemArray = dtrTo.Rows[0].ItemArray.Clone() as object[];
+                        //    allDr1.ItemArray = dtrTo.Rows[0].ItemArray.Clone() as object[];
 
                         double maxId;
                         if (drTo.dt.Rows.Count == 0)
@@ -190,6 +191,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         }
                         else
                         {
+                            dVersionNumber = Convert.ToDouble(drTo.dt.Rows[0]["version_number__c"]);
                             maxId = Convert.ToDouble(dVersionNumber + 1);
                         }
 
@@ -271,12 +273,13 @@ namespace AxiomIRISRibbon.SForceEdit
                         }
                     }
                 }
-                bsyIndc.IsBusy = false;
+
             }
             catch (Exception ex)
             {
                 //Logger.Log(ex, "Clone");
             }
+            finally { bsyIndc.IsBusy = false; }
         }
        
         private  void OpenAttachment(DataTable dt,string versionid, string matterid, string templateid, string versionName, string versionNumber)

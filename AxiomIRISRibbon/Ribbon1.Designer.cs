@@ -68,12 +68,12 @@
             this.lbSFCount = this.Factory.CreateRibbonLabel();
             this.lbSFLast = this.Factory.CreateRibbonLabel();
             this.gSFDebug = this.Factory.CreateRibbonGallery();
+            this.group2 = this.Factory.CreateRibbonGroup();
+            this.button4 = this.Factory.CreateRibbonButton();
             this.group3 = this.Factory.CreateRibbonGroup();
             this.btnReports = this.Factory.CreateRibbonButton();
             this.btnSettings = this.Factory.CreateRibbonButton();
             this.btnAbout = this.Factory.CreateRibbonButton();
-            this.group2 = this.Factory.CreateRibbonGroup();
-            this.button4 = this.Factory.CreateRibbonButton();
             this.btnNewFromExsisting = this.Factory.CreateRibbonButton();
             this.tbMain.SuspendLayout();
             this.group1.SuspendLayout();
@@ -81,8 +81,8 @@
             this.gpAdmin.SuspendLayout();
             this.gpDraft.SuspendLayout();
             this.btnTrack.SuspendLayout();
-            this.group3.SuspendLayout();
             this.group2.SuspendLayout();
+            this.group3.SuspendLayout();
             // 
             // tbMain
             // 
@@ -392,6 +392,20 @@
             this.gSFDebug.Name = "gSFDebug";
             this.gSFDebug.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.gSFDebug_Click);
             // 
+            // group2
+            // 
+            this.group2.Items.Add(this.button4);
+            this.group2.Label = "IRIS - Track";
+            this.group2.Name = "group2";
+            // 
+            // button4
+            // 
+            this.button4.Image = global::AxiomIRISRibbon.Properties.Resources.Iris_Logo_Solo_Orange_40;
+            this.button4.Label = "Track Changes";
+            this.button4.Name = "button4";
+            this.button4.ShowImage = true;
+            this.button4.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnTrack_DialogLauncherClick);
+            // 
             // group3
             // 
             this.group3.Items.Add(this.btnReports);
@@ -424,20 +438,6 @@
             this.btnAbout.ShowImage = true;
             this.btnAbout.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnAbout_Click);
             // 
-            // group2
-            // 
-            this.group2.Items.Add(this.button4);
-            this.group2.Label = "IRIS - Track";
-            this.group2.Name = "group2";
-            // 
-            // button4
-            // 
-            this.button4.Image = global::AxiomIRISRibbon.Properties.Resources.Iris_Logo_Solo_Orange_40;
-            this.button4.Label = "Track";
-            this.button4.Name = "button4";
-            this.button4.ShowImage = true;
-            this.button4.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnTrack_DialogLauncherClick);
-            // 
             // btnNewFromExsisting
             // 
             this.btnNewFromExsisting.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -465,10 +465,10 @@
             this.gpDraft.PerformLayout();
             this.btnTrack.ResumeLayout(false);
             this.btnTrack.PerformLayout();
-            this.group3.ResumeLayout(false);
-            this.group3.PerformLayout();
             this.group2.ResumeLayout(false);
             this.group2.PerformLayout();
+            this.group3.ResumeLayout(false);
+            this.group3.PerformLayout();
 
         }
 

@@ -389,8 +389,9 @@ namespace AxiomIRISRibbon.SForceEdit
                             rngDelete.Text += wrOthers;
                             rngDelete.Text += "\u000A";
                             rngDelete.Font.StrikeThrough = 1;
-
+                          //  CopyDeletedContent(objtempAmendmentTemplate, wrOthers);
                         }
+
                         /*  if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Formatting (bold,italics)
                           {
                               inscnt += r.Range.Words.Count;
@@ -402,7 +403,43 @@ namespace AxiomIRISRibbon.SForceEdit
             }
             catch (Exception ex) { }
         }
+        private static void CopyDeletedContent(Microsoft.Office.Interop.Word.Document doc, string deletedcontent)
+        {
+            foreach (Microsoft.Office.Interop.Word.Field myMergeField in doc.Fields)
+            {
+                Microsoft.Office.Interop.Word.Range rngFieldCode = myMergeField.Code;
 
+                String fieldText = rngFieldCode.Text.Trim();
+
+
+                if (fieldText.StartsWith("MERGEFIELD  Name  \\* MERGEFORMAT"))
+                {
+                    Int32 endMerge = fieldText.IndexOf("\\");
+
+                    Int32 fieldNameLength = fieldText.Length - endMerge;
+
+                    String fieldName = fieldText.Substring(11, endMerge - 11);
+
+
+                    fieldName = fieldName.Trim();
+
+                    // **** FIELD REPLACEMENT IMPLEMENTATION GOES HERE ****//
+
+                    // THE PROGRAMMER CAN HAVE HIS OWN IMPLEMENTATIONS HERE
+
+                    if (fieldName == "Name")
+                    {
+                        myMergeField.Select();
+                        //myMergeField.Application.Selection.InsertBreak();
+                        //Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
+                        myMergeField.Application.Selection.InsertAfter("\n");
+
+                        myMergeField.Application.Selection.InsertAfter(deletedcontent);
+                    }
+
+                }
+            }
+        }
         public DataReturn SaveContract(string newAttachmentId, string fileAmendmentTemplatePath)
         {
 

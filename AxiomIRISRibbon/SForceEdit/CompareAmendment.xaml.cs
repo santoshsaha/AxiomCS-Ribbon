@@ -85,7 +85,6 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 DataTable dt = dr.dt;
 
-
                 RadComboBoxItem i;
 
                 i = new RadComboBoxItem();
@@ -135,7 +134,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 if (this.radComboAmendment.SelectedItem == null && this.chkMaster.IsChecked == false)
                 {
-                    MessageBox.Show("Select any template from dropdown  or master checkbox");
+                    MessageBox.Show("Either select one template from dropdown  or select master checkbox");
                 }
                 else
                 {
@@ -268,7 +267,9 @@ namespace AxiomIRISRibbon.SForceEdit
                         foreach (Microsoft.Office.Interop.Word.Field f in fs)
                         {
                             f.Select();
-                            tempAmendmentTemplate.Application.Selection.InsertFile(fileAmendmentDocumentPath);
+                           tempAmendmentTemplate.Application.Selection.InsertFile(fileAmendmentDocumentPath);
+                          //  tempAmendmentTemplate.Application.Selection.InsertParagraph();
+                         
                         }
 
                         //string vfilename = _versionName.Replace(" ", "_") + ".docx";
@@ -338,6 +339,8 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempDocAmendment = app.Documents.Open(ref newFilenameObject2, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                 ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
+            
+
                 //AmendmentTemplate
                 Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentTemplate", "");
                 //AmendmentDocument
@@ -345,11 +348,23 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 object o = objtempAmendmentTemplate;
                 objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
+
+
+                //Remove Markup from template doc
+                Microsoft.Office.Interop.Word.Fields fields = objtempAmendmentTemplate.Fields;
+                foreach (Microsoft.Office.Interop.Word.Field f in fields)
+                {
+                    f.Select();
+                    objtempAmendmentTemplate.Application.Selection.InsertParagraph();
+
+                }
+
                 objtempDocAmendment.AcceptAllRevisions();
-                objtempDocAmendment.TrackRevisions = true;
+                                objtempDocAmendment.TrackRevisions = true;
              //   objtempDocAmendment.ActiveWindow.View.MarkupMode = Microsoft.Office.Interop.Word.WdRevisionsMode.wdBalloonRevisions;
                 objtempDocAmendment.ActiveWindow.View.ShowRevisionsAndComments = false;
                 objtempAmendmentTemplate.TrackRevisions = true;
+
             }
         }
 

@@ -235,7 +235,7 @@ namespace AxiomIRISRibbon
         //    return _sf.RunSOQL(query);
         //}
 
-        public DataReturn GetTemplateForsearch(string agreementnumber, string CNID)
+       /* public DataReturn GetTemplateForsearch(string agreementnumber, string CNID)
         {
             string query = string.Empty;
             if (String.IsNullOrEmpty(CNID) && !String.IsNullOrEmpty(agreementnumber))
@@ -250,7 +250,7 @@ namespace AxiomIRISRibbon
                 query = "SELECT  Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where Agreement_Number__c like " + "'%" + agreementnumber + "%'" + " AND CNID__c like " + "'%" + CNID + "%'";
             return _sf.RunSOQL(query);
 
-        }
+        }*/
         public DataReturn GetTemplateForVersion(string Id)
         {
             return _sf.RunSOQL("select Id,Name,Template__c,version_number__c from Version__c where Id = '" + Id + "'");
@@ -270,6 +270,121 @@ namespace AxiomIRISRibbon
 
             DataReturn dr = _sf.RunSOQL("select Master_Agreement_Type__c  from matter__c where id in (select matter__c from Version__c where id='" + ParentId + "') ");
             return dr;
+        }
+
+
+        public DataReturn GetTemplateForsearch(string agreementnumber, string CNID)
+        {
+
+            //start
+            string attachIdsString = "select parentid from attachment where parentid in (select Id from version__c where version_number__c != null)";// +res;
+            DataReturn attachIds = _sf.RunSOQL(attachIdsString);
+            DataTable dt2 = attachIds.dt;
+            string abcd = string.Empty;
+            string abcde = string.Empty;
+            abcde = "('";
+            for (int index = 0; index < dt2.Rows.Count; index++)
+            {
+                abcde = abcde + dt2.Rows[index][0].ToString();
+                if (index < dt2.Rows.Count - 1)
+                {
+                    //
+                    abcde = abcde + "','";
+                }
+                else
+                {
+                    //
+                    abcde = abcde + "')";
+                }
+            }
+
+            string versionsIdsString2 = "select matter__c from version__c where id in " + abcde + " and version_number__c != null";
+            DataReturn versionsIds1 = _sf.RunSOQL(versionsIdsString2);
+            DataTable dt31 = versionsIds1.dt;
+            string abcde1 = string.Empty;
+            abcde1 = "('";
+            for (int index = 0; index < dt31.Rows.Count; index++)
+            {
+                abcde1 = abcde1 + dt31.Rows[index][0].ToString();
+                if (index < dt31.Rows.Count - 1)
+                {
+                    //
+                    abcde1 = abcde1 + "','";
+                }
+                else
+                {
+                    //
+                    abcde1 = abcde1 + "')";
+                }
+            }
+
+            //string agreementIdsString = "select Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c from matter__c where id in " + abcde1 + " order by name";
+            //DataReturn agreementIds = _sf.RunSOQL(agreementIdsString);
+            //end
+
+            string query = string.Empty;
+            if (String.IsNullOrEmpty(CNID) && !String.IsNullOrEmpty(agreementnumber))
+            {
+                query = "SELECT Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where id in " + abcde1 + " and Agreement_Number__c like " + "'%" + agreementnumber + "%'";
+            }
+            else if (String.IsNullOrEmpty(agreementnumber) && !String.IsNullOrEmpty(CNID))
+            {
+                query = "SELECT  Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where id in " + abcde1 + " and CNID__c like " + "'%" + CNID + "%'";
+            }
+            else
+                query = "SELECT  Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where id in " + abcde1 + " and Agreement_Number__c like " + "'%" + agreementnumber + "%'" + " AND CNID__c like " + "'%" + CNID + "%'";
+            return _sf.RunSOQL(query);
+
+        }
+
+
+        public DataReturn GetTemplateForAssociatedSearch(bool published)
+        {
+            string attachIdsString = "select parentid from attachment where parentid in (select Id from version__c where version_number__c != null)";// +res;
+            DataReturn attachIds = _sf.RunSOQL(attachIdsString);
+            DataTable dt2 = attachIds.dt;
+            string abcd = string.Empty;
+            string abcde = string.Empty;
+            abcde = "('";
+            for (int index = 0; index < dt2.Rows.Count; index++)
+            {
+                abcde = abcde + dt2.Rows[index][0].ToString();
+                if (index < dt2.Rows.Count - 1)
+                {
+                    //
+                    abcde = abcde + "','";
+                }
+                else
+                {
+                    //
+                    abcde = abcde + "')";
+                }
+            }
+
+            string versionsIdsString2 = "select matter__c from version__c where id in " + abcde + " and version_number__c != null";
+            DataReturn versionsIds1 = _sf.RunSOQL(versionsIdsString2);
+            DataTable dt31 = versionsIds1.dt;
+            string abcde1 = string.Empty;
+            abcde1 = "('";
+            for (int index = 0; index < dt31.Rows.Count; index++)
+            {
+                abcde1 = abcde1 + dt31.Rows[index][0].ToString();
+                if (index < dt31.Rows.Count - 1)
+                {
+                    //
+                    abcde1 = abcde1 + "','";
+                }
+                else
+                {
+                    //
+                    abcde1 = abcde1 + "')";
+                }
+            }
+
+            string agreementIdsString = "select Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c from matter__c where id in " + abcde1 + " order by name";
+            DataReturn agreementIds = _sf.RunSOQL(agreementIdsString);
+            return agreementIds;
+
         }
 
 

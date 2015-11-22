@@ -36,8 +36,8 @@ namespace AxiomIRISRibbon.SForceEdit
         string _objname;
         string _id;
         string _name;
-        private SForceEdit.SObjectDef _sDocumentObjectDef;
         public AxObject _parentObject;
+        private static DataTable _dtAgreement;
 
         public Exsisting()
         {
@@ -62,10 +62,12 @@ namespace AxiomIRISRibbon.SForceEdit
             _id = id;
             _name = name;
 
-            DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplatesFromExsisting(true));
+            DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplateForAssociatedSearch(true));
             if (!dr.success) return;
 
             DataTable dt = dr.dt;
+            _dtAgreement = dt;
+
             dgTemplates.Items.Clear();
 
             this.dgTemplates.ItemsSource = dt.DefaultView;
@@ -75,12 +77,16 @@ namespace AxiomIRISRibbon.SForceEdit
         {
             CNID.Text = "" ;
             AgreemntNumber.Text = "";
-            DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplatesFromExsisting(true));
+          /*  DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplatesFromExsisting(true));
             if (!dr.success) return;
 
             DataTable dt = dr.dt;
             // dgTemplates.Items.Clear();
-            this.dgTemplates.ItemsSource = dt.DefaultView;
+            this.dgTemplates.ItemsSource = dt.DefaultView;*/
+
+
+            this.dgTemplates.ItemsSource = _dtAgreement.DefaultView;
+            
             dgTemplates.Focus();
         }
 
@@ -110,6 +116,8 @@ namespace AxiomIRISRibbon.SForceEdit
                     //dgTemplates.Items.Clear();
                     this.dgTemplates.ItemsSource = dt.DefaultView;
                     dgTemplates.Focus();
+
+
                 }
                 catch (Exception ex)
                 {

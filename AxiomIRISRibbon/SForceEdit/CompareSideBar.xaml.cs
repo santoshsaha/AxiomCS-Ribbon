@@ -118,27 +118,30 @@ namespace AxiomIRISRibbon.SForceEdit
                      //   _source = app.Documents.Open(filename);
                         
                         
-                    }      
+                    }
 
-                    Microsoft.Office.Interop.Word.Document tempDoc1;
-                    Microsoft.Office.Interop.Word.Document tempDoc2;
+                    Microsoft.Office.Interop.Word.Document wordTemplate;
+                    Microsoft.Office.Interop.Word.Document wordAttachment;
                     Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
 
 
 
-                    object newFilenameObject2 = fileTemplate;
-                    tempDoc2 = app.Documents.Open(ref newFilenameObject2, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                    object objTemplate = fileTemplate;
+                    wordAttachment = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
-                    object newFilenameObject1 = _fileName;
-                    tempDoc1 = app.Documents.Open(ref newFilenameObject1, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                    object objAttachment = _fileName;
+                    wordTemplate = app.Documents.Open(ref objAttachment, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                    ref missing, ref missing);
-                    //Compare
-                    Globals.ThisAddIn.AddDocId(tempDoc1, "Compare", "");
 
-                    object o = tempDoc2;
-                    tempDoc1.Windows.CompareSideBySideWith(ref o);
+                    wordAttachment.ActiveWindow.View.ShowRevisionsAndComments = false;
+
+                    //Compare
+                    Globals.ThisAddIn.AddDocId(wordAttachment, "Compare", "");
+
+                    object o = wordAttachment;
+                    wordAttachment.Windows.CompareSideBySideWith(ref o);
 
                     Globals.Ribbons.Ribbon1.CloseWindows();
 

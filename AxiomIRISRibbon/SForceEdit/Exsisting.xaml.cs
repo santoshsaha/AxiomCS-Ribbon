@@ -95,7 +95,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
             if (CNID.Text == "" && AgreemntNumber.Text == "")
             {
-               MessageBoxResult result = MessageBox.Show("Please enter either Agreemnt Number or CNID");
+                MessageBoxResult result = MessageBox.Show("Please enter either Agreement Number or CNID");
 
             }
             else
@@ -221,7 +221,8 @@ namespace AxiomIRISRibbon.SForceEdit
                         {
                             drSupersede = r;
                         }
-                        drSupersede["Supersedes__c"] = strToAgreementId;
+                       // drSupersede["Supersedes__c"] = strToAgreementId;
+                        drSupersede["Superseded_By__c"] = strToAgreementId;
                         //call save method
                         _d.SaveMatter(drSupersede);
                         //call query method
@@ -233,7 +234,8 @@ namespace AxiomIRISRibbon.SForceEdit
                         {
                             drSuperseded = r;
                         }
-                        drSuperseded["Superseded_By__c"] = strFromAgreementId;
+                     ///   drSuperseded["Superseded_By__c"] = strFromAgreementId;
+                        drSuperseded["Supersedes__c"] = strFromAgreementId;
                         //call save method
                         _d.SaveMatter(drSuperseded);
 

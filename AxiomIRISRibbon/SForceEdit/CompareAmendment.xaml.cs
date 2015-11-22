@@ -347,10 +347,64 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
                 objtempDocAmendment.AcceptAllRevisions();
                 objtempDocAmendment.TrackRevisions = true;
+             //   objtempDocAmendment.ActiveWindow.View.MarkupMode = Microsoft.Office.Interop.Word.WdRevisionsMode.wdBalloonRevisions;
+                objtempDocAmendment.ActiveWindow.View.ShowRevisionsAndComments = false;
                 objtempAmendmentTemplate.TrackRevisions = true;
             }
         }
 
+        public static void TrackDocument()
+        {
+            try
+            {
+                object missing = System.Reflection.Missing.Value;
+                Microsoft.Office.Interop.Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
+                Microsoft.Office.Interop.Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
+                Object insertType;
+                Object deleteType;
+                String wrInsert = null;
+                String wrOthers = null;
+                objtempAmendmentTemplate.RejectAllRevisions();
+
+                foreach (Microsoft.Office.Interop.Word.Section s in objtempDocAmendment.Sections)
+                {
+                    for (int rnumber = 1; rnumber <= s.Range.Revisions.Count; rnumber++)
+                    {
+
+                        Microsoft.Office.Interop.Word.Revision r = s.Range.Revisions[rnumber];
+
+                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionInsert) // Inserted
+                        {
+                            insertType = r.Range.Font.TextShadow;
+                            wrInsert += r.Range.Text;
+                            wrInsert += "\u000A";
+                        }
+                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionDelete) // Deleted
+                        {
+                            deleteType = r.Range.Text.GetType();
+                            wrOthers += r.Range.Text;
+                            wrOthers += "\u000A";
+                        }
+                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Property
+                        {
+                            wrInsert += r.Range.Text;
+                            wrInsert += "\u000A";
+                        }
+                    }
+
+                    rngInsert.Text += wrInsert;
+                    rngDelete.Text += wrOthers;
+                    rngDelete.Font.StrikeThrough = 1;
+
+                }
+            }
+            catch (Exception exe)
+            {
+                MessageBox.Show(exe.ToString());
+            }
+
+        }
+        /*
         public static void TrackDocument()
         {
             try
@@ -392,17 +446,18 @@ namespace AxiomIRISRibbon.SForceEdit
                           //  CopyDeletedContent(objtempAmendmentTemplate, wrOthers);
                         }
 
-                        /*  if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Formatting (bold,italics)
-                          {
-                              inscnt += r.Range.Words.Count;
-                             // Microsoft.Office.Interop.Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
-                              rngInsert.Text = wr;
-                          }*/
+                     // if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Formatting (bold,italics)
+                       //   {
+                      //        inscnt += r.Range.Words.Count;
+                      //       // Microsoft.Office.Interop.Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
+                      //        rngInsert.Text = wr;
+                     //     }
                     }
                 }
             }
             catch (Exception ex) { }
         }
+
         private static void CopyDeletedContent(Microsoft.Office.Interop.Word.Document doc, string deletedcontent)
         {
             foreach (Microsoft.Office.Interop.Word.Field myMergeField in doc.Fields)
@@ -423,7 +478,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     fieldName = fieldName.Trim();
 
-                    // **** FIELD REPLACEMENT IMPLEMENTATION GOES HERE ****//
+                    // **** FIELD REPLACEMENT IMPLEMENTATION GOES HERE ****
 
                     // THE PROGRAMMER CAN HAVE HIS OWN IMPLEMENTATIONS HERE
 
@@ -440,6 +495,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
             }
         }
+         * */
         public DataReturn SaveContract(string newAttachmentId, string fileAmendmentTemplatePath)
         {
 

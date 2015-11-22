@@ -52,6 +52,7 @@ namespace AxiomIRISRibbon.SForceEdit
             }
 
             SetupAxAttachment(ParentType);
+         
         }
 
         public void SetupAxAttachment(string ParentType)
@@ -219,6 +220,7 @@ namespace AxiomIRISRibbon.SForceEdit
             {
                 radGridView1.IsSynchronizedWithCurrentItem = true;
             }
+
             radGridView1.ItemsSource = dr.dt.DefaultView;
 
             _gotdata = true;
@@ -237,9 +239,42 @@ namespace AxiomIRISRibbon.SForceEdit
             DataRow r = ((DataRowView)radGridView1.SelectedItem).Row;
             EditAttach(r);
         }
+        //Code PES
+        private void radGridView1_DataLoaded(object sender, EventArgs e)
+        {
+            try
+            {
+                string agrementId;
+                radbtnAmendment.Visibility = System.Windows.Visibility.Visible;
+                radbtnAmendment.IsEnabled = false;
+              //  radbtnAmendment.Visibility = System.Windows.Visibility.Hidden;
+                if (radGridView1.Items.Count > 0)
+                {
+                    // DataRow r = ((DataRowView)radGridView1.SelectedItem).Row;
+                    // agrementId = r.Table.Rows[0][1].ToString();
+                    agrementId = (((System.Data.DataRowView)radGridView1.Items[0])).Row.ItemArray[1].ToString();
+                    DataReturn dr1 = _d.GetAgreementTypefromParentId(agrementId);
+                    if (!dr1.success) return;
+                    DataTable dt = dr1.dt;
+                    if (dt.Rows.Count == 0) return;
+                    if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() == "Amendment")
+                    {
+                       // radbtnAmendment.Visibility = System.Windows.Visibility.Visible;
+                        radbtnAmendment.IsEnabled = true;
+                    }
+                }
+                /*  else
+                  {
+                      radbtnAmendment.Visibility = System.Windows.Visibility.Hidden;
+                  }*/
+            }
+            catch (Exception ex) { }
 
+        }
+        //End Code
         void radGridView1_SelectionChanged(object sender, SelectionChangeEventArgs e)
         {
+                
             e.Handled = true;
         }
 

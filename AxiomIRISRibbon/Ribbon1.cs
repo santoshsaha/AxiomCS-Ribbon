@@ -30,8 +30,7 @@ namespace AxiomIRISRibbon
             btnReports.Enabled = false;
 
             gpDraft.Visible = false;
-            gpAdmin.Visible = false;
-
+            gpIrisTrack.Visible = false;
         }
 
         public void Activate()
@@ -126,6 +125,9 @@ namespace AxiomIRISRibbon
                 // gp.Name = "gpData1";
 
                 gpData.Visible = true;
+                //Code PES
+                gpIrisTrack.Visible = true;
+                // End PES
 
                 btn1.Visible = false;
                 btn2.Visible = false;
@@ -225,6 +227,10 @@ namespace AxiomIRISRibbon
             btnLogin.Enabled = true;
 
             btnReports.Enabled = false;
+
+            //Code PES
+            gpIrisTrack.Visible = false;
+            // End PES
         }
 
 

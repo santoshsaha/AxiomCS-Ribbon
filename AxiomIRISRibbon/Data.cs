@@ -187,12 +187,12 @@ namespace AxiomIRISRibbon
 
         public DataReturn GetAgreementSupersedeby(string id)
         {
-            return _sf.RunSOQL("SELECT  Name,Id,Superseded_By__c,CNID__c,Agreement_Number__c,Request__c FROM matter__c WHERE  id='" + id + "' limit 1");
+            return _sf.RunSOQL("SELECT  Name,Id,Supersedes__c,Superseded_By__c,CNID__c,Agreement_Number__c,Request__c FROM matter__c WHERE  id='" + id + "' limit 1");
         }
 
         public DataReturn GetAgreementSupersedes(string id)
         {
-            return _sf.RunSOQL("SELECT  Name,Id,Supersedes__c,CNID__c,Agreement_Number__c,Request__c FROM matter__c WHERE  id='" + id + "' limit 1");
+            return _sf.RunSOQL("SELECT  Name,Id,Supersedes__c,Superseded_By__c,CNID__c,Agreement_Number__c,Request__c FROM matter__c WHERE  id='" + id + "' limit 1");
             //return _sf.RunSOQL("SELECT  Name,Id FROM matter__c WHERE  id='" + id + "' limit 1");
         }
 
@@ -265,6 +265,14 @@ namespace AxiomIRISRibbon
                 return _sf.RunSOQL("SELECT Id,Name,Amendment__c ,State__c,AgreementTemplate__c FROM RibbonTemplate__c where State__c='Published' AND Amendment__c = true AND AgreementTemplate__c= '" + Id + "'  order by Name");
             }
         }
+        public DataReturn GetAgreementTypefromParentId(string ParentId)
+        {
+
+            DataReturn dr = _sf.RunSOQL("select Master_Agreement_Type__c  from matter__c where id in (select matter__c from Version__c where id='" + ParentId + "') ");
+            return dr;
+        }
+
+
         //End Code PES
 
 

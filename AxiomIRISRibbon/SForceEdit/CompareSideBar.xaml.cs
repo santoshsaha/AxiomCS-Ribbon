@@ -126,21 +126,21 @@ namespace AxiomIRISRibbon.SForceEdit
 
 
                     object objTemplate = fileTemplate;
-                    wordAttachment = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                    wordTemplate = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
                     object objAttachment = _fileName;
-                    wordTemplate = app.Documents.Open(ref objAttachment, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                    wordAttachment = app.Documents.Open(ref objAttachment, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                    ref missing, ref missing);
 
-                    wordAttachment.ActiveWindow.View.ShowRevisionsAndComments = false;
+                    wordTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
 
                     //Compare
                     Globals.ThisAddIn.AddDocId(wordAttachment, "Compare", "");
 
-                    object o = wordAttachment;
-                    wordAttachment.Windows.CompareSideBySideWith(ref o);
+                    object o = wordTemplate;
+                    wordTemplate.Windows.CompareSideBySideWith(ref o);
 
                     /*    wordTemplate.Compare(_fileName, missing, Microsoft.Office.Interop.Word.WdCompareTarget.wdCompareTargetNew, true, false, false, false, false);
                         app.ActiveWindow.View.SplitSpecial = Microsoft.Office.Interop.Word.WdSpecialPane.wdPaneRevisionsVert;

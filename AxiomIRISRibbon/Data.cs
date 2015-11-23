@@ -273,115 +273,153 @@ namespace AxiomIRISRibbon
         }
 
 
-        public DataReturn GetTemplateForsearch(string agreementnumber, string CNID)
+        public DataReturn GetAllAgementsHavingAttachmentsInLatestVersion(Boolean index)
+        {
+            //
+            String allAgreements, latestVersions, versionsAttach, relatedAgreements;
+            latestVersions = "select max(version_number__c),max(id) from version__c where version_number__c != null group by matter__c";
+            DataReturn latestVersionDataReturn = _sf.RunSOQL(latestVersions);
+            DataTable latestVersionDataTable = latestVersionDataReturn.dt;
+            string versionIdsString = string.Empty;
+            versionIdsString = "('";
+            for (int indValue = 0; indValue < latestVersionDataTable.Rows.Count; indValue++)
+            {
+                //
+                versionIdsString = versionIdsString + latestVersionDataTable.Rows[indValue][1].ToString();
+                if (indValue < latestVersionDataTable.Rows.Count - 1)
+                {
+                    //
+                    versionIdsString = versionIdsString + "','";
+                }
+                else
+                {
+                    //
+                    versionIdsString = versionIdsString + "')";
+                }
+            }
+            versionsAttach = "select parentid from attachment where parentid in " + versionIdsString;
+            DataReturn versionsAttachDataReturn = _sf.RunSOQL(versionsAttach);
+            DataTable versionsAttachDataTable = versionsAttachDataReturn.dt;
+            string versionAttachIdsString = "('";
+            for (int indValue = 0; indValue < versionsAttachDataTable.Rows.Count; indValue++)
+            {
+                //
+                versionAttachIdsString = versionAttachIdsString + versionsAttachDataTable.Rows[indValue][0].ToString();
+                if (indValue < versionsAttachDataTable.Rows.Count - 1)
+                {
+                    //
+                    versionAttachIdsString = versionAttachIdsString + "','";
+                }
+                else
+                {
+                    //
+                    versionAttachIdsString = versionAttachIdsString + "')";
+                }
+            }
+            relatedAgreements = "select matter__c from version__c where id in " + versionAttachIdsString;
+            DataReturn relatedAgreementsDataReturn = _sf.RunSOQL(relatedAgreements);
+            DataTable relatedAgreementsDataTable = relatedAgreementsDataReturn.dt;
+            string relatedAgreementsIdsString = "('";
+            for (int indValue = 0; indValue < relatedAgreementsDataTable.Rows.Count; indValue++)
+            {
+                //
+                relatedAgreementsIdsString = relatedAgreementsIdsString + relatedAgreementsDataTable.Rows[indValue][0].ToString();
+                if (indValue < relatedAgreementsDataTable.Rows.Count - 1)
+                {
+                    //
+                    relatedAgreementsIdsString = relatedAgreementsIdsString + "','";
+                }
+                else
+                {
+                    //
+                    relatedAgreementsIdsString = relatedAgreementsIdsString + "')";
+                }
+            }
+            allAgreements = "select Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c from matter__c where id in " + relatedAgreementsIdsString + " order by name";
+            DataReturn allAgreementsDataReturn = _sf.RunSOQL(allAgreements);
+            return allAgreementsDataReturn;
+        }
+
+        public DataReturn GetFilterdAgementsHavingAttachmentsInLatestVersion(string agreementnumber, string CNID)
         {
 
             //start
-            string attachIdsString = "select parentid from attachment where parentid in (select Id from version__c where version_number__c != null)";// +res;
-            DataReturn attachIds = _sf.RunSOQL(attachIdsString);
-            DataTable dt2 = attachIds.dt;
-            string strId = string.Empty;
-            strId = "('";
-            for (int index = 0; index < dt2.Rows.Count; index++)
+            String allAgreements, latestVersions, versionsAttach, relatedAgreements;
+            latestVersions = "select max(version_number__c),max(id) from version__c where version_number__c != null group by matter__c";
+            DataReturn latestVersionDataReturn = _sf.RunSOQL(latestVersions);
+            DataTable latestVersionDataTable = latestVersionDataReturn.dt;
+            string versionIdsString = string.Empty;
+            versionIdsString = "('";
+            for (int indValue = 0; indValue < latestVersionDataTable.Rows.Count; indValue++)
             {
-                strId = strId + dt2.Rows[index][0].ToString();
-                if (index < dt2.Rows.Count - 1)
+                //
+                versionIdsString = versionIdsString + latestVersionDataTable.Rows[indValue][1].ToString();
+                if (indValue < latestVersionDataTable.Rows.Count - 1)
                 {
                     //
-                    strId = strId + "','";
+                    versionIdsString = versionIdsString + "','";
                 }
                 else
                 {
                     //
-                    strId = strId + "')";
+                    versionIdsString = versionIdsString + "')";
                 }
             }
-
-            string versionsIdsString2 = "select matter__c from version__c where id in " + strId + " and version_number__c != null";
-            DataReturn versionsIds1 = _sf.RunSOQL(versionsIdsString2);
-            DataTable dt3 = versionsIds1.dt;
-            string strAgrId = string.Empty;
-            strAgrId = "('";
-            for (int index = 0; index < dt3.Rows.Count; index++)
+            versionsAttach = "select parentid from attachment where parentid in " + versionIdsString;
+            DataReturn versionsAttachDataReturn = _sf.RunSOQL(versionsAttach);
+            DataTable versionsAttachDataTable = versionsAttachDataReturn.dt;
+            string versionAttachIdsString = "('";
+            for (int indValue = 0; indValue < versionsAttachDataTable.Rows.Count; indValue++)
             {
-                strAgrId = strAgrId + dt3.Rows[index][0].ToString();
-                if (index < dt3.Rows.Count - 1)
+                //
+                versionAttachIdsString = versionAttachIdsString + versionsAttachDataTable.Rows[indValue][0].ToString();
+                if (indValue < versionsAttachDataTable.Rows.Count - 1)
                 {
                     //
-                    strAgrId = strAgrId + "','";
+                    versionAttachIdsString = versionAttachIdsString + "','";
                 }
                 else
                 {
                     //
-                    strAgrId = strAgrId + "')";
+                    versionAttachIdsString = versionAttachIdsString + "')";
                 }
             }
-
-            //string agreementIdsString = "select Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c from matter__c where id in " + abcde1 + " order by name";
-            //DataReturn agreementIds = _sf.RunSOQL(agreementIdsString);
+            relatedAgreements = "select matter__c from version__c where id in " + versionAttachIdsString;
+            DataReturn relatedAgreementsDataReturn = _sf.RunSOQL(relatedAgreements);
+            DataTable relatedAgreementsDataTable = relatedAgreementsDataReturn.dt;
+            string relatedAgreementsIdsString = "('";
+            for (int indValue = 0; indValue < relatedAgreementsDataTable.Rows.Count; indValue++)
+            {
+                //
+                relatedAgreementsIdsString = relatedAgreementsIdsString + relatedAgreementsDataTable.Rows[indValue][0].ToString();
+                if (indValue < relatedAgreementsDataTable.Rows.Count - 1)
+                {
+                    //
+                    relatedAgreementsIdsString = relatedAgreementsIdsString + "','";
+                }
+                else
+                {
+                    //
+                    relatedAgreementsIdsString = relatedAgreementsIdsString + "')";
+                }
+            }
+            //allAgreements = "select Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c from matter__c where id in " + relatedAgreementsIdsString + " order by name";
+            //DataReturn allAgreementsDataReturn = _sf.RunSOQL(allAgreements);
+            //return allAgreementsDataReturn;
             //end
 
-            string query = string.Empty;
+            allAgreements = string.Empty;
             if (String.IsNullOrEmpty(CNID) && !String.IsNullOrEmpty(agreementnumber))
             {
-                query = "SELECT Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where id in " + strAgrId + " and Agreement_Number__c like " + "'%" + agreementnumber + "%'";
+                allAgreements = "SELECT Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where id in " + relatedAgreementsIdsString + " and Agreement_Number__c like " + "'%" + agreementnumber + "%'";
             }
             else if (String.IsNullOrEmpty(agreementnumber) && !String.IsNullOrEmpty(CNID))
             {
-                query = "SELECT  Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where id in " + strAgrId + " and CNID__c like " + "'%" + CNID + "%'";
+                allAgreements = "SELECT  Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where id in " + relatedAgreementsIdsString + " and CNID__c like " + "'%" + CNID + "%'";
             }
             else
-                query = "SELECT  Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where id in " + strAgrId + " and Agreement_Number__c like " + "'%" + agreementnumber + "%'" + " AND CNID__c like " + "'%" + CNID + "%'";
-            return _sf.RunSOQL(query);
-
-        }
-
-
-        public DataReturn GetTemplateForAssociatedSearch(bool published)
-        {
-            string attachIdsString = "select parentid from attachment where parentid in (select Id from version__c where version_number__c != null)";// +res;
-            DataReturn attachIds = _sf.RunSOQL(attachIdsString);
-            DataTable dt4 = attachIds.dt;
-            string strId = string.Empty;
-            strId = "('";
-            for (int index = 0; index < dt4.Rows.Count; index++)
-            {
-                strId = strId + dt4.Rows[index][0].ToString();
-                if (index < dt4.Rows.Count - 1)
-                {
-                    //
-                    strId = strId + "','";
-                }
-                else
-                {
-                    //
-                    strId = strId + "')";
-                }
-            }
-
-            string versionsIdsString2 = "select matter__c from version__c where id in " + strId + " and version_number__c != null";
-            DataReturn versionsIds1 = _sf.RunSOQL(versionsIdsString2);
-            DataTable dt5 = versionsIds1.dt;
-            string strAgrId = string.Empty;
-            strAgrId = "('";
-            for (int index = 0; index < dt5.Rows.Count; index++)
-            {
-                strAgrId = strAgrId + dt5.Rows[index][0].ToString();
-                if (index < dt5.Rows.Count - 1)
-                {
-                    //
-                    strAgrId = strAgrId + "','";
-                }
-                else
-                {
-                    //
-                    strAgrId = strAgrId + "')";
-                }
-            }
-
-            string agreementIdsString = "select Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c from matter__c where id in " + strAgrId + " order by name";
-            DataReturn agreementIds = _sf.RunSOQL(agreementIdsString);
-            return agreementIds;
+                allAgreements = "SELECT  Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where id in " + relatedAgreementsIdsString + " and Agreement_Number__c like " + "'%" + agreementnumber + "%'" + " AND CNID__c like " + "'%" + CNID + "%'";
+            return _sf.RunSOQL(allAgreements);
 
         }
 
@@ -563,13 +601,24 @@ namespace AxiomIRISRibbon
 
         public DataReturn GetTemplateClauses(string TemplateId, string ConceptId)
         {
-
+            /*
             string sql = "select Id,Name,Order__c,DefaultSelection__c,Template__c,Clause__r.Id,Clause__r.Name,Clause__r.Concept__r.Id,Clause__r.Concept__r.Name,Clause__r.Concept__r.Description__c,Clause__r.Concept__r.PlayBookInfo__c,Clause__r.Concept__r.PlayBookClient__c,Clause__r.Concept__r.AllowNone__c,Clause__r.LastModifiedDate from " + this.ribbontemplateclause
             + " where Template__c = '" + TemplateId + "' and Clause__r.Concept__r.Id = '" + ConceptId + "' order by Order__c";
 
             if (ConceptId == "")
             {
                 sql = "select Id,Name,Order__c,DefaultSelection__c,Template__c,Clause__r.Id,Clause__r.Name,Clause__r.Description__c,Clause__r.Concept__r.Id,Clause__r.Concept__r.Name,Clause__r.Concept__r.Description__c,Clause__r.Concept__r.PlayBookInfo__c,Clause__r.Concept__r.PlayBookClient__c,Clause__r.Concept__r.AllowNone__c,Clause__r.LastModifiedDate from " + this.ribbontemplateclause
+              + " where Template__c = '" + TemplateId + "' order by Order__c";
+            }
+
+            return _sf.RunSOQL(sql);*/
+
+            string sql = "select Id,Name,Order__c,DefaultSelection__c,Template__c,Clause__r.Id,Clause__r.Name,Clause__r.Concept__r.Id,Clause__r.Concept__r.Name,Clause__r.Concept__r.Description__c,Clause__r.Concept__r.PlayBookInfo__c,Clause__r.Concept__r.PlayBookClient__c,Clause__r.Concept__r.AllowNone__c,Clause__r.LastModifiedDate from " + this.ribbontemplateclause
+                            + " where Template__c = '" + TemplateId + "' and Clause__r.Concept__r.Id = '" + ConceptId + "' order by Order__c";
+
+            if (ConceptId == "")
+            {
+                sql = "select Id,Name,Order__c,DefaultSelection__c,Template__c,Clause__r.Id,Clause__r.Name,Clause__r.Description__c,Clause__r.Text__c,Clause__r.Concept__r.Id,Clause__r.Concept__r.Name,Clause__r.Concept__r.Description__c,Clause__r.Concept__r.PlayBookInfo__c,Clause__r.Concept__r.PlayBookClient__c,Clause__r.Concept__r.AllowNone__c,Clause__r.LastModifiedDate from " + this.ribbontemplateclause
               + " where Template__c = '" + TemplateId + "' order by Order__c";
             }
 

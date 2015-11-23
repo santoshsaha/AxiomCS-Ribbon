@@ -10,6 +10,11 @@ using Word = Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using AxiomIRISRibbon.SForceEdit;
+using System.IO;
+using System.Xml;
+using System.Windows.Forms;
+using AxiomIRISRibbon.ContractEdit;
+using System.Diagnostics;
 
 namespace AxiomIRISRibbon
 {
@@ -17,6 +22,13 @@ namespace AxiomIRISRibbon
     {
 
         int _sfcount = 0;
+        private Data D;
+       private string Id;
+       private bool IsTemplate;
+       private DataTable DTTemplate;
+       private Word.Document Doc;
+       private string _versionid;
+       private Data _d;
 
         private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
         {            
@@ -416,7 +428,7 @@ namespace AxiomIRISRibbon
 
         private void gSFDebug_Click(object sender, RibbonControlEventArgs e)
         {
-            MessageBox.Show(Convert.ToString(((RibbonGallery)sender).SelectedItem.Label) + "\n" + Convert.ToString(((RibbonGallery)sender).SelectedItem.Tag));            
+            System.Windows.Forms.MessageBox.Show(Convert.ToString(((RibbonGallery)sender).SelectedItem.Label) + "\n" + Convert.ToString(((RibbonGallery)sender).SelectedItem.Tag));            
         }
 
 
@@ -482,15 +494,179 @@ namespace AxiomIRISRibbon
             Globals.ThisAddIn.OpenAbout();
         }
              
-
+        //Code PES
         private void btnTrack_DialogLauncherClick(object sender, RibbonControlEventArgs e)
         {
        
             CompareAmendment.TrackDocument();
         }
+        private void btnExportToWord_Click(object sender, RibbonControlEventArgs e)
+        {
 
+            if (this.Id == null) this.Id = Globals.ThisAddIn.GetCurrentDocId();
 
+            if (this.Id != "")
+            {
+                this.IsTemplate = true;
+                //GetTemplateDetails();
 
+            }
+            // so whats the plan! 
+            // for now don't make it human readable i.e. not a marked up doc - going to be too clumsy, might come back to
+            // so leave in the controls and write the metadata and the non-shown clauses to custom xml parts
+
+            // leave in the ids as they are - import will sort them out
+            try
+            {
+                Globals.ThisAddIn.ProcessingStart("Import Template");
+
+                if (this.IsTemplate)
+                {
+
+                    Globals.ThisAddIn.ProcessingUpdate("Copy Template");
+                    Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
+                    Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
+
+                    Word.Range source = template.Range(template.Content.Start, template.Content.End);
+                    export.Range(export.Content.Start).InsertXML(source.WordOpenXML);
+
+                    Globals.ThisAddIn.ProcessingUpdate("Update Template Id");
+                    Globals.ThisAddIn.AddDocId(export, "ExportTemplate", this.Id);
+
+                    // now get the meta data and store it as custom xml parts
+                    Globals.ThisAddIn.ProcessingUpdate("Add Data to Dataset");
+                    DataSet ds = new DataSet();
+                    ds.Namespace = "http://www.axiomlaw.com/irisribbon";
+                    //Globals.ThisAddIn.ProcessingUpdate("Template");
+                    //ds.Tables.Add(this.DTTemplate);
+                    //Globals.ThisAddIn.ProcessingUpdate("Clause");
+                    //ds.Tables.Add(this.DTClause);
+                    //Globals.ThisAddIn.ProcessingUpdate("ClauseXML");
+                    //ds.Tables.Add(this.DTClauseXML);
+                    //Globals.ThisAddIn.ProcessingUpdate("Elements");
+                    //ds.Tables.Add(this.DTElement);
+
+                    Globals.ThisAddIn.ProcessingUpdate("Serialise Data to XML");
+                    string xmldata = "";
+                    using (StringWriter stringWriter = new StringWriter())
+                    {
+                        ds.WriteXml(new XmlTextWriter(stringWriter));
+                        xmldata = stringWriter.ToString();
+                    };
+
+                    xmldata = AxiomIRISRibbon.Utility.CleanUpXML(xmldata);
+
+                    Globals.ThisAddIn.ProcessingUpdate("Save as XML Part");
+
+                    Microsoft.Office.Core.CustomXMLPart data = export.CustomXMLParts.Add(xmldata);
+
+                    export.Activate();
+
+                    Globals.ThisAddIn.ProcessingUpdate("Save As ...");
+
+                    SaveFileDialog dlg = new SaveFileDialog();
+                    dlg.Title = "MyTitle";
+                    dlg.Filter = "Word Document (*.doc;*.docx;*.docm)|*.doc;*.docx;*.docx";
+                    dlg.FileName = "ExportTemplate-" + dlg.Title.Replace(" ", "");
+                    dlg.ShowDialog();
+                    export.SaveAs2(dlg.FileName);
+                    Globals.ThisAddIn.ProcessingStop("Finished");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                string message = "Sorry there has been an error - " + ex.Message;
+                if (ex.InnerException != null) message += " " + ex.InnerException.Message;
+                System.Windows.Forms.MessageBox.Show(message);
+                // Globals.ThisAddIn.ProcessingStop("Finished");
+            }
+
+        }
+
+        private void btnExportToPDF_Click(object sender, RibbonControlEventArgs e)
+        {
+            //save this to a scratch file
+            Globals.ThisAddIn.ProcessingStart("Save as Pdf");
+            Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;
+
+            ////Check we have a name - TODO check name doesn't exist already
+            //if (tbVersionName.Text == "")
+            //{
+            //    MessageBox.Show("Please enter a name for the document");
+            //    tbVersionName.Focus();
+            //    return;
+            //}
+
+            // always save
+            try
+            {
+                //Always fails cause the handler returns an error to stop the normal save
+                Globals.ThisAddIn.Application.ActiveDocument.Save();
+            }
+            catch (Exception)
+            {
+            }
+
+            //Need to take out the docid!
+            Globals.ThisAddIn.DeleteDocId(doc);
+            Globals.ThisAddIn.AddDocId(doc, "ExportContract", _versionid);
+
+            // Switch of the element highliting
+            // Need to select somewhere editable!
+            Globals.ThisAddIn.Application.ActiveDocument.Characters.Last.Select();
+
+            try
+            {
+                Word.Style s = Globals.ThisAddIn.Application.ActiveDocument.Styles["ContentControl"];
+                if (s.Shading.BackgroundPatternColor != Word.WdColor.wdColorAutomatic)
+                {
+                    s.Shading.BackgroundPatternColor = Word.WdColor.wdColorAutomatic;
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            // switch on Revisions
+            doc.TrackRevisions = true;
+            doc.ShowRevisions = true;
+
+            Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
+            string filename = Utility.SaveTempFile(_versionid);
+            doc.SaveAs2(FileName: filename, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+
+            //Save a copy! - give it the name of the version
+            //string versionname = tbVersionName.Text;
+
+            Globals.ThisAddIn.ProcessingUpdate("Save PDF");
+            string filenamecopy = Utility.SaveTempFile(filename, "pdf");
+            doc.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatPDF);
+
+            var docclose = (Microsoft.Office.Interop.Word._Document)doc;
+            docclose.Close();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
+
+            //Now save the file
+            Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
+            DataReturn dr;
+            dr = Utility.HandleData(_d.AttachFile(_versionid, filename + ".pdf", filenamecopy));
+            if (!dr.success) return;
+
+            // open the pdf file in a viewer
+            ExternalEditProcess p = new ExternalEditProcess();
+            p._id = dr.id;
+            p._path = filenamecopy;
+            // p._lastwrite = System.IO.File.GetLastWriteTimeUtc(dr.strRtn).ToString();
+            // p.EnableRaisingEvents = true;
+            // p.Exited += new EventHandler(ExternalEditProcess_HasExited);
+            p.StartInfo = new ProcessStartInfo(filenamecopy);
+            p.Start();
+
+            Globals.ThisAddIn.ProcessingStop("End");
+        }
+
+        //End PES
 
       
     }

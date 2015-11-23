@@ -23,6 +23,7 @@ namespace AxiomIRISRibbon.SForceEdit
     /// <summary>
     /// Interaction logic for CompareAmendment.xaml
     ///    NEW File Added by PES
+    ///    Story2 - On click of amendment button this screen will be avilable
     /// </summary>
     public partial class CompareAmendment : RadWindow
     {
@@ -54,7 +55,6 @@ namespace AxiomIRISRibbon.SForceEdit
         {
             InitializeComponent();
             AxiomIRISRibbon.Utility.setTheme(this);
-
             _d = Globals.ThisAddIn.getData();
 
 
@@ -62,8 +62,6 @@ namespace AxiomIRISRibbon.SForceEdit
 
         public void Create(string attachmentid, string versionid, string attachmentName)
         {
-
-
             _attachmentid = attachmentid;
             _versionid = versionid;
             _strSelectedAttachmentName = attachmentName;
@@ -134,7 +132,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 if (this.radComboAmendment.SelectedItem == null && this.chkMaster.IsChecked == false)
                 {
-                    MessageBox.Show("Either select one template from dropdown  or select master checkbox");
+                    MessageBox.Show("Please select either one template from dropdown  or select master checkbox");
                 }
                 else
                 {
@@ -173,15 +171,15 @@ namespace AxiomIRISRibbon.SForceEdit
                         }
                         else
                         {
-                            string filename = "";
+                            string filename = string.Empty, body = string.Empty;
                             foreach (DataRow rw in dtAttachments.Rows)
                             {
                                 filename = rw["Name"].ToString();
-                                //   if (filename != _strSelectedAttachmentName)
-                                //    {
-                                string body = rw["body"].ToString();
-                                _d.saveAttachmentstoSF(_newVersionId, filename, body);
-                                //    }
+                                if (filename == _strSelectedAttachmentName)
+                                {
+                                    body = rw["body"].ToString();
+                                    _d.saveAttachmentstoSF(_newVersionId, filename, body);
+                                }
                             }
 
                             //Save template into version as amendtment
@@ -204,7 +202,12 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+            }
+            finally {
+                this.Close();
+            }
         }
 
 
@@ -230,7 +233,6 @@ namespace AxiomIRISRibbon.SForceEdit
                             if (rw["Name"].ToString() == _strSelectedAttachmentName)
                             {
                                 byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
-                                // fileAmendmentDocument = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
                                 fileAmendmentDocumentPath = _d.GetTempFilePath(rw["Id"].ToString() + _strSelectedAttachmentName);
                                 File.WriteAllBytes(fileAmendmentDocumentPath, toBytes);
                                 _strNewAttachmentId = rw["Id"].ToString();
@@ -238,13 +240,11 @@ namespace AxiomIRISRibbon.SForceEdit
                             else if (rw["Name"].ToString() == strFileNameTemplate)
                             {
                                 byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
-                                //  fileAmendmentTemplate = _d.GetTempFilePath(rw["Id"].ToString() + "_AmendmentTemplate");
                                 fileAmendmentTemplatePath = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
                                 File.WriteAllBytes(fileAmendmentTemplatePath, toBytes);
                                 _fileToSaveAsAgreement = fileAmendmentTemplatePath;
                                 _strAmendmentAttachmentId = rw["Id"].ToString();
                             }
-                            // _source = app.Documents.Open(filename);
                         }
                     }
                     if (fileAmendmentDocumentPath == string.Empty && fileAmendmentTemplatePath == string.Empty)
@@ -253,7 +253,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
                     else
                     {
-                        //  CombineDocs(fileAmendmentDocument, fileAmendmentTemplate, newAttachmentId);
+                        //  CombineDocs : fileAmendmentDocument, fileAmendmentTemplate
                         Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
                         object missing = System.Reflection.Missing.Value;
                         Microsoft.Office.Interop.Word.Document tempAmendmentTemplate;
@@ -268,11 +268,9 @@ namespace AxiomIRISRibbon.SForceEdit
                         {
                             f.Select();
                            tempAmendmentTemplate.Application.Selection.InsertFile(fileAmendmentDocumentPath);
-                          //  tempAmendmentTemplate.Application.Selection.InsertParagraph();
                          
                         }
 
-                        //string vfilename = _versionName.Replace(" ", "_") + ".docx";
                         DataReturn dr = SaveContract(_strNewAttachmentId, fileAmendmentTemplatePath);
                         app.Documents.Close();
 
@@ -324,7 +322,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         }
                     }
                 }
-                // CompareSideBySide(fileAmendmentDocument, fileAmendmentTemplate);
+                // CompareSideBySide : fileAmendmentDocument, fileAmendmentTemplate
                 _strAmendmentTemplatePath = fileAmendmentTemplatePath;
                 _strAmendmentDocumentPath = fileAmendmentDocumentPath;
 
@@ -341,9 +339,9 @@ namespace AxiomIRISRibbon.SForceEdit
 
             
 
-                //AmendmentTemplate
+                //AmendmentTemplate - For Save
                 Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentTemplate", "");
-                //AmendmentDocument
+                //AmendmentDocument - For Save
                 Globals.ThisAddIn.AddDocId(objtempDocAmendment, "AmendmentDocument", "");
 
                 object o = objtempAmendmentTemplate;
@@ -360,8 +358,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
 
                 objtempDocAmendment.AcceptAllRevisions();
-                                objtempDocAmendment.TrackRevisions = true;
-             //   objtempDocAmendment.ActiveWindow.View.MarkupMode = Microsoft.Office.Interop.Word.WdRevisionsMode.wdBalloonRevisions;
+                 objtempDocAmendment.TrackRevisions = true;
                 objtempDocAmendment.ActiveWindow.View.ShowRevisionsAndComments = false;
                 objtempAmendmentTemplate.TrackRevisions = true;
 

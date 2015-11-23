@@ -90,7 +90,6 @@ namespace AxiomIRISRibbon.SForceEdit
             }
         }
 
-
         private void btnCompare_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -102,12 +101,12 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     string TemplateId = ((RadComboBoxItem)(this.cbTemplates.SelectedItem)).Tag.ToString();
                     string TemplateName = ((RadComboBoxItem)(this.cbTemplates.SelectedItem)).Content.ToString();
-                   // Microsoft.Office.Interop.Word.Document tempDoc;
+                    // Microsoft.Office.Interop.Word.Document tempDoc;
 
                     DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplateAttach(TemplateId));
                     if (!drAttachemnts.success) return;
 
-                     
+
                     DataTable dtAttachments = drAttachemnts.dt;
                     string fileTemplate = "";
                     foreach (DataRow rw in dtAttachments.Rows)
@@ -115,9 +114,9 @@ namespace AxiomIRISRibbon.SForceEdit
                         byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
                         fileTemplate = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
                         File.WriteAllBytes(fileTemplate, toBytes);
-                     //   _source = app.Documents.Open(filename);
-                        
-                        
+                        //   _source = app.Documents.Open(filename);
+
+
                     }
 
                     Microsoft.Office.Interop.Word.Document wordTemplate;
@@ -143,6 +142,10 @@ namespace AxiomIRISRibbon.SForceEdit
                     object o = wordAttachment;
                     wordAttachment.Windows.CompareSideBySideWith(ref o);
 
+                    /*    wordTemplate.Compare(_fileName, missing, Microsoft.Office.Interop.Word.WdCompareTarget.wdCompareTargetNew, true, false, false, false, false);
+                        app.ActiveWindow.View.SplitSpecial = Microsoft.Office.Interop.Word.WdSpecialPane.wdPaneRevisionsVert;
+                        app.ActiveWindow.ShowSourceDocuments = Microsoft.Office.Interop.Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
+                        app.ActiveWindow.View.RevisionsFilter.Markup = 0;*/
                     Globals.Ribbons.Ribbon1.CloseWindows();
 
                 }
@@ -157,6 +160,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 //Logger.Log(ex, "Clone");
             }
         }
+       
      
         public bool SaveContract(bool ForceSave, bool SaveDoc)
         {
@@ -204,5 +208,7 @@ namespace AxiomIRISRibbon.SForceEdit
         }
 
 
+
+        public Word.WdRevisionsMarkup wdRevisionsMarkupNone { get; set; }
     }
 }

@@ -70,6 +70,8 @@
             this.gSFDebug = this.Factory.CreateRibbonGallery();
             this.gpIrisTrack = this.Factory.CreateRibbonGroup();
             this.btnAmendment = this.Factory.CreateRibbonButton();
+            this.btnExportToWord = this.Factory.CreateRibbonButton(); 
+            this.btnExportToPDF = this.Factory.CreateRibbonButton();
             this.group3 = this.Factory.CreateRibbonGroup();
             this.btnReports = this.Factory.CreateRibbonButton();
             this.btnSettings = this.Factory.CreateRibbonButton();
@@ -395,6 +397,8 @@
             // gpIrisTrack
             // 
             this.gpIrisTrack.Items.Add(this.btnAmendment);
+            this.gpIrisTrack.Items.Add(this.btnExportToWord);  //Jyoti
+            this.gpIrisTrack.Items.Add(this.btnExportToPDF);
             this.gpIrisTrack.Label = "IRIS - Track";
             this.gpIrisTrack.Name = "gpIrisTrack";
             this.gpIrisTrack.Visible = false;
@@ -406,6 +410,23 @@
             this.btnAmendment.Name = "btnAmendment";
             this.btnAmendment.ShowImage = true;
             this.btnAmendment.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnTrack_DialogLauncherClick);
+            //
+            // btnExportToWord
+            // 
+            this.btnExportToWord.Image = global::AxiomIRISRibbon.Properties.Resources.Iris_Logo_Solo_Orange_40;
+            this.btnExportToWord.Label = "Export To Word";
+            this.btnExportToWord.Name = "btnExportToWord";
+            this.btnExportToWord.ShowImage = true;
+           this.btnExportToWord.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnExportToWord_Click);
+            // 
+            // btnExportToPDF
+            // 
+            this.btnExportToPDF.Image = global::AxiomIRISRibbon.Properties.Resources.Iris_Logo_Solo_Orange_40;
+            this.btnExportToPDF.Label = "Export To PDF";
+            this.btnExportToPDF.Name = "btnExportToPDF";
+            this.btnExportToPDF.ShowImage = true;
+           this.btnExportToPDF.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnExportToPDF_Click);
+            // 
             // 
             // group3
             // 
@@ -516,6 +537,8 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn5;
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup gpIrisTrack;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnAmendment;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btnExportToWord;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btnExportToPDF;
     }
 
     partial class ThisRibbonCollection

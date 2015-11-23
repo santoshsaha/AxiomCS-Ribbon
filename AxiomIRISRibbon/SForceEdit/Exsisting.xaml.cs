@@ -17,6 +17,8 @@ using Office = Microsoft.Office.Core;
 using System.Data;
 using AxiomIRISRibbon.sfPartner;
 using System.IO;
+using System.ComponentModel;
+using System.Windows.Threading;
 
 
 
@@ -31,6 +33,7 @@ namespace AxiomIRISRibbon.SForceEdit
     {
 
         static Microsoft.Office.Interop.Word.Application app;
+        BackgroundWorker busyIndicatorBackgroundWorker;
 
         private Data _d;
         string _objname;
@@ -62,7 +65,7 @@ namespace AxiomIRISRibbon.SForceEdit
             _id = id;
             _name = name;
 
-            DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplateForAssociatedSearch(true));
+            DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAgementsHavingAttachmentsInLatestVersion(true));
             if (!dr.success) return;
 
             DataTable dt = dr.dt;
@@ -75,18 +78,18 @@ namespace AxiomIRISRibbon.SForceEdit
         }
         public void btnReset_Click(object sender, RoutedEventArgs e)
         {
-            CNID.Text = "" ;
+            CNID.Text = "";
             AgreemntNumber.Text = "";
-          /*  DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplatesFromExsisting(true));
-            if (!dr.success) return;
+            /*  DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplatesFromExsisting(true));
+              if (!dr.success) return;
 
-            DataTable dt = dr.dt;
-            // dgTemplates.Items.Clear();
-            this.dgTemplates.ItemsSource = dt.DefaultView;*/
+              DataTable dt = dr.dt;
+              // dgTemplates.Items.Clear();
+              this.dgTemplates.ItemsSource = dt.DefaultView;*/
 
 
             this.dgTemplates.ItemsSource = _dtAgreement.DefaultView;
-            
+
             dgTemplates.Focus();
         }
 
@@ -109,7 +112,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 try
                 {
-                    DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplateForsearch(agreementnumber, cnid));
+                    DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetFilterdAgementsHavingAttachmentsInLatestVersion(agreementnumber, cnid));
                     if (!dr.success) return;
 
                     DataTable dt = dr.dt;
@@ -135,15 +138,206 @@ namespace AxiomIRISRibbon.SForceEdit
             this.Close();
         }
         //Code PES
+
+        void busyIndicatorBackgroundWorker_DoWork(object sender, DoWorkEventArgs e, string strFromAgreementId)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            //e.Result = 
+            PerformCloning(worker, e, strFromAgreementId);
+        }
+        void busyIndicatorBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
+            busyIndicatorBackgroundWorker.DoWork -= (obj, ev) => busyIndicatorBackgroundWorker_DoWork(obj, ev, null);
+            busyIndicatorBackgroundWorker.RunWorkerCompleted -= busyIndicatorBackgroundWorker_RunWorkerCompleted;
+
+            bsyIndc.IsBusy = false;
+            //this.bsyIndc.IsBusy = false;
+            bsyIndc.BusyContent = "";
+            this.btnclone.IsEnabled = true;
+            Globals.Ribbons.Ribbon1.CloseWindows();
+            this.Close();
+        }
+        //protected void btnClone_Click(object sender, RoutedEventArgs e)
+        //{
+        //    try
+        //    {
+        //        bsyIndc.IsBusy = true;
+        //        bsyIndc.BusyContent = "Cloning ...";
+
+
+        //        if ((DataRowView)dgTemplates.SelectedItem == null)
+        //        {
+        //            MessageBox.Show("Select an item", "Alert");
+        //        }
+        //        else
+        //        {
+
+        //            double dVersionNumber = 0;
+        //            string strFromAgreementId, strToAgreementId, strFromVersionId = string.Empty, strTemplate = string.Empty;
+        //            strToAgreementId = _id;
+
+        //            DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
+        //            DataRow allDr0, allDr1;// = new DataRow();
+        //            DataRow drSupersede, drSuperseded;// = new DataRow();
+        //            strFromAgreementId = dtr["Id"].ToString();
+
+        //            //Get version from 
+
+        //            DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strFromAgreementId, ""));
+
+        //            if (!dr.success) return;
+        //            if (dr.dt.Rows.Count == 0)
+        //            {
+        //                MessageBox.Show("Version not avilable in source Agreement");
+        //            }
+        //            else
+        //            {
+        //                DataTable dtv = dr.dt;
+        //                //  DataTable dtv1 = dr.dt;
+        //                allDr0 = dtv.NewRow();
+        //                allDr1 = dtv.NewRow();
+
+        //                foreach (DataRow rv in dtv.Rows)
+        //                {
+        //                    strFromVersionId = rv["Id"].ToString();
+        //                    //   dVersionNumber = Convert.ToDouble(r["version_number__c"]);
+        //                    strTemplate = Convert.ToString(rv["Template__c"]);
+        //                }
+        //                allDr0 = dtv.Rows[0];
+        //                allDr1.ItemArray = dtv.Rows[0].ItemArray.Clone() as object[];
+
+        //                //Get version to 
+        //                DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId, ""));
+        //             //   DataTable dtrTo = drTo.dt;
+        //                //   allDr0 = dtv.Rows[0];
+        //               // dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
+
+        //                //    allDr1.ItemArray = dtrTo.Rows[0].ItemArray.Clone() as object[];
+
+        //                double maxId;
+        //                if (drTo.dt.Rows.Count == 0)
+        //                {
+        //                    maxId = 0;
+        //                }
+        //                else
+        //                {
+        //                    dVersionNumber = Convert.ToDouble(drTo.dt.Rows[0]["version_number__c"]);
+        //                    maxId = Convert.ToDouble(dVersionNumber + 1);
+        //                }
+
+        //                string VersionName = "Version " + (maxId).ToString();
+        //                string VersionNumber = maxId.ToString();
+
+        //                // Create Version 0 or lower version in To
+        //                DataReturn drCreatev0 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr0));
+        //                string newV0VersionId = drCreatev0.id;
+        //                // Create Version 1 or lower version +1 in To
+        //                maxId = Convert.ToDouble(maxId + 1);
+        //                VersionName = "Version " + (maxId).ToString();
+        //                VersionNumber = maxId.ToString();
+
+        //                DataReturn drCreateV1 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr1));
+        //                string newV1VersionId = drCreateV1.id;
+
+
+        //                //Code to update supersede and superseded by
+        //                //call query method
+        //                DataReturn dreturnSupersede = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedes(strFromAgreementId));
+        //                DataTable dtSupersede = new DataTable();
+        //                dtSupersede = dreturnSupersede.dt;
+        //                //drSupersede = new DataRow();
+        //                drSupersede = dtSupersede.NewRow();
+        //                foreach (DataRow r in dtSupersede.Rows)
+        //                {
+        //                    drSupersede = r;
+        //                }
+        //               // drSupersede["Supersedes__c"] = strToAgreementId;
+        //                drSupersede["Superseded_By__c"] = strToAgreementId;
+        //                //call save method
+        //                _d.SaveMatter(drSupersede);
+        //                //call query method
+        //                DataReturn dreturnSuperseded = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedeby(strToAgreementId));
+        //                DataTable dtSuperseded = dreturnSuperseded.dt;
+        //                drSuperseded = dtSuperseded.NewRow();
+        //                //call save method
+        //                foreach (DataRow r in dtSuperseded.Rows)
+        //                {
+        //                    drSuperseded = r;
+        //                }
+        //             ///   drSuperseded["Superseded_By__c"] = strFromAgreementId;
+        //                drSuperseded["Supersedes__c"] = strFromAgreementId;
+        //                //call save method
+        //                _d.SaveMatter(drSuperseded);
+
+
+
+
+
+        //                //Create attachments in To
+        //                DataReturn drVersionAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(strFromVersionId));
+        //                if (!drVersionAttachemnts.success) return;
+        //                DataTable dtAttachments = drVersionAttachemnts.dt;
+
+        //                if (dtAttachments.Rows.Count == 0)
+        //                {
+        //                    MessageBox.Show("Attachments not avilable in source Version");
+        //                }
+        //                else
+        //                {
+        //                    string filename = "";
+        //                    foreach (DataRow rw in dtAttachments.Rows)
+        //                    {
+        //                        filename = rw["Name"].ToString();
+        //                        string body = rw["body"].ToString();
+        //                        _d.saveAttachmentstoSF(newV0VersionId, filename, body);
+        //                        _d.saveAttachmentstoSF(newV1VersionId, filename, body);
+        //                    }
+
+        //                    //Get Attachments
+        //                    DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(newV1VersionId));
+        //                    if (!drAttachemnts.success) return;
+        //                    DataTable dtAllAttachments = drAttachemnts.dt;
+
+        //                    //Open attachment with compare screeen
+        //                    OpenAttachment(dtAllAttachments, newV1VersionId, strToAgreementId, strTemplate, VersionName, VersionNumber);
+        //                    Globals.Ribbons.Ribbon1.CloseWindows();
+        //                    this.Close();
+        //                }
+        //            }
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //Logger.Log(ex, "Clone");
+        //    }
+        //    finally { bsyIndc.IsBusy = false; }
+        //}
+
         protected void btnClone_Click(object sender, RoutedEventArgs e)
+        {
+            this.btnclone.IsEnabled = false;
+            bsyIndc.IsBusy = true;
+            bsyIndc.BusyContent = "Cloning ...";
+            busyIndicatorBackgroundWorker = new BackgroundWorker();
+            //Application.Current.Dispatcher.BeginInvoke();
+
+            DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
+            string strFromAgreementId = dtr["Id"].ToString();
+
+            busyIndicatorBackgroundWorker.DoWork += (obj, ev) => busyIndicatorBackgroundWorker_DoWork(obj, ev, strFromAgreementId);
+            busyIndicatorBackgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(busyIndicatorBackgroundWorker_RunWorkerCompleted);
+            busyIndicatorBackgroundWorker.RunWorkerAsync();
+
+        }
+
+        protected void PerformCloning(BackgroundWorker worker, DoWorkEventArgs e, string strFromAgreementId)
         {
             try
             {
-                bsyIndc.IsBusy = true;
-                bsyIndc.BusyContent = "Cloning ...";
 
-
-                if ((DataRowView)dgTemplates.SelectedItem == null)
+                if (string.IsNullOrEmpty(strFromAgreementId))
                 {
                     MessageBox.Show("Select an item", "Alert");
                 }
@@ -151,13 +345,13 @@ namespace AxiomIRISRibbon.SForceEdit
                 {
 
                     double dVersionNumber = 0;
-                    string strFromAgreementId, strToAgreementId, strFromVersionId = string.Empty, strTemplate = string.Empty;
+                    string strToAgreementId, strFromVersionId = string.Empty, strTemplate = string.Empty;
                     strToAgreementId = _id;
 
-                    DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
+                    //DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
                     DataRow allDr0, allDr1;// = new DataRow();
                     DataRow drSupersede, drSuperseded;// = new DataRow();
-                    strFromAgreementId = dtr["Id"].ToString();
+                    //strFromAgreementId = dtr["Id"].ToString();
 
                     //Get version from 
 
@@ -186,9 +380,9 @@ namespace AxiomIRISRibbon.SForceEdit
 
                         //Get version to 
                         DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId, ""));
-                     //   DataTable dtrTo = drTo.dt;
+                        //   DataTable dtrTo = drTo.dt;
                         //   allDr0 = dtv.Rows[0];
-                       // dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
+                        // dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
 
                         //    allDr1.ItemArray = dtrTo.Rows[0].ItemArray.Clone() as object[];
 
@@ -229,7 +423,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         {
                             drSupersede = r;
                         }
-                       // drSupersede["Supersedes__c"] = strToAgreementId;
+                        // drSupersede["Supersedes__c"] = strToAgreementId;
                         drSupersede["Superseded_By__c"] = strToAgreementId;
                         //call save method
                         _d.SaveMatter(drSupersede);
@@ -242,7 +436,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         {
                             drSuperseded = r;
                         }
-                     ///   drSuperseded["Superseded_By__c"] = strFromAgreementId;
+                        ///   drSuperseded["Superseded_By__c"] = strFromAgreementId;
                         drSuperseded["Supersedes__c"] = strFromAgreementId;
                         //call save method
                         _d.SaveMatter(drSuperseded);
@@ -278,8 +472,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                             //Open attachment with compare screeen
                             OpenAttachment(dtAllAttachments, newV1VersionId, strToAgreementId, strTemplate, VersionName, VersionNumber);
-                            Globals.Ribbons.Ribbon1.CloseWindows();
-                            this.Close();
+
                         }
                     }
                 }
@@ -289,68 +482,81 @@ namespace AxiomIRISRibbon.SForceEdit
             {
                 //Logger.Log(ex, "Clone");
             }
-            finally { bsyIndc.IsBusy = false; }
+            //finally { bsyIndc.IsBusy = false; }
         }
-       
-        private  void OpenAttachment(DataTable dt,string versionid, string matterid, string templateid, string versionName, string versionNumber)
+
+        private void OpenAttachment(DataTable dt, string versionid, string matterid, string templateid, string versionName, string versionNumber)
         {
+
             try
             {
-                    var res = from row in dt.AsEnumerable()
-                              where 
-                              (row.Field<string>("Name").Contains(".doc") ||
-                              row.Field<string>("ContentType").Contains("msword"))
-                              select row;
-                    if (res.Count() > 1)
-                    {
+                this.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+             new Action(
+                 delegate
+                 {
+                     var res = from row in dt.AsEnumerable()
+                               where
+                               (row.Field<string>("Name").Contains(".doc") ||
+                               row.Field<string>("ContentType").Contains("msword"))
+                               select row;
+                     if (res.Count() > 1)
+                     {
 
-                        AttachmentsView attTemp = new AttachmentsView();
-                        attTemp.Create(dt,versionid, matterid, templateid, versionName, versionNumber);
-                        attTemp.Show();
-                        attTemp.Focus();
-                    }
-                    else
-                    {
+                         AttachmentsView attTemp = new AttachmentsView();
+                         attTemp.Create(dt, versionid, matterid, templateid, versionName, versionNumber);
+                         attTemp.Show();
+                         attTemp.Focus();
+                     }
+                     else
+                     {
 
-                        string attachmentid;
-                        foreach (DataRow rw in dt.Rows)
-                        {
-                            if (rw["Name"].ToString().Contains(".doc"))
-                            {
-                                byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
-                                string filename = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
+                         string attachmentid;
+                         foreach (DataRow rw in dt.Rows)
+                         {
+                             if (rw["Name"].ToString().Contains(".doc"))
+                             {
+                                 byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
+                                 string filename = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
 
-                                File.WriteAllBytes(filename, toBytes);
+                                 File.WriteAllBytes(filename, toBytes);
 
 
-                                Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);
-                                //     Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
-                                //     doc.Activate();
+                                 Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);
+                                 //     Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
+                                 //     doc.Activate();
 
-                                attachmentid = rw["Id"].ToString();
+                                 attachmentid = rw["Id"].ToString();
 
-                                //Right Panel
-                                System.Windows.Forms.Integration.ElementHost elHost = new System.Windows.Forms.Integration.ElementHost();
-                                SForceEdit.CompareSideBar csb = new SForceEdit.CompareSideBar();
-                                csb.Create(filename, versionid, matterid, templateid, versionName, versionNumber, attachmentid);
+                                 //Right Panel
+                                 //Dispatcher.BeginInvoke(delegate)
 
-                                elHost.Child = csb;
-                                elHost.Dock = System.Windows.Forms.DockStyle.Fill;
-                                System.Windows.Forms.UserControl u = new System.Windows.Forms.UserControl();
-                                u.Controls.Add(elHost);
-                                Microsoft.Office.Tools.CustomTaskPane taskPaneValue = Globals.ThisAddIn.CustomTaskPanes.Add(u, "Axiom IRIS Compare", doc.ActiveWindow);
-                                taskPaneValue.Visible = true;
-                                taskPaneValue.Width = 400;
-                            }
-                        }
-                    }
+                                 System.Windows.Forms.Integration.ElementHost elHost = new System.Windows.Forms.Integration.ElementHost();
+                                 SForceEdit.CompareSideBar csb = new SForceEdit.CompareSideBar();
+                                 csb.Create(filename, versionid, matterid, templateid, versionName, versionNumber, attachmentid);
+
+                                 elHost.Child = csb;
+                                 elHost.Dock = System.Windows.Forms.DockStyle.Fill;
+                                 System.Windows.Forms.UserControl u = new System.Windows.Forms.UserControl();
+                                 u.Controls.Add(elHost);
+                                 Microsoft.Office.Tools.CustomTaskPane taskPaneValue = Globals.ThisAddIn.CustomTaskPanes.Add(u, "Axiom IRIS Compare", doc.ActiveWindow);
+                                 taskPaneValue.Visible = true;
+                                 taskPaneValue.Width = 400;
+
+
+                             }
+                         }
+                     }
+                 }));
             }
-            catch (Exception ex) { //Logger.Log(ex, "OpenAttachment"); 
+            catch (Exception ex)
+            {
+                //Logger.Log(ex, "OpenAttachment"); 
             }
-           
+
+
         }
 
-        
+
 
         //End Code PES
     }

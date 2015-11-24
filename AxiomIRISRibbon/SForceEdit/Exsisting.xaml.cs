@@ -117,6 +117,11 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     DataTable dt = dr.dt;
                     //dgTemplates.Items.Clear();
+
+                    if (dt.Rows.Count == 0)
+                    {
+                        MessageBox.Show("No eligible matter found");
+                    }
                     this.dgTemplates.ItemsSource = dt.DefaultView;
                     dgTemplates.Focus();
 

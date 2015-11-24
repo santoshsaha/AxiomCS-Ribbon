@@ -504,13 +504,13 @@ namespace AxiomIRISRibbon
         {
 
             if (this.Id == null) this.Id = Globals.ThisAddIn.GetCurrentDocId();
+            this.IsTemplate = true;
+            //if (this.Id != "")
+            //{
+            //    this.IsTemplate = true;
+            //    //GetTemplateDetails();
 
-            if (this.Id != "")
-            {
-                this.IsTemplate = true;
-                //GetTemplateDetails();
-
-            }
+            //}
             // so whats the plan! 
             // for now don't make it human readable i.e. not a marked up doc - going to be too clumsy, might come back to
             // so leave in the controls and write the metadata and the non-shown clauses to custom xml parts
@@ -518,20 +518,20 @@ namespace AxiomIRISRibbon
             // leave in the ids as they are - import will sort them out
             try
             {
-                Globals.ThisAddIn.ProcessingStart("Import Template");
+                Globals.ThisAddIn.ProcessingStart("Import Document");
 
                 if (this.IsTemplate)
                 {
 
-                    Globals.ThisAddIn.ProcessingUpdate("Copy Template");
+                    Globals.ThisAddIn.ProcessingUpdate("Copy Document");
                     Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
                     Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
 
                     Word.Range source = template.Range(template.Content.Start, template.Content.End);
                     export.Range(export.Content.Start).InsertXML(source.WordOpenXML);
 
-                    Globals.ThisAddIn.ProcessingUpdate("Update Template Id");
-                    Globals.ThisAddIn.AddDocId(export, "ExportTemplate", this.Id);
+                    Globals.ThisAddIn.ProcessingUpdate("Update DocumentDocument Id");
+                    //Globals.ThisAddIn.AddDocId(export, "ExportTemplate", this.Id);
 
                     // now get the meta data and store it as custom xml parts
                     Globals.ThisAddIn.ProcessingUpdate("Add Data to Dataset");
@@ -567,9 +567,9 @@ namespace AxiomIRISRibbon
                     SaveFileDialog dlg = new SaveFileDialog();
                     dlg.Title = "MyTitle";
                     dlg.Filter = "Word Document (*.doc;*.docx;*.docm)|*.doc;*.docx;*.docx";
-                    dlg.FileName = "ExportTemplate-" + dlg.Title.Replace(" ", "");
+                    dlg.FileName = "ExportDocument-" + dlg.Title.Replace(" ", "");
                     dlg.ShowDialog();
-                    export.SaveAs2(dlg.FileName);
+                    export.SaveAs2(dlg.FileName,ReadOnlyRecommended:true);
                     Globals.ThisAddIn.ProcessingStop("Finished");
 
                 }
@@ -609,8 +609,8 @@ namespace AxiomIRISRibbon
             }
 
             //Need to take out the docid!
-            Globals.ThisAddIn.DeleteDocId(doc);
-            Globals.ThisAddIn.AddDocId(doc, "ExportContract", _versionid);
+           // Globals.ThisAddIn.DeleteDocId(doc);
+            //Globals.ThisAddIn.AddDocId(doc, "ExportContract", _versionid);
 
             // Switch of the element highliting
             // Need to select somewhere editable!

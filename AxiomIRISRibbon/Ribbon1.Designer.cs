@@ -70,7 +70,7 @@
             this.gSFDebug = this.Factory.CreateRibbonGallery();
             this.gpIrisTrack = this.Factory.CreateRibbonGroup();
             this.btnAmendment = this.Factory.CreateRibbonButton();
-            this.btnExportToWord = this.Factory.CreateRibbonButton(); 
+            this.btnExportToWord = this.Factory.CreateRibbonButton();
             this.btnExportToPDF = this.Factory.CreateRibbonButton();
             this.group3 = this.Factory.CreateRibbonGroup();
             this.btnReports = this.Factory.CreateRibbonButton();
@@ -397,7 +397,7 @@
             // gpIrisTrack
             // 
             this.gpIrisTrack.Items.Add(this.btnAmendment);
-            this.gpIrisTrack.Items.Add(this.btnExportToWord);  //Jyoti
+            this.gpIrisTrack.Items.Add(this.btnExportToWord);
             this.gpIrisTrack.Items.Add(this.btnExportToPDF);
             this.gpIrisTrack.Label = "IRIS - Track";
             this.gpIrisTrack.Name = "gpIrisTrack";
@@ -410,14 +410,14 @@
             this.btnAmendment.Name = "btnAmendment";
             this.btnAmendment.ShowImage = true;
             this.btnAmendment.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnTrack_DialogLauncherClick);
-            //
+            // 
             // btnExportToWord
             // 
             this.btnExportToWord.Image = global::AxiomIRISRibbon.Properties.Resources.Iris_Logo_Solo_Orange_40;
             this.btnExportToWord.Label = "Export To Word";
             this.btnExportToWord.Name = "btnExportToWord";
             this.btnExportToWord.ShowImage = true;
-           this.btnExportToWord.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnExportToWord_Click);
+            this.btnExportToWord.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnExportToWord_Click);
             // 
             // btnExportToPDF
             // 
@@ -425,8 +425,8 @@
             this.btnExportToPDF.Label = "Export To PDF";
             this.btnExportToPDF.Name = "btnExportToPDF";
             this.btnExportToPDF.ShowImage = true;
-           this.btnExportToPDF.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnExportToPDF_Click);
-            // 
+            this.btnExportToPDF.Visible = false;
+            this.btnExportToPDF.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnExportToPDF_Click);
             // 
             // group3
             // 

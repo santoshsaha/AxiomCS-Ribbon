@@ -335,7 +335,7 @@ namespace AxiomIRISRibbon
                     relatedAgreementsIdsString = relatedAgreementsIdsString + "')";
                 }
             }
-            allAgreements = "select Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c from matter__c where id in " + relatedAgreementsIdsString + " order by name";
+            allAgreements = "select Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c from matter__c where id in " + relatedAgreementsIdsString + " and Master_Agreement_Type__c = 'Amendment' order by name";
             DataReturn allAgreementsDataReturn = _sf.RunSOQL(allAgreements);
             return allAgreementsDataReturn;
         }

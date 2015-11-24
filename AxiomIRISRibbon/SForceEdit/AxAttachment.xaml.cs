@@ -426,6 +426,8 @@ namespace AxiomIRISRibbon.SForceEdit
                             //Scroll to the top
                             Globals.ThisAddIn.Application.ActiveWindow.DisplayVerticalScrollBar = true;
                             Globals.ThisAddIn.Application.ActiveWindow.VerticalPercentScrolled = 0;
+                         //   Globals.ThisAddIn.Application.ActiveWindow.TrackRevisions = false;
+                            Globals.ThisAddIn.Application.ActiveWindow.View.ShowRevisionsAndComments = false;
                             
                             // load the data tab
                             u.LoadDataTab(dr.strRtn,_sObjectDef.ParentType, _sObjectDef.ParentId);
@@ -468,7 +470,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                             Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;                            
                             Globals.ThisAddIn.ShowTaskPaneSFEdit(doc,true, dr.id, dr.strRtn, _sObjectDef.ParentType, _sObjectDef.ParentId);
-
+                            Globals.ThisAddIn.Application.ActiveWindow.View.ShowRevisionsAndComments = false;
                             if (doc != null) doc.Activate();
 
                             // add in a tag so it no where to save

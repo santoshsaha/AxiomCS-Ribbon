@@ -325,26 +325,44 @@ namespace AxiomIRISRibbon.SForceEdit
 
         protected void btnClone_Click(object sender, RoutedEventArgs e)
         {
+
             this.btnclone.IsEnabled = false;
             bsyIndc.IsBusy = true;
             bsyIndc.BusyContent = "Cloning ...";
             busyIndicatorBackgroundWorker = new BackgroundWorker();
             //Application.Current.Dispatcher.BeginInvoke();
-            string strFromAgreementId=string.Empty;
-            if (dgTemplates.Items.Count > 0)
+            string strFromAgreementId = string.Empty;
+            if ((DataRowView)dgTemplates.SelectedItem != null)
             {
                 DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
                 if (dtr != null)
                 {
                     strFromAgreementId = dtr["Id"].ToString();
+                    DataReturn dataReturnVersionRecord = _d.getLatestVersionDetails(strFromAgreementId);
+                    DataTable dataTableVersionRecord = dataReturnVersionRecord.dt;
+
+                    if (dataTableVersionRecord.Rows.Count == 0)
+                    {
+                        this.btnclone.IsEnabled = true;
+                        bsyIndc.IsBusy = false;
+
+                        //Displaying a message to indicate the selected matter's latest version doesnt have attachments
+                        MessageBox.Show("Cloning cannot occur since selected Agreement does not have an available attachment.");
+                    }
+                    else
+                    {
+                        busyIndicatorBackgroundWorker.DoWork += (obj, ev) => busyIndicatorBackgroundWorker_DoWork(obj, ev, strFromAgreementId);
+                        busyIndicatorBackgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(busyIndicatorBackgroundWorker_RunWorkerCompleted);
+                        busyIndicatorBackgroundWorker.RunWorkerAsync();
+                    }
                 }
             }
-            busyIndicatorBackgroundWorker.DoWork += (obj, ev) => busyIndicatorBackgroundWorker_DoWork(obj, ev, strFromAgreementId);
-            busyIndicatorBackgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(busyIndicatorBackgroundWorker_RunWorkerCompleted);
-            busyIndicatorBackgroundWorker.RunWorkerAsync();
-
+            else
+            {
+                this.btnclone.IsEnabled = true;
+                bsyIndc.IsBusy = false;
+            }
         }
-
         protected void PerformCloning(BackgroundWorker worker, DoWorkEventArgs e, string strFromAgreementId)
         {
             try
@@ -356,154 +374,135 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
                 else
                 {
+                    double dVersionNumber = 0;
+                    string strToAgreementId, strFromVersionId = string.Empty, strTemplate = string.Empty;
+                    strToAgreementId = _id;
 
-                    //Pavan
-                    //DataRow dataRowSearchMatterSelected = ((DataRowView)dgTemplates.SelectedItem).Row;
-                   // string searchMatterSelectedId = dataRowSearchMatterSelected["id"].ToString();
-                    //call sql method in data.cs to check if the selected matter's latest version has attachment.
-                    DataReturn dataReturnVersionRecord = _d.getLatestVersionDetails(strFromAgreementId);
-                    DataTable dataTableVersionRecord = dataReturnVersionRecord.dt;
+                    //DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
+                    DataRow allDr0, allDr1;// = new DataRow();
+                    DataRow drSupersede, drSuperseded;// = new DataRow();
+                    //strFromAgreementId = dtr["Id"].ToString();
 
-                    if (dataTableVersionRecord.Rows.Count == 0)
+                    //Get version from 
+
+                    DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strFromAgreementId, ""));
+
+                    if (!dr.success) return;
+                    if (dr.dt.Rows.Count == 0)
                     {
-                        //Displaying a message to indicate the selected matter's latest version doesnt have attachments
-                        MessageBox.Show("Cloning cannot occur since selected Agreement does not have an available attachment.");
+                        MessageBox.Show("Version not avilable in source Agreement");
                     }
                     else
                     {
+                        DataTable dtv = dr.dt;
+                        //  DataTable dtv1 = dr.dt;
+                        allDr0 = dtv.NewRow();
+                        allDr1 = dtv.NewRow();
 
-
-
-                        double dVersionNumber = 0;
-                        string strToAgreementId, strFromVersionId = string.Empty, strTemplate = string.Empty;
-                        strToAgreementId = _id;
-
-                        //DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
-                        DataRow allDr0, allDr1;// = new DataRow();
-                        DataRow drSupersede, drSuperseded;// = new DataRow();
-                        //strFromAgreementId = dtr["Id"].ToString();
-
-                        //Get version from 
-
-                        DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strFromAgreementId, ""));
-
-                        if (!dr.success) return;
-                        if (dr.dt.Rows.Count == 0)
+                        foreach (DataRow rv in dtv.Rows)
                         {
-                            MessageBox.Show("Version not avilable in source Agreement");
+                            strFromVersionId = rv["Id"].ToString();
+                            //   dVersionNumber = Convert.ToDouble(r["version_number__c"]);
+                            strTemplate = Convert.ToString(rv["Template__c"]);
+                        }
+                        allDr0 = dtv.Rows[0];
+                        allDr1.ItemArray = dtv.Rows[0].ItemArray.Clone() as object[];
+
+                        //Get version to 
+                        DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId, ""));
+                        //   DataTable dtrTo = drTo.dt;
+                        //   allDr0 = dtv.Rows[0];
+                        // dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
+
+                        //    allDr1.ItemArray = dtrTo.Rows[0].ItemArray.Clone() as object[];
+
+                        double maxId;
+                        if (drTo.dt.Rows.Count == 0)
+                        {
+                            maxId = 0;
                         }
                         else
                         {
-                            DataTable dtv = dr.dt;
-                            //  DataTable dtv1 = dr.dt;
-                            allDr0 = dtv.NewRow();
-                            allDr1 = dtv.NewRow();
+                            dVersionNumber = Convert.ToDouble(drTo.dt.Rows[0]["version_number__c"]);
+                            maxId = Convert.ToDouble(dVersionNumber + 1);
+                        }
 
-                            foreach (DataRow rv in dtv.Rows)
+                        string VersionName = "Version " + (maxId).ToString();
+                        string VersionNumber = maxId.ToString();
+
+                        // Create Version 0 or lower version in To
+                        DataReturn drCreatev0 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr0));
+                        string newV0VersionId = drCreatev0.id;
+                        // Create Version 1 or lower version +1 in To
+                        maxId = Convert.ToDouble(maxId + 1);
+                        VersionName = "Version " + (maxId).ToString();
+                        VersionNumber = maxId.ToString();
+
+                        DataReturn drCreateV1 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr1));
+                        string newV1VersionId = drCreateV1.id;
+
+
+                        //Code to update supersede and superseded by
+                        //call query method
+                        DataReturn dreturnSupersede = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedes(strFromAgreementId));
+                        DataTable dtSupersede = new DataTable();
+                        dtSupersede = dreturnSupersede.dt;
+                        //drSupersede = new DataRow();
+                        drSupersede = dtSupersede.NewRow();
+                        foreach (DataRow r in dtSupersede.Rows)
+                        {
+                            drSupersede = r;
+                        }
+                        // drSupersede["Supersedes__c"] = strToAgreementId;
+                        drSupersede["Superseded_By__c"] = strToAgreementId;
+                        //call save method
+                        _d.SaveMatter(drSupersede);
+                        //call query method
+                        DataReturn dreturnSuperseded = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedeby(strToAgreementId));
+                        DataTable dtSuperseded = dreturnSuperseded.dt;
+                        drSuperseded = dtSuperseded.NewRow();
+                        //call save method
+                        foreach (DataRow r in dtSuperseded.Rows)
+                        {
+                            drSuperseded = r;
+                        }
+                        ///   drSuperseded["Superseded_By__c"] = strFromAgreementId;
+                        drSuperseded["Supersedes__c"] = strFromAgreementId;
+                        //call save method
+                        _d.SaveMatter(drSuperseded);
+
+
+
+
+
+                        //Create attachments in To
+                        DataReturn drVersionAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(strFromVersionId));
+                        if (!drVersionAttachemnts.success) return;
+                        DataTable dtAttachments = drVersionAttachemnts.dt;
+
+                        if (dtAttachments.Rows.Count == 0)
+                        {
+                            MessageBox.Show("Attachments not avilable in source Version");
+                        }
+                        else
+                        {
+                            string filename = "";
+                            foreach (DataRow rw in dtAttachments.Rows)
                             {
-                                strFromVersionId = rv["Id"].ToString();
-                                //   dVersionNumber = Convert.ToDouble(r["version_number__c"]);
-                                strTemplate = Convert.ToString(rv["Template__c"]);
-                            }
-                            allDr0 = dtv.Rows[0];
-                            allDr1.ItemArray = dtv.Rows[0].ItemArray.Clone() as object[];
-
-                            //Get version to 
-                            DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId, ""));
-                            //   DataTable dtrTo = drTo.dt;
-                            //   allDr0 = dtv.Rows[0];
-                            // dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
-
-                            //    allDr1.ItemArray = dtrTo.Rows[0].ItemArray.Clone() as object[];
-
-                            double maxId;
-                            if (drTo.dt.Rows.Count == 0)
-                            {
-                                maxId = 0;
-                            }
-                            else
-                            {
-                                dVersionNumber = Convert.ToDouble(drTo.dt.Rows[0]["version_number__c"]);
-                                maxId = Convert.ToDouble(dVersionNumber + 1);
+                                filename = rw["Name"].ToString();
+                                string body = rw["body"].ToString();
+                                _d.saveAttachmentstoSF(newV0VersionId, filename, body);
+                                _d.saveAttachmentstoSF(newV1VersionId, filename, body);
                             }
 
-                            string VersionName = "Version " + (maxId).ToString();
-                            string VersionNumber = maxId.ToString();
+                            //Get Attachments
+                            DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(newV1VersionId));
+                            if (!drAttachemnts.success) return;
+                            DataTable dtAllAttachments = drAttachemnts.dt;
 
-                            // Create Version 0 or lower version in To
-                            DataReturn drCreatev0 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr0));
-                            string newV0VersionId = drCreatev0.id;
-                            // Create Version 1 or lower version +1 in To
-                            maxId = Convert.ToDouble(maxId + 1);
-                            VersionName = "Version " + (maxId).ToString();
-                            VersionNumber = maxId.ToString();
+                            //Open attachment with compare screeen
+                            OpenAttachment(dtAllAttachments, newV1VersionId, strToAgreementId, strTemplate, VersionName, VersionNumber);
 
-                            DataReturn drCreateV1 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr1));
-                            string newV1VersionId = drCreateV1.id;
-
-
-                            //Code to update supersede and superseded by
-                            //call query method
-                            DataReturn dreturnSupersede = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedes(strFromAgreementId));
-                            DataTable dtSupersede = new DataTable();
-                            dtSupersede = dreturnSupersede.dt;
-                            //drSupersede = new DataRow();
-                            drSupersede = dtSupersede.NewRow();
-                            foreach (DataRow r in dtSupersede.Rows)
-                            {
-                                drSupersede = r;
-                            }
-                            // drSupersede["Supersedes__c"] = strToAgreementId;
-                            drSupersede["Superseded_By__c"] = strToAgreementId;
-                            //call save method
-                            _d.SaveMatter(drSupersede);
-                            //call query method
-                            DataReturn dreturnSuperseded = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedeby(strToAgreementId));
-                            DataTable dtSuperseded = dreturnSuperseded.dt;
-                            drSuperseded = dtSuperseded.NewRow();
-                            //call save method
-                            foreach (DataRow r in dtSuperseded.Rows)
-                            {
-                                drSuperseded = r;
-                            }
-                            ///   drSuperseded["Superseded_By__c"] = strFromAgreementId;
-                            drSuperseded["Supersedes__c"] = strFromAgreementId;
-                            //call save method
-                            _d.SaveMatter(drSuperseded);
-
-
-
-
-
-                            //Create attachments in To
-                            DataReturn drVersionAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(strFromVersionId));
-                            if (!drVersionAttachemnts.success) return;
-                            DataTable dtAttachments = drVersionAttachemnts.dt;
-
-                            if (dtAttachments.Rows.Count == 0)
-                            {
-                                MessageBox.Show("Attachments not avilable in source Version");
-                            }
-                            else
-                            {
-                                string filename = "";
-                                foreach (DataRow rw in dtAttachments.Rows)
-                                {
-                                    filename = rw["Name"].ToString();
-                                    string body = rw["body"].ToString();
-                                    _d.saveAttachmentstoSF(newV0VersionId, filename, body);
-                                    _d.saveAttachmentstoSF(newV1VersionId, filename, body);
-                                }
-
-                                //Get Attachments
-                                DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(newV1VersionId));
-                                if (!drAttachemnts.success) return;
-                                DataTable dtAllAttachments = drAttachemnts.dt;
-
-                                //Open attachment with compare screeen
-                                OpenAttachment(dtAllAttachments, newV1VersionId, strToAgreementId, strTemplate, VersionName, VersionNumber);
-
-                            }
                         }
                     }
                 }

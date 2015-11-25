@@ -49,6 +49,7 @@ namespace AxiomIRISRibbon.SForceEdit
            LoadTemplatesDLL();
         
         }
+        ~CompareSideBar() { }
         public void Create(string filename, string versionid, string matterid, string templateid, string versionName, string versionNumber, string attachmentid)
         {
             _fileName = filename;
@@ -162,13 +163,13 @@ namespace AxiomIRISRibbon.SForceEdit
                     app.ActiveWindow.View.SplitSpecial =Word.WdSpecialPane.wdPaneRevisionsVert;
                     app.ActiveWindow.ShowSourceDocuments =Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
                     app.ActiveWindow.View.RevisionsFilter.Markup = 0;
-
+                    app.Activate();
 
                     // close the temp files
                     var docTemplateClose = (Word._Document)wordTemplate;
-                    docTemplateClose.Close(SaveChanges: false);
-                  //  var docAttachmentClose = (Word._Document)wordAttachment;
-                //    docAttachmentClose.Close(SaveChanges: false);
+                   docTemplateClose.Close(SaveChanges: false);
+                    var docAttachmentClose = (Word._Document)wordAttachment;
+                   docAttachmentClose.Close(SaveChanges: false);
 
 
                     // System.Runtime.InteropServices.Marshal.ReleaseComObject(newdoc);
@@ -176,7 +177,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     //  docclose.Close(SaveChanges: false);
                     //  System.Runtime.InteropServices.Marshal.ReleaseComObject(olddoc);
 
-                    wordTemplate.Activate();
+                  //  wordTemplate.Activate();
                     //End Compare
                     Globals.Ribbons.Ribbon1.CloseWindows();
 
@@ -197,47 +198,51 @@ namespace AxiomIRISRibbon.SForceEdit
      
         public bool SaveContract(bool ForceSave, bool SaveDoc)
         {
-            string strFileAttached = _fileName;
-            //Save the Contract    
-            Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
-     
-            Globals.ThisAddIn.ProcessingStart("Save Contract");
-            DataReturn dr;
-          _doc = Globals.ThisAddIn.Application.ActiveDocument;
+            try
+            {
+                string strFileAttached = _fileName;
+                //Save the Contract    
+                Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
 
-            dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveVersion(_versionid, _matterid, _templateid, _versionName, _versionNumber));
-            if (!dr.success) return false;
-            _versionid = dr.id;
+                Globals.ThisAddIn.ProcessingStart("Save Contract");
+                DataReturn dr;
+                _doc = Globals.ThisAddIn.Application.ActiveDocument;
 
-            if (SaveDoc)
-            {        
+                dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveVersion(_versionid, _matterid, _templateid, _versionName, _versionNumber));
+                if (!dr.success) return false;
+                _versionid = dr.id;
 
-                //Save the file as an attachment
-                //save this to a scratch file
-                Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
-             //   string filename = AxiomIRISRibbon.Utility.SaveTempFile(_versionid);
-                _doc.SaveAs2(FileName: strFileAttached, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+                if (SaveDoc)
+                {
 
-                //Save a copy!
-                Globals.ThisAddIn.ProcessingUpdate("Save Copy");
-                string filenamecopy =  AxiomIRISRibbon.Utility.SaveTempFile(_versionid + "X");
-                Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(strFileAttached, Visible: false);
-                dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+                    //Save the file as an attachment
+                    //save this to a scratch file
+                    Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
+                    //   string filename = AxiomIRISRibbon.Utility.SaveTempFile(_versionid);
+                    _doc.SaveAs2(FileName: strFileAttached, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
 
-                var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
-                docclose.Close();
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
+                    //Save a copy!
+                    Globals.ThisAddIn.ProcessingUpdate("Save Copy");
+                    string filenamecopy = AxiomIRISRibbon.Utility.SaveTempFile(_versionid + "X");
+                    Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(strFileAttached, Visible: false);
+                    dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
 
-                //Now save the file - change this to always save as the version name
+                    var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
+                    docclose.Close();
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
 
-                Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
-                string vfilename = _versionName.Replace(" ", "_") + ".docx";         
-                dr = AxiomIRISRibbon.Utility.HandleData(_d.UpdateFile(_attachmentid, vfilename, filenamecopy));
-           
+                    //Now save the file - change this to always save as the version name
+
+                    Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
+                    string vfilename = _versionName.Replace(" ", "_") + ".docx";
+                    dr = AxiomIRISRibbon.Utility.HandleData(_d.UpdateFile(_attachmentid, vfilename, filenamecopy));
+
+                }
+                Globals.ThisAddIn.AddSaveHandler(); // add it back in
+                Globals.ThisAddIn.ProcessingStop("End");
+                return true;
             }
-            Globals.ThisAddIn.AddSaveHandler(); // add it back in
-            Globals.ThisAddIn.ProcessingStop("End");
-            return true;
+            catch (Exception ex) { return false; }
         }
 
 

@@ -235,7 +235,7 @@ namespace AxiomIRISRibbon
         //    return _sf.RunSOQL(query);
         //}
 
-       /* public DataReturn GetTemplateForsearch(string agreementnumber, string CNID)
+       public DataReturn GetTemplateForsearch(string agreementnumber, string CNID)
         {
             string query = string.Empty;
             if (String.IsNullOrEmpty(CNID) && !String.IsNullOrEmpty(agreementnumber))
@@ -250,7 +250,7 @@ namespace AxiomIRISRibbon
                 query = "SELECT  Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where Agreement_Number__c like " + "'%" + agreementnumber + "%'" + " AND CNID__c like " + "'%" + CNID + "%'";
             return _sf.RunSOQL(query);
 
-        }*/
+        }
         public DataReturn GetTemplateForVersion(string Id)
         {
             return _sf.RunSOQL("select Id,Name,Template__c,version_number__c from Version__c where Id = '" + Id + "'");
@@ -272,7 +272,7 @@ namespace AxiomIRISRibbon
             return dr;
         }
 
-
+/*
         public DataReturn GetAllAgementsHavingAttachmentsInLatestVersion(Boolean index)
         {
             //
@@ -339,7 +339,7 @@ namespace AxiomIRISRibbon
             DataReturn allAgreementsDataReturn = _sf.RunSOQL(allAgreements);
             return allAgreementsDataReturn;
         }
-
+/*
         public DataReturn GetFilterdAgementsHavingAttachmentsInLatestVersion(string agreementnumber, string CNID)
         {
 
@@ -421,15 +421,35 @@ namespace AxiomIRISRibbon
                 allAgreements = "SELECT  Id,Name,Counterparty__c,Credit_Suisse_Entity__c,CNID__c,Agreement_Number__c  FROM " + this.Matter + " where id in " + relatedAgreementsIdsString + " and Agreement_Number__c like " + "'%" + agreementnumber + "%'" + " AND CNID__c like " + "'%" + CNID + "%'";
             return _sf.RunSOQL(allAgreements);
 
+        }*/
+        public DataReturn GetAgreementFalse(bool published) 
+        {
+            return _sf.RunSOQL("SELECT Id,Name,state__c,Amendment__c FROM RibbonTemplate__c where Amendment__c = false and state__c = 'published' order by name");
         }
-
+        public DataReturn getLatestVersionDetails(string matterId)
+        {
+            //
+            string LatestVersionDetail, matterRecord;
+            string latestVersionId;
+            LatestVersionDetail = "select Id from version__c where matter__c = '" + matterId + "' and version_number__c != null order by version_number__c desc limit 1";
+            DataReturn latestVersionDataReturn = _sf.RunSOQL(LatestVersionDetail);
+            DataTable latestVersionDataTable = latestVersionDataReturn.dt;
+            latestVersionId = latestVersionDataTable.Rows[0][0].ToString();
+            matterRecord = "select parentid from attachment where parentid = '" + latestVersionId + "'";
+            DataReturn matterRecordDataReturn = _sf.RunSOQL(matterRecord);
+            return matterRecordDataReturn;
+        }
+        public DataReturn GetAgreementTemplates(bool published)
+        {
+            return _sf.RunSOQL("SELECT Id,Name,Description__c,Type__c,State__c,PlaybookLink__c,Amendment__c,AgreementTemplate__c,Generic_Master_Agreement__c  FROM " + this.ribbontemplate + " where amendment__c = false and state__c = 'published' order by Name ");
+        }
 
         //End Code PES
 
 
         public DataReturn GetTemplates(bool published)
         {
-            return _sf.RunSOQL("SELECT Id,Name,Description__c,Type__c,State__c,PlaybookLink__c FROM " + this.ribbontemplate + (published ? " where State__c='Published'" : "") + " order by Name ");
+            return _sf.RunSOQL("SELECT Id,Name,Description__c,Type__c,State__c,PlaybookLink__c,Amendment__c,AgreementTemplate__c,Generic_Master_Agreement__c  FROM " + this.ribbontemplate + (published ? " where State__c='Published'" : "") + " order by Name ");
         }
         public DataReturn GetTemplate(string Id)
         {

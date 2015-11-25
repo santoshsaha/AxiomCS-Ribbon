@@ -82,7 +82,49 @@ namespace AxiomIRISRibbon
                 cbState.Items.Add(i);
             }
 
+            //Code PES
+            //==========for DDL========================//
+            DataReturn dr = AxiomIRISRibbon.Utility.HandleData(d.GetAgreementFalse(false));
+            if (!dr.success) return;
+            DataTable dt1 = dr.dt;
+            cbAgreementTemplate.Items.Clear();
+            //ComboBoxItem t;
+
+            //i = new ComboBoxItem();
+            //i.Tag = "select";
+            //i.Content = "";
+            //this.cbAgreement.Items.Add(i);
+            List<AgreementComboBoxPair> cbp = new List<AgreementComboBoxPair>();
+            cbp.Add(new AgreementComboBoxPair("", ""));
+            foreach (DataRow r in dt1.Rows)
+            {
+                //t = new ComboBoxItem();
+                //t.Content = r["Name"].ToString();
+                ////t.SetValue(r["id"].ToString();
+                //t.SetValue(i,)
+                AgreementComboBoxPair cbmItem = new AgreementComboBoxPair(Convert.ToString(r["Name"]), Convert.ToString((r["id"])));
+                cbp.Add(cbmItem);
+            }
+
+            cbAgreementTemplate.DisplayMemberPath = "Text";
+            cbAgreementTemplate.SelectedValuePath = "Id";
+            cbAgreementTemplate.ItemsSource = cbp;
+
+           
+
         }
+        public class AgreementComboBoxPair
+        {
+            public string Id { get; set; }
+            public string Text { get; set; }
+            public AgreementComboBoxPair(string text,
+                                 string id)
+            {
+                this.Id = id;
+                this.Text = text;
+            }
+        }
+        //End code
 
         private void LoadTemplatesDLL()
         {
@@ -133,7 +175,7 @@ namespace AxiomIRISRibbon
 
         }
 
-
+        /*
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             //check the required fields
@@ -213,7 +255,94 @@ namespace AxiomIRISRibbon
 
             Globals.ThisAddIn.ProcessingStop("Finished");
         }
+        */
 
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            //check the required fields
+            if (tbName.Text == "")
+            {
+                MessageBox.Show("Name field is required", "Problem", MessageBoxButton.OK);
+                return;
+            }
+
+            Globals.ThisAddIn.ProcessingStart("Save ...");
+
+            DataRow drow;
+
+            DataView dv = (DataView)dgTemplates.ItemsSource;
+            DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
+            drow = dv.Table.NewRow();
+            //Update from the form
+            string Agreement = (this.cbAgreementTemplate.SelectedValue).ToString();
+            bool genericMasterAgreement = (bool)this.chkAmendmewnt.IsChecked;
+            dtr["AgreementTemplate__c"] = Agreement;
+            dtr["Generic_Master_Agreement__c"] = genericMasterAgreement;
+            //drow["AgreementTemplate__c"] = Agreement;
+            Utility.UpdateRow(new Grid[] { formGrid1, formGrid2 }, drow);         
+
+            //Save the values
+            //DataReturn dr = Utility.HandleData(d.SaveTemplate(drow));
+            DataReturn dr = Utility.HandleData(d.SaveTemplate(dtr));
+            if (!dr.success) return;
+            tbId.Text = dr.id;
+
+            Globals.ThisAddIn.ProcessingStart("Save Template Data");
+
+            //Take the active doc and save it with the new id
+            if (editmode == "newfromdoc")
+            {
+                // close the dialog
+                this.Hide();
+
+                Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;
+                Globals.ThisAddIn.AddDocId(doc, "ContractTemplate", tbId.Text);
+
+                try
+                {
+                    Word.Style s = doc.Styles.Add("ContentControl");
+                    s.Shading.BackgroundPatternColor = Word.WdColor.wdColorLightOrange;
+                }
+                catch (Exception)
+                {
+
+                }
+
+                //save the file - this will throw an error because the event handler will do the save
+                //should be a way to do this without the throw
+                try
+                {
+                    doc.SaveAs2("Dummy", Word.WdSaveFormat.wdFormatXMLDocument);
+                }
+                catch (Exception)
+                {
+                }
+
+                Globals.ThisAddIn.ProcessingStart("Show Task Pane");
+
+                //now open the sidebar and add the handler
+                Globals.ThisAddIn.AddContentControlHandler(doc);
+                Globals.ThisAddIn.ShowTaskPane(true);
+
+                //reload the tree
+                TemplateEdit.TEditSidebar tsb = Globals.ThisAddIn.GetTaskPaneControlTemplate();
+                tsb.Refresh();
+
+                Globals.ThisAddIn.ProcessingStop("");
+
+            }
+
+            btnSave.IsEnabled = false;
+            btnCancel.IsEnabled = false;
+            btnOpen.IsEnabled = true;
+
+            Globals.ThisAddIn.ProcessingStart("Refresh Lists");
+
+            RefreshTemplateList();
+            Globals.Ribbons.Ribbon1.RefreshTemplatesList();
+
+            Globals.ThisAddIn.ProcessingStop("Finished");
+        }
         public void NewTemplate()
         {
             editmode = "newfromdoc";
@@ -251,7 +380,7 @@ namespace AxiomIRISRibbon
         {
             Open();
         }
-
+/*
         private void dgTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Utility.ReadOnlyForm(false, new Grid[] { formGrid1, formGrid2 });
@@ -287,7 +416,74 @@ namespace AxiomIRISRibbon
             LoadTemplatesDLL();
         }
 
+*/
 
+        private void dgTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Utility.ReadOnlyForm(false, new Grid[] { formGrid1, formGrid2 });
+
+
+            if (dgTemplates.SelectedIndex > -1)
+            {
+                if (btnSave.IsEnabled)
+                {
+                    MessageBoxResult res = MessageBox.Show("Loose Changes?", "Warning", MessageBoxButton.OKCancel);
+                    if (res == MessageBoxResult.Cancel)
+                    {
+                        dgTemplates.SelectedIndex = -1;
+                        return;
+                    }
+                }
+
+                Utility.UpdateForm(new Grid[] { formGrid1, formGrid2 }, ((DataRowView)dgTemplates.SelectedItem).Row);
+                {
+                    string id = Convert.ToString(((DataRowView)dgTemplates.SelectedItem).Row["AgreementTemplate__c"]);
+                    if (string.IsNullOrEmpty(id))
+                    {
+                        cbAgreementTemplate.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        cbAgreementTemplate.SelectedValue = id;
+
+                    }
+                    bool genericMaster = Convert.ToBoolean(((DataRowView)dgTemplates.SelectedItem).Row["Generic_Master_Agreement__c"]);
+                    chkAmendmewnt.IsChecked = genericMaster;
+
+                    //dgTemplates.SelectedItem.Row["AgreementTemplate__c"].tostring();
+                    if (((DataRowView)dgTemplates.SelectedItem).Row["Amendment__c"].ToString() == "true")
+                    {
+                        label4.Visibility = System.Windows.Visibility.Visible;
+                        cbAgreementTemplate.Visibility = System.Windows.Visibility.Visible;
+                        label5.Visibility = System.Windows.Visibility.Visible;
+                        chkAmendmewnt.Visibility = System.Windows.Visibility.Visible;
+                        btnSave.IsEnabled = true;
+                        btnCancel.IsEnabled = true;
+                    
+                    }
+                    else
+                    {
+                        label4.Visibility = System.Windows.Visibility.Hidden;
+                        cbAgreementTemplate.Visibility = System.Windows.Visibility.Hidden;
+                        label5.Visibility = System.Windows.Visibility.Hidden;
+                        chkAmendmewnt.Visibility = System.Windows.Visibility.Hidden;
+                        btnSave.IsEnabled = false;
+                        btnCancel.IsEnabled = false;
+                       
+                    }
+                }
+            }
+            else
+            {
+                Utility.ClearForm(new Grid[] { formGrid1, formGrid2 });
+                btnSave.IsEnabled = false;
+                btnCancel.IsEnabled = false;
+                btnOpen.IsEnabled = false;
+                tbXML.Text = "";
+            }
+
+            LoadTemplatesDLL();
+        }
         private void formTextBoxChanged(object sender, TextChangedEventArgs e)
         {
             btnSave.IsEnabled = true;
@@ -439,6 +635,19 @@ namespace AxiomIRISRibbon
         {
             this.Hide();
         }
+       //Code PES
+        private void cbAgreement_SelectionChanged(object sender, RoutedEventArgs e)
+        {
 
+            this.chkAmendmewnt.IsChecked = false;
+
+        }
+
+        private void chkAmendmewnt_checked(object sender, RoutedEventArgs e)
+        {
+            this.cbAgreementTemplate.SelectedIndex = 0;
+
+        }
+        //End Code
     }
 }

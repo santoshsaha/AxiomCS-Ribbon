@@ -35,6 +35,10 @@
                     <DataGridTextColumn Binding="{Binding Path=State__c}" Header="State" IsReadOnly="True" />
                     <DataGridTextColumn Binding="{Binding Path=Type__c}" Header="Type" IsReadOnly="True" />
                     <DataGridTextColumn Binding="{Binding Path=Name}" Header="Name" Width="*" IsReadOnly="True" />
+                    <DataGridCheckBoxColumn Header="Is Amendment" Binding="{Binding Path=Amendment__c}" Width="*" IsReadOnly="True"  />
+                    <DataGridTextColumn Binding="{Binding Path=AgreementTemplate__c}" Header="AgreementTemplate__c" IsReadOnly="True" Visibility="Hidden" />
+                    <DataGridTextColumn Binding="{Binding Path=Generic_Master_Agreement__c}" Header="Generic Master" IsReadOnly="True" Visibility="Hidden" />
+
                 </DataGrid.Columns>
             </DataGrid>
             <Button HorizontalAlignment="Left" Margin="288,6,0,0" Width="22"  Height="23" VerticalAlignment="Top" Name="btnReload" Click="btnReload_Click">
@@ -61,13 +65,13 @@
 
                     <Label Content="State:" Height="35" HorizontalAlignment="Left" Margin="118,36,0,0" Name="label3" VerticalAlignment="Top" Grid.Column="1" />
                     <ComboBox Height="20" Margin="163,39,0,0" HorizontalAlignment="Left"  Width="100"  Name="cbState" VerticalAlignment="Top" SelectionChanged="formComboChanged" Grid.Column="1" />
-                    <!-- Code PES
-                    <Label Content="Amendment:" Height="25" HorizontalAlignment="Left" Margin="6,102,0,0" Name="label4" VerticalAlignment="Top" />
-                    <ComboBox Height="20" Margin="89,100,0,0" HorizontalAlignment="Left"  Width="281"  Name="cbAmendmewnt" VerticalAlignment="Top" SelectionChanged="formComboChanged" Grid.ColumnSpan="2" />
+                    <!--Code PES-->
+                    <Label Content="Agreement:" Height="25" HorizontalAlignment="Left" Margin="6,102,0,0" Name="label4" Visibility="Hidden"  VerticalAlignment="Top" />
+                    <ComboBox Height="20" Margin="89,100,0,0" HorizontalAlignment="Left"  Width="281"  Name="cbAgreementTemplate" Visibility="Hidden"  VerticalAlignment="Top" SelectionChanged="cbAgreement_SelectionChanged" Grid.ColumnSpan="2" />
 
-                    <Label Content="Master Amendment Template:" Height="25" HorizontalAlignment="Left" Margin="6,133,0,0" Name="label5" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="171" />
-                    <CheckBox Height="20" Margin="85,138,0,0" HorizontalAlignment="Left"  Width="88"  Name="chkAmendmewnt" VerticalAlignment="Top" Grid.Column="1"  />
-            End Code PES  -->
+                    <Label Content="Master Amendment Template:" Height="25" HorizontalAlignment="Left" Margin="6,133,0,0" Name="label5" Visibility="Hidden" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="171" />
+                    <CheckBox Height="20" Margin="85,138,0,0" HorizontalAlignment="Left"  Width="88"  Name="chkAmendmewnt" Visibility="Hidden" Checked="chkAmendmewnt_checked" VerticalAlignment="Top" Grid.Column="1"  />
+                    <!--End Code PES-->
 
                     <ScrollViewer Margin="10,158,-10,36" Grid.ColumnSpan="2" Grid.RowSpan="2">
                         <TextBox AcceptsReturn="True" Name="tbDescription" TextChanged="formTextBoxChanged" VerticalContentAlignment="Top" Height="108" MaxLength="32768"/>

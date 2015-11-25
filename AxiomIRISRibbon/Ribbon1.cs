@@ -584,86 +584,104 @@ namespace AxiomIRISRibbon
 
         }
 
+        /*
+
         private void btnExportToPDF_Click(object sender, RibbonControlEventArgs e)
         {
-            //save this to a scratch file
-            Globals.ThisAddIn.ProcessingStart("Save as Pdf");
-            Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;
+            object oMissing = System.Reflection.Missing.Value;
 
-            ////Check we have a name - TODO check name doesn't exist already
-            //if (tbVersionName.Text == "")
-            //{
-            //    MessageBox.Show("Please enter a name for the document");
-            //    tbVersionName.Focus();
-            //    return;
-            //}
+            Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
+            Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
 
-            // always save
-            try
+            Word.Range source = template.Range(template.Content.Start, template.Content.End);
+            export.Range(export.Content.Start).InsertXML(source.WordOpenXML);
+
+            export.Activate();
+
+            object fileFormat = Word.WdSaveFormat.wdFormatPDF;
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "MyTitle";
+            dlg.Filter = "Word Document (*.pdf)|*.pdf";
+            dlg.FileName = "ExportTemplate-" + dlg.Title.Replace(" ", "");
+            dlg.ShowDialog();
+            object outputFileName = dlg.FileName;
+            export.SaveAs(ref outputFileName, ref fileFormat, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
+                ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
+                ref oMissing, ref oMissing, ref oMissing);
+            export.Activate();
+            object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
+            ((Microsoft.Office.Interop.Word._Document)export).Close(ref saveChanges, ref oMissing, ref oMissing);
+            export = null;
+
+
+        }
+
+        */
+
+        private void btnExportToPDF_Click(object sender, RibbonControlEventArgs e)
+        {
+            object oMissing = System.Reflection.Missing.Value;
+
+
+            Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
+            Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
+
+            Word.Range source = template.Range(template.Content.Start, template.Content.End);
+            export.Range(export.Content.Start).InsertXML(source.WordOpenXML);
+
+            Word.Shape logoWatermark = null;
+
+            foreach (Word.Window item in export.Windows)
             {
-                //Always fails cause the handler returns an error to stop the normal save
-                Globals.ThisAddIn.Application.ActiveDocument.Save();
-            }
-            catch (Exception)
-            {
-            }
-
-            //Need to take out the docid!
-           // Globals.ThisAddIn.DeleteDocId(doc);
-            //Globals.ThisAddIn.AddDocId(doc, "ExportContract", _versionid);
-
-            // Switch of the element highliting
-            // Need to select somewhere editable!
-            Globals.ThisAddIn.Application.ActiveDocument.Characters.Last.Select();
-
-            try
-            {
-                Word.Style s = Globals.ThisAddIn.Application.ActiveDocument.Styles["ContentControl"];
-                if (s.Shading.BackgroundPatternColor != Word.WdColor.wdColorAutomatic)
-                {
-                    s.Shading.BackgroundPatternColor = Word.WdColor.wdColorAutomatic;
-                }
-            }
-            catch (Exception)
-            {
+                logoWatermark = item.Selection.Document.Content.Document.Shapes.AddTextEffect(
+                            Microsoft.Office.Core.MsoPresetTextEffect.msoTextEffect1,
+                            "Draft", "Arial", (float)60,
+                            Microsoft.Office.Core.MsoTriState.msoTrue,
+                            Microsoft.Office.Core.MsoTriState.msoFalse,
+                            0, 0, ref oMissing);
+                logoWatermark.Select(ref oMissing);
+                logoWatermark.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
+                logoWatermark.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
+                logoWatermark.Fill.Solid();
+                logoWatermark.Fill.Transparency = 0.2f;
+                logoWatermark.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray30;
+                logoWatermark.RelativeHorizontalPosition = Word.WdRelativeHorizontalPosition.wdRelativeHorizontalPositionMargin;
+                logoWatermark.RelativeVerticalPosition = Word.WdRelativeVerticalPosition.wdRelativeVerticalPositionMargin;
+                logoWatermark.Left = (float)Word.WdShapePosition.wdShapeCenter;
+                logoWatermark.Top = (float)Word.WdShapePosition.wdShapeCenter;
+                logoWatermark.Height = Globals.ThisAddIn.Application.InchesToPoints(2.4f);
+                logoWatermark.Width = Globals.ThisAddIn.Application.InchesToPoints(6f);
             }
 
-            // switch on Revisions
-            doc.TrackRevisions = true;
-            doc.ShowRevisions = true;
 
-            Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
-            string filename = Utility.SaveTempFile(_versionid);
-            doc.SaveAs2(FileName: filename, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+            /// 
+            /// 
+            ///
 
-            //Save a copy! - give it the name of the version
-            //string versionname = tbVersionName.Text;
+            export.Activate();
 
-            Globals.ThisAddIn.ProcessingUpdate("Save PDF");
-            string filenamecopy = Utility.SaveTempFile(filename, "pdf");
-            doc.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatPDF);
+            object fileFormat =Word.WdSaveFormat.wdFormatPDF;
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "MyTitle";
+            dlg.Filter = "Word Document (*.pdf)|*.pdf";
+            dlg.FileName = "ExportTemplate-" + dlg.Title.Replace(" ", "");
+            dlg.ShowDialog();
+            object outputFileName = dlg.FileName;
+            export.SaveAs(ref outputFileName, ref fileFormat, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
+                ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
+                ref oMissing, ref oMissing, ref oMissing);
+            //export.Activate();
 
-            var docclose = (Microsoft.Office.Interop.Word._Document)doc;
-            docclose.Close();
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
+            // Close the Word document, but leave the Word application open.
+            // doc has to be cast to type _Document so that it will find the
+            // correct Close method.                
+            object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
+            ((Word._Document)export).Close(ref saveChanges, ref oMissing, ref oMissing);
+            export = null;
+            //oWord.Quit();
+            //System.Runtime.InteropServices.Marshal.ReleaseComObject(oWord); 
+            //oWord = null;
 
-            //Now save the file
-            Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
-            DataReturn dr;
-            dr = Utility.HandleData(_d.AttachFile(_versionid, filename + ".pdf", filenamecopy));
-            if (!dr.success) return;
-
-            // open the pdf file in a viewer
-            ExternalEditProcess p = new ExternalEditProcess();
-            p._id = dr.id;
-            p._path = filenamecopy;
-            // p._lastwrite = System.IO.File.GetLastWriteTimeUtc(dr.strRtn).ToString();
-            // p.EnableRaisingEvents = true;
-            // p.Exited += new EventHandler(ExternalEditProcess_HasExited);
-            p.StartInfo = new ProcessStartInfo(filenamecopy);
-            p.Start();
-
-            Globals.ThisAddIn.ProcessingStop("End");
         }
 
         //End PES

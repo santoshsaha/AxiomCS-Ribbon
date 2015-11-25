@@ -18,7 +18,7 @@
         <Label Content="CNID:" Height="28" HorizontalAlignment="Left" Margin="254,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.463,0.5" />
         <TextBox Height="23" Margin="300,10,324,0" Name="CNID" VerticalAlignment="Top" Width="95"  MaxLength="80" RenderTransformOrigin="0.5,0.5"/>
         <Button HorizontalAlignment="Left" Content="Search" Margin="558,10,0,0" Width="75"  Height="23" VerticalAlignment="Top" Name="btnSearch" Click="btnSearch_Click" IsDefault="True" ></Button>
-        <Button HorizontalAlignment="Left" Content="Reset" Margin="644,10,0,0" Width="75"  Height="23" VerticalAlignment="Top" Name="btnReset" Click="btnReset_Click" >
+        <Button HorizontalAlignment="Left" Content="Reset" Margin="644,10,0,0" Width="75"  Height="23" VerticalAlignment="Top" Name="btnReset" Click="btnReset_Click" Visibility="Hidden" >
         </Button>
        
 

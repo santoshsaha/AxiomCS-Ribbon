@@ -425,7 +425,6 @@
             this.btnExportToPDF.Label = "Export To PDF";
             this.btnExportToPDF.Name = "btnExportToPDF";
             this.btnExportToPDF.ShowImage = true;
-            this.btnExportToPDF.Visible = false;
             this.btnExportToPDF.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnExportToPDF_Click);
             // 
             // group3

@@ -16,6 +16,7 @@ using Word = Microsoft.Office.Interop.Word;
 using Office = Microsoft.Office.Core;
 using System.Data;
 using System.IO;
+using System.Threading;
 
 
 namespace AxiomIRISRibbon.SForceEdit
@@ -27,8 +28,8 @@ namespace AxiomIRISRibbon.SForceEdit
     /// </summary>
     public partial class CompareAmendment : RadWindow
     {
-        static Microsoft.Office.Interop.Word.Document objtempAmendmentTemplate;
-        static Microsoft.Office.Interop.Word.Document objtempDocAmendment;
+        static Word.Document objtempAmendmentTemplate;
+        static Word.Document objtempDocAmendment;
 
         private static Data _d;
         private static string _attachmentid;
@@ -156,7 +157,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         string VersionNumber = maxId.ToString();
 
 
-                        // Create Version 0 or lower version in To
+                        // Create Version 2 or lower version in To
                         DataReturn drCreate = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", _strToAgreementId, _strTemplate, VersionName, VersionNumber, _allDr));
                         _newVersionId = drCreate.id;
 
@@ -254,17 +255,17 @@ namespace AxiomIRISRibbon.SForceEdit
                     else
                     {
                         //  CombineDocs : fileAmendmentDocument, fileAmendmentTemplate
-                        Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
+                       Word.Application app = Globals.ThisAddIn.Application;
                         object missing = System.Reflection.Missing.Value;
-                        Microsoft.Office.Interop.Word.Document tempAmendmentTemplate;
+                       Word.Document tempAmendmentTemplate;
                         object objAmendmentTemplate = fileAmendmentTemplatePath;
                         tempAmendmentTemplate = app.Documents.Open(ref objAmendmentTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                                       ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                                      ref missing, ref missing);
 
 
-                        Microsoft.Office.Interop.Word.Fields fs = tempAmendmentTemplate.Fields;
-                        foreach (Microsoft.Office.Interop.Word.Field f in fs)
+                       Word.Fields fs = tempAmendmentTemplate.Fields;
+                        foreach (Word.Field f in fs)
                         {
                             f.Select();
                            tempAmendmentTemplate.Application.Selection.InsertFile(fileAmendmentDocumentPath);
@@ -322,11 +323,13 @@ namespace AxiomIRISRibbon.SForceEdit
                         }
                     }
                 }
+
+            
                 // CompareSideBySide : fileAmendmentDocument, fileAmendmentTemplate
                 _strAmendmentTemplatePath = fileAmendmentTemplatePath;
                 _strAmendmentDocumentPath = fileAmendmentDocumentPath;
 
-                Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
+                Word.Application app = Globals.ThisAddIn.Application;
 
                 object newFilenameObject1 = fileAmendmentTemplatePath;
                 objtempAmendmentTemplate = app.Documents.Open(ref newFilenameObject1, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
@@ -337,7 +340,12 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempDocAmendment = app.Documents.Open(ref newFilenameObject2, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                 ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
-            
+                for (int i = 1; i <= objtempDocAmendment.ContentControls.Count; i++)
+                {
+                    objtempDocAmendment.ContentControls[i].LockContents = false;
+
+                }
+        
 
                 //AmendmentTemplate - For Save
                 Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentTemplate", "");
@@ -349,7 +357,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
 
                 //Remove Markup from template doc
-                Microsoft.Office.Interop.Word.Fields fields = objtempAmendmentTemplate.Fields;
+                Word.Fields fields = objtempAmendmentTemplate.Fields;
                 foreach (Microsoft.Office.Interop.Word.Field f in fields)
                 {
                     f.Select();
@@ -362,42 +370,172 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempDocAmendment.ActiveWindow.View.ShowRevisionsAndComments = false;
                 objtempAmendmentTemplate.TrackRevisions = true;
 
+
+                objtempAmendmentTemplate.Activate();
+
+                /*
+             //Compare Split view
+             _strAmendmentTemplatePath = fileAmendmentTemplatePath;
+             _strAmendmentDocumentPath = fileAmendmentDocumentPath;
+
+            Word.Application app = Globals.ThisAddIn.Application;
+
+            objtempDocAmendment = Globals.ThisAddIn.Application.Documents.Add(fileAmendmentDocumentPath);
+           // wordAttachment.TrackRevisions = false;
+          //  wordAttachment.ShowRevisions = false;
+          //  wordAttachment.AcceptAllRevisions();
+            object objTemplate = fileAmendmentTemplatePath;
+            objtempAmendmentTemplate = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+            ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
+
+            //Compare
+            Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentDocument", "");
+            objtempAmendmentTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
+           // objtempAmendmentTemplate.TrackRevisions = false;
+          //  objtempAmendmentTemplate.ShowRevisions = false;
+         //   objtempAmendmentTemplate.AcceptAllRevisions();
+
+            //  Compare code
+            objtempAmendmentTemplate.Compare(fileAmendmentDocumentPath, missing,Word.WdCompareTarget.wdCompareTargetNew, true, true, false, false, false);
+            app.ActiveWindow.View.SplitSpecial =Word.WdSpecialPane.wdPaneRevisionsVert;
+            app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
+            app.ActiveWindow.View.RevisionsFilter.Markup = 0;
+
+            // close the temp files
+          // var docTemplateClose = (Word._Document)objtempAmendmentTemplate;
+          //  docTemplateClose.Close(SaveChanges: false);
+         //   var docAttachmentClose = (Word._Document)objtempDocAmendment;
+          //  docAttachmentClose.Close(SaveChanges: false);
+
+            objtempAmendmentTemplate.Activate();
+
+            //End Compare
+               
+
+                */
+
+
+
+
+
+                Globals.Ribbons.Ribbon1.CloseWindows();
             }
         }
+        public static void TrackDocument()
+        {
+            try
+            {
 
+                object missing = System.Reflection.Missing.Value;
+                Microsoft.Office.Interop.Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
+                Microsoft.Office.Interop.Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
+                Microsoft.Office.Interop.Word.Range rngOther = objtempAmendmentTemplate.Range(0, 0);
+                String wrDel = null;
+                String wrDelete = null;
+                int milliseconds = 5000;
+                List<String> pText = new List<String>();
+
+                objtempAmendmentTemplate.RejectAllRevisions();
+                objtempAmendmentTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
+                objtempAmendmentTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupAll;
+
+
+                /* if (tempDoc1.ProtectionType != WdProtectionType.wdNoProtection)
+                 {
+                     tempDoc1.Unprotect(ref szPassword);
+                     tempDoc1.Save();
+                 } */
+
+                foreach (Microsoft.Office.Interop.Word.Paragraph p in objtempDocAmendment.Paragraphs)
+                {
+                    Microsoft.Office.Interop.Word.Range parRng = p.Range;
+                    string sText = parRng.Text;
+                    String listVal = parRng.ListFormat.ListString;
+                    int flag = 0;
+                    for (int rnumber = 1; rnumber <= p.Range.Revisions.Count; rnumber++)
+                    {
+                        Microsoft.Office.Interop.Word.Revision r = p.Range.Revisions[rnumber];
+
+                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionDelete) // Deleted
+                        {
+                            if (flag == 0)
+                            {
+                                if (sText.Equals(r.Range.Text))
+                                {
+                                    wrDelete += r.Range.Text;
+                                    wrDelete += "\u000A";
+                                    flag = 1;
+                                }
+                                else
+                                {
+                                    // var result = Regex.Replace(sText,r.Range.Text,"<b>$0</b>", RegexOptions.IgnoreCase);   
+                                    wrDel = r.Range.Text.ToUpper();
+                                    wrDelete += r.Range.Text;
+                                    sText.Replace(r.Range.Text, wrDel);
+                                    wrDelete += sText;
+                                    wrDelete += "\u000A";
+                                    flag = 1;
+                                }
+                            }
+                            //pText.Add(sText);
+
+                        }
+
+                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionInsert) // Inserted
+                        {
+                            if (flag == 0)
+                            {
+                                Thread.Sleep(milliseconds);
+                                p.Range.Copy();
+                                Thread.Sleep(milliseconds);
+                                // parRng.ListFormat.ApplyListTemplateWithLevel level = ListGalleries(wdNumberGallery).ListTemplates(1).ListLevels(1).
+
+                                rngInsert.PasteSpecial();
+                                flag = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception exe)
+            {
+              //  MessageBox.Show(exe.ToString());
+            }
+        }
+        /*
         public static void TrackDocument()
         {
             try
             {
                 object missing = System.Reflection.Missing.Value;
-                Microsoft.Office.Interop.Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
-                Microsoft.Office.Interop.Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
+                Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
+                Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
                 Object insertType;
                 Object deleteType;
                 String wrInsert = null;
                 String wrOthers = null;
                 objtempAmendmentTemplate.RejectAllRevisions();
 
-                foreach (Microsoft.Office.Interop.Word.Section s in objtempDocAmendment.Sections)
+                foreach (Word.Section s in objtempDocAmendment.Sections)
                 {
                     for (int rnumber = 1; rnumber <= s.Range.Revisions.Count; rnumber++)
                     {
 
-                        Microsoft.Office.Interop.Word.Revision r = s.Range.Revisions[rnumber];
+                        Word.Revision r = s.Range.Revisions[rnumber];
 
-                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionInsert) // Inserted
+                        if (r.Type == Word.WdRevisionType.wdRevisionInsert) // Inserted
                         {
                             insertType = r.Range.Font.TextShadow;
                             wrInsert += r.Range.Text;
                             wrInsert += "\u000A";
                         }
-                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionDelete) // Deleted
+                        if (r.Type == Word.WdRevisionType.wdRevisionDelete) // Deleted
                         {
                             deleteType = r.Range.Text.GetType();
                             wrOthers += r.Range.Text;
                             wrOthers += "\u000A";
                         }
-                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Property
+                        if (r.Type == Word.WdRevisionType.wdRevisionProperty) // Property
                         {
                             wrInsert += r.Range.Text;
                             wrInsert += "\u000A";
@@ -416,6 +554,7 @@ namespace AxiomIRISRibbon.SForceEdit
             }
 
         }
+        */
         /*
         public static void TrackDocument()
         {
@@ -426,17 +565,17 @@ namespace AxiomIRISRibbon.SForceEdit
                 int inscnt = 0;
                 string wrInsert = string.Empty;
                 string wrOthers = string.Empty;
-                Microsoft.Office.Interop.Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
-                Microsoft.Office.Interop.Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
+                Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
+                Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
                 objtempAmendmentTemplate.RejectAllRevisions();
 
-                foreach (Microsoft.Office.Interop.Word.Section s in objtempDocAmendment.Sections)
+                foreach (Word.Section s in objtempDocAmendment.Sections)
                 {
                     for (int rnumber = 1; rnumber <= s.Range.Revisions.Count; rnumber++)
                     {
-                        Microsoft.Office.Interop.Word.Revision r = s.Range.Revisions[rnumber];
+                        Word.Revision r = s.Range.Revisions[rnumber];
 
-                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionInsert) // Inserted
+                        if (r.Type == Word.WdRevisionType.wdRevisionInsert) // Inserted
                         {
                             rngInsert.Font.StrikeThrough = 0;
                             inscnt += r.Range.Words.Count;
@@ -446,11 +585,11 @@ namespace AxiomIRISRibbon.SForceEdit
                             rngInsert.Bold = 1;
                             rngInsert.Font.StrikeThrough = 0;
                         }
-                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionDelete) // Deleted
+                        if (r.Type == Word.WdRevisionType.wdRevisionDelete) // Deleted
                         {
                             delcnt += r.Range.Words.Count;
                             wrOthers = r.Range.Text;
-                            //Microsoft.Office.Interop.Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
+                            //Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
                             rngDelete.Font.StrikeThrough = 0;
                             rngDelete.Text += wrOthers;
                             rngDelete.Text += "\u000A";
@@ -458,10 +597,10 @@ namespace AxiomIRISRibbon.SForceEdit
                           //  CopyDeletedContent(objtempAmendmentTemplate, wrOthers);
                         }
 
-                     // if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Formatting (bold,italics)
+                     // if (r.Type == Word.WdRevisionType.wdRevisionProperty) // Formatting (bold,italics)
                        //   {
                       //        inscnt += r.Range.Words.Count;
-                      //       // Microsoft.Office.Interop.Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
+                      //       // Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
                       //        rngInsert.Text = wr;
                      //     }
                     }
@@ -470,11 +609,11 @@ namespace AxiomIRISRibbon.SForceEdit
             catch (Exception ex) { }
         }
 
-        private static void CopyDeletedContent(Microsoft.Office.Interop.Word.Document doc, string deletedcontent)
+        private static void CopyDeletedContent(Word.Document doc, string deletedcontent)
         {
-            foreach (Microsoft.Office.Interop.Word.Field myMergeField in doc.Fields)
+            foreach (Word.Field myMergeField in doc.Fields)
             {
-                Microsoft.Office.Interop.Word.Range rngFieldCode = myMergeField.Code;
+                Word.Range rngFieldCode = myMergeField.Code;
 
                 String fieldText = rngFieldCode.Text.Trim();
 
@@ -498,7 +637,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     {
                         myMergeField.Select();
                         //myMergeField.Application.Selection.InsertBreak();
-                        //Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
+                        //Word.Application wordApp = new Word.Application();
                         myMergeField.Application.Selection.InsertAfter("\n");
 
                         myMergeField.Application.Selection.InsertAfter(deletedcontent);
@@ -522,7 +661,7 @@ namespace AxiomIRISRibbon.SForceEdit
             Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(strFileAttached, Visible: false);
             dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
 
-            var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
+            var docclose = (Word._Document)dcopy;
             docclose.Close();
             System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
 
@@ -568,7 +707,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(strFileToSave, Visible: false);
                 dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
 
-                var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
+                var docclose = (Word._Document)dcopy;
                 docclose.Close();
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
 

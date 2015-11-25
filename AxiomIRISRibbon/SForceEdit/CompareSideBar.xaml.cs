@@ -28,7 +28,7 @@ namespace AxiomIRISRibbon.SForceEdit
     {
 
         private Data _d;
-        static Microsoft.Office.Interop.Word.Application app;
+        static Word.Application app;
         static Word.Document _source;
         private string _fileName;
         private string _matterid;
@@ -65,7 +65,9 @@ namespace AxiomIRISRibbon.SForceEdit
             try
             {
 
-                DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplates(true));
+                //DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplates(true));
+                DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementTemplates(true));
+                
                 if (!dr.success) return;
 
                 DataTable dt = dr.dt;
@@ -101,7 +103,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     string TemplateId = ((RadComboBoxItem)(this.cbTemplates.SelectedItem)).Tag.ToString();
                     string TemplateName = ((RadComboBoxItem)(this.cbTemplates.SelectedItem)).Content.ToString();
-                    // Microsoft.Office.Interop.Word.Document tempDoc;
+                    //Word.Document tempDoc;
 
                     DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplateAttach(TemplateId));
                     if (!drAttachemnts.success) return;
@@ -120,13 +122,13 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
 
                     Word.Document wordTemplate;
-                   Word.Document wordAttachment;
-                   Word.Application app = Globals.ThisAddIn.Application;
+                    Word.Document wordAttachment;
+                    Word.Application app = Globals.ThisAddIn.Application;
 
-                  wordAttachment = Globals.ThisAddIn.Application.Documents.Add(_fileName);
-                  wordAttachment.TrackRevisions = false;
-                  wordAttachment.ShowRevisions = false;
-                  wordAttachment.AcceptAllRevisions();
+                    wordAttachment = Globals.ThisAddIn.Application.Documents.Add(_fileName);
+                    wordAttachment.TrackRevisions = false;
+                    wordAttachment.ShowRevisions = false;
+                    wordAttachment.AcceptAllRevisions();
 
                     /*   object objAttachment = _fileName;
                       wordAttachment = app.Documents.Open(ref objAttachment, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
@@ -139,54 +141,50 @@ namespace AxiomIRISRibbon.SForceEdit
                       //Compare
                  Globals.ThisAddIn.AddDocId(wordAttachment, "Compare", "");*/
 
-                
-                 object objTemplate = fileTemplate;
-                 wordTemplate = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
-                 ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
-                 //Compare
-                 Globals.ThisAddIn.AddDocId(wordTemplate, "Compare", "");
-                 wordTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
-                 wordTemplate.TrackRevisions = false;
-                 wordTemplate.ShowRevisions = false;
-                 wordTemplate.AcceptAllRevisions();
+                    object objTemplate = fileTemplate;
+                    wordTemplate = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                    ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
-                
+                    //Compare
+                    Globals.ThisAddIn.AddDocId(wordTemplate, "Compare", "");
+                    wordTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
+                    wordTemplate.TrackRevisions = false;
+                    wordTemplate.ShowRevisions = false;
+                    wordTemplate.AcceptAllRevisions();
 
-                    
                     /*
                     object o = wordTemplate;
                     wordTemplate.Windows.CompareSideBySideWith(ref o);*/
 
                     //  Compare code
-                 wordTemplate.Compare(_fileName, missing, Microsoft.Office.Interop.Word.WdCompareTarget.wdCompareTargetNew, true, true, false, false, false);
-                        app.ActiveWindow.View.SplitSpecial = Microsoft.Office.Interop.Word.WdSpecialPane.wdPaneRevisionsVert;
-                        app.ActiveWindow.ShowSourceDocuments = Microsoft.Office.Interop.Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
-                        app.ActiveWindow.View.RevisionsFilter.Markup = 0;
+                    wordTemplate.Compare(_fileName, missing,Word.WdCompareTarget.wdCompareTargetNew, true, true, false, false, false);
+                    app.ActiveWindow.View.SplitSpecial =Word.WdSpecialPane.wdPaneRevisionsVert;
+                    app.ActiveWindow.ShowSourceDocuments =Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
+                    app.ActiveWindow.View.RevisionsFilter.Markup = 0;
 
 
+                    // close the temp files
+                    var docTemplateClose = (Word._Document)wordTemplate;
+                    docTemplateClose.Close(SaveChanges: false);
+                  //  var docAttachmentClose = (Word._Document)wordAttachment;
+                //    docAttachmentClose.Close(SaveChanges: false);
 
-                     
 
-                        // close the temp files
-                        var docTemplateClose = (Microsoft.Office.Interop.Word._Document)wordTemplate;
-                        docTemplateClose.Close(SaveChanges: false);
-                        var docAttachmentClose = (Microsoft.Office.Interop.Word._Document)wordAttachment;
-                        docAttachmentClose.Close(SaveChanges: false);
-                       // System.Runtime.InteropServices.Marshal.ReleaseComObject(newdoc);
+                    // System.Runtime.InteropServices.Marshal.ReleaseComObject(newdoc);
+                    //  docclose = (Microsoft.Office.Interop.Word._Document)olddoc;
+                    //  docclose.Close(SaveChanges: false);
+                    //  System.Runtime.InteropServices.Marshal.ReleaseComObject(olddoc);
 
-                      //  docclose = (Microsoft.Office.Interop.Word._Document)olddoc;
-                      //  docclose.Close(SaveChanges: false);
-                      //  System.Runtime.InteropServices.Marshal.ReleaseComObject(olddoc);
-                        wordTemplate.Activate();
+                    wordTemplate.Activate();
                     //End Compare
                     Globals.Ribbons.Ribbon1.CloseWindows();
-                   
+
 
                 }
                 else
                 {
-                    MessageBox.Show("Please elect one template");
+                    MessageBox.Show("Please select one template");
 
                 }
             }

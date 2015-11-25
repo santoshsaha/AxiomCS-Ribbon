@@ -353,7 +353,15 @@ namespace AxiomIRISRibbon.SForceEdit
                     if (r["ContentType"].ToString().ToLower().Contains("ms-excel")) filename += ".xls";
                     if (r["ContentType"].ToString().ToLower().Contains("ms-powerpoint")) filename += ".ppt";
                 }
+                if (filename.ToLower().Contains("_amendment"))
+                {
+                    Globals.Ribbons.Ribbon1.btnExportToWord.Enabled = true;
+                }
+                else
+                {
+                    Globals.Ribbons.Ribbon1.btnExportToWord.Enabled = false;
 
+                }
                 Open(r["Id"].ToString(), filename);
             } 
         }

@@ -332,7 +332,15 @@ namespace AxiomIRISRibbon.SForceEdit
             busyIndicatorBackgroundWorker = new BackgroundWorker();
             //Application.Current.Dispatcher.BeginInvoke();
             string strFromAgreementId = string.Empty;
-            if ((DataRowView)dgTemplates.SelectedItem != null)
+            if ((DataRowView)dgTemplates.SelectedItem == null)
+            {
+                
+                this.btnclone.IsEnabled = true;
+                bsyIndc.IsBusy = false;
+                MessageBox.Show("Select an item.", "Alert");
+
+            }
+            else
             {
                 DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
                 if (dtr != null)
@@ -347,7 +355,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         bsyIndc.IsBusy = false;
 
                         //Displaying a message to indicate the selected matter's latest version doesnt have attachments
-                        MessageBox.Show("Cloning cannot occur since selected Agreement does not have an available attachment.");
+                        MessageBox.Show("Cloning cannot occur since selected Agreement does not have an available attachment.", "Alert");
                     }
                     else
                     {
@@ -356,11 +364,8 @@ namespace AxiomIRISRibbon.SForceEdit
                         busyIndicatorBackgroundWorker.RunWorkerAsync();
                     }
                 }
-            }
-            else
-            {
-                this.btnclone.IsEnabled = true;
-                bsyIndc.IsBusy = false;
+
+
             }
         }
         protected void PerformCloning(BackgroundWorker worker, DoWorkEventArgs e, string strFromAgreementId)
@@ -390,7 +395,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     if (!dr.success) return;
                     if (dr.dt.Rows.Count == 0)
                     {
-                        MessageBox.Show("Version not avilable in source Agreement");
+                        MessageBox.Show("Version not avilable in source Agreement", "Alert");
                     }
                     else
                     {

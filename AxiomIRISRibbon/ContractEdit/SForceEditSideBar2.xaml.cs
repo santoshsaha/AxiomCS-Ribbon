@@ -23,6 +23,7 @@ using System.Diagnostics;
 using HTMLConverter;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Microsoft.Win32;
+using AxiomIRISRibbon.SForceEdit;
 
 namespace AxiomIRISRibbon.ContractEdit
 {
@@ -5566,6 +5567,8 @@ namespace AxiomIRISRibbon.ContractEdit
             object missing = System.Reflection.Missing.Value;
             string fileAmendmentDocumentPath = string.Empty, fileAmendmentTemplatePath = string.Empty;
             string fileNameTemplate = string.Empty, vfilename = string.Empty;
+            string documentAttachmentId = string.Empty,  templateAttachmentId = string.Empty;
+            string fileName = string.Empty, attachmentId = string.Empty, filePath = string.Empty, tempAttachmentId = string.Empty, tempFileName = string.Empty;
             // string vfilename = _filename.Replace(" ", "_") + ".docx";
             //    string fileNameTemplate = _filename;
             DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(_parentId));
@@ -5576,9 +5579,78 @@ namespace AxiomIRISRibbon.ContractEdit
                       (row.Field<string>("Name").Contains(".doc") ||
                       row.Field<string>("ContentType").Contains("msword"))
                       select row;
-            if (res.Count() > 1)
+            if (res.Count() ==2)
             {
+                byte[] toBytes = Convert.FromBase64String(dtAllAttachments.Rows[0]["body"].ToString());
+                fileName = dtAllAttachments.Rows[0]["Name"].ToString();
+                attachmentId = dtAllAttachments.Rows[0]["Id"].ToString();
+                filePath = _d.GetTempFilePath(attachmentId + "_" + fileName);
+                if (fileName.Contains("_Amendment"))
+                {
+                    fileAmendmentTemplatePath = filePath;
+                    File.WriteAllBytes(fileAmendmentTemplatePath, toBytes);
+                }
+                else
+                {
+                    fileAmendmentDocumentPath = filePath;
+                    File.WriteAllBytes(fileAmendmentDocumentPath, toBytes);
 
+                }
+
+                byte[] toBytes1 = Convert.FromBase64String(dtAllAttachments.Rows[1]["body"].ToString());
+                tempFileName = dtAllAttachments.Rows[1]["Name"].ToString();
+                tempAttachmentId = dtAllAttachments.Rows[1]["Id"].ToString();
+                filePath = _d.GetTempFilePath(tempAttachmentId + "_" + tempFileName);
+                if (tempFileName.Contains("_Amendment"))
+                {
+                    fileAmendmentTemplatePath = tempFileName;
+                    File.WriteAllBytes(fileAmendmentTemplatePath, toBytes1);
+                }
+                else
+                {
+                    fileAmendmentDocumentPath = tempFileName;
+                    File.WriteAllBytes(fileAmendmentDocumentPath, toBytes1);
+
+                }
+
+                if (fileAmendmentTemplatePath != string.Empty)
+                {
+                    CompareAmendment.OpenExistingAmendment(fileAmendmentDocumentPath, fileAmendmentTemplatePath, attachmentId, tempAttachmentId, fileName, tempFileName, _parentId);
+                    //  (string documentPath, string templatePath, string documentAttachmentId, string templateAttachmentId, string documentVName, string templateVName) {
+
+                }
+              /* if (dtAllAttachments.Rows[0]["Name"].ToString().Contains("_Amendment"))
+               {
+                   fileAmendmentTemplatePath = _d.GetTempFilePath(dtAllAttachments.Rows[0]["Id"].ToString() + "_" + dtAllAttachments.Rows[0]["Name"].ToString());
+                   File.WriteAllBytes(fileAmendmentTemplatePath, toBytes);
+               }
+               else
+               {
+                   fileAmendmentDocumentPath = _d.GetTempFilePath(dtAllAttachments.Rows[0]["Id"].ToString() + "_" + dtAllAttachments.Rows[0]["Name"].ToString());
+                   File.WriteAllBytes(fileAmendmentDocumentPath, toBytes);
+
+               }
+               byte[] toBytes1 = Convert.FromBase64String(dtAllAttachments.Rows[1]["body"].ToString());
+               if (dtAllAttachments.Rows[1]["Name"].ToString().Contains("_Amendment"))
+               {
+                   fileAmendmentTemplatePath = _d.GetTempFilePath(dtAllAttachments.Rows[1]["Id"].ToString() + "_" + dtAllAttachments.Rows[1]["Name"].ToString());
+                   File.WriteAllBytes(fileAmendmentTemplatePath, toBytes1);
+               }
+               else
+               {
+                   fileAmendmentDocumentPath = _d.GetTempFilePath(dtAllAttachments.Rows[1]["Id"].ToString() + "_" + dtAllAttachments.Rows[1]["Name"].ToString());
+                   File.WriteAllBytes(fileAmendmentDocumentPath, toBytes1);
+               }
+
+               if (fileAmendmentTemplatePath != string.Empty)
+               {
+                   CompareAmendment.OpenExistingAmendment(fileAmendmentDocumentPath, fileAmendmentTemplatePath);
+                 //  (string documentPath, string templatePath, string documentAttachmentId, string templateAttachmentId, string documentVName, string templateVName) {
+        
+               }*/
+
+
+                /*
                 //  foreach (DataRow rw in dtAllAttachments.Rows)
                 //  {
                 //  if (rw["Name"].ToString().Contains(".doc"))
@@ -5598,12 +5670,12 @@ namespace AxiomIRISRibbon.ContractEdit
 
                 //   }
                 // }
-                //   }
-                // CompareSideBySide(fileAmendmentDocument, fileAmendmentTemplate);
-                _strAmendmentTemplatePath = fileAmendmentTemplatePath;
-                _strAmendmentDocumentPath = fileAmendmentDocumentPath;
+                //   }*/
+              
+              //  _strAmendmentTemplatePath = fileAmendmentTemplatePath;
+              //  _strAmendmentDocumentPath = fileAmendmentDocumentPath;
 
-                Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
+            /*    Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
 
                 object newFilenameObject1 = fileAmendmentTemplatePath;
                 objtempAmendmentTemplate = app.Documents.Open(ref newFilenameObject1, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
@@ -5622,7 +5694,7 @@ namespace AxiomIRISRibbon.ContractEdit
                 Globals.ThisAddIn.AddDocId(objtempDocAmendment, "AmendmentDocument", "");
 
                 object o = objtempAmendmentTemplate;
-                objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
+                objtempDocAmendment.Windows.CompareSideBySideWith(ref o);*/
 
 
             }

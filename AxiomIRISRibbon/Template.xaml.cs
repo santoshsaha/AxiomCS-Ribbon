@@ -88,20 +88,10 @@ namespace AxiomIRISRibbon
             if (!dr.success) return;
             DataTable dt1 = dr.dt;
             cbAgreementTemplate.Items.Clear();
-            //ComboBoxItem t;
-
-            //i = new ComboBoxItem();
-            //i.Tag = "select";
-            //i.Content = "";
-            //this.cbAgreement.Items.Add(i);
             List<AgreementComboBoxPair> cbp = new List<AgreementComboBoxPair>();
             cbp.Add(new AgreementComboBoxPair("", ""));
             foreach (DataRow r in dt1.Rows)
             {
-                //t = new ComboBoxItem();
-                //t.Content = r["Name"].ToString();
-                ////t.SetValue(r["id"].ToString();
-                //t.SetValue(i,)
                 AgreementComboBoxPair cbmItem = new AgreementComboBoxPair(Convert.ToString(r["Name"]), Convert.ToString((r["id"])));
                 cbp.Add(cbmItem);
             }
@@ -109,7 +99,7 @@ namespace AxiomIRISRibbon
             cbAgreementTemplate.DisplayMemberPath = "Text";
             cbAgreementTemplate.SelectedValuePath = "Id";
             cbAgreementTemplate.ItemsSource = cbp;
-
+            //End Code
            
 
         }

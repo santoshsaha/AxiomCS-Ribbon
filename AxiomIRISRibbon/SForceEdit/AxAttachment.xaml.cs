@@ -240,7 +240,7 @@ namespace AxiomIRISRibbon.SForceEdit
             EditAttach(r);
         }
         //Code PES
-        private void radGridView1_DataLoaded(object sender, EventArgs e)
+    /*    private void radGridView1_DataLoaded(object sender, EventArgs e)
         {
             try
             {
@@ -263,14 +263,11 @@ namespace AxiomIRISRibbon.SForceEdit
                         radbtnAmendment.IsEnabled = true;
                     }
                 }
-                /*  else
-                  {
-                      radbtnAmendment.Visibility = System.Windows.Visibility.Hidden;
-                  }*/
+                
             }
             catch (Exception ex) { }
 
-        }
+        }*/
         //End Code
         void radGridView1_SelectionChanged(object sender, SelectionChangeEventArgs e)
         {
@@ -638,7 +635,7 @@ namespace AxiomIRISRibbon.SForceEdit
         }
 
         //Code PES
-        private void Amendment_Click(object sender, RoutedEventArgs e)
+     /*   private void Amendment_Click(object sender, RoutedEventArgs e)
         {
             //Open The Document
             if (radGridView1.SelectedItem != null)
@@ -651,7 +648,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 amend.Show();
             }
 
-        }
+        }*/
 
         //END PES
 

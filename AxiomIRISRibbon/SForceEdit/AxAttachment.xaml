@@ -52,9 +52,9 @@
                         Edit
                     </telerik:RadButton>
                     <telerik:RadToolBarSeparator/>
-                    <telerik:RadButton Name="radbtnAmendment" BorderThickness="0" Height="22" Margin="3" Click="Amendment_Click" Visibility="Hidden" Width="149">
+                    <!--<telerik:RadButton Name="radbtnAmendment" BorderThickness="0" Height="22" Margin="3" Click="Amendment_Click" Width="149">
                        Generate Amendment
-                    </telerik:RadButton>
+                    </telerik:RadButton>-->
 
                 
 
@@ -65,7 +65,7 @@
 
                 <telerik:RadGridView Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Name="radGridView1"  Height="Auto" Width="Auto"
                                         IsFilteringAllowed="False" IsReadOnly="True" ShowGroupPanel="False" SelectionChanged="radGridView1_SelectionChanged" AllowDrop="False"  
-                                     MouseDoubleClick="radGridView1_MouseDoubleClick" DataLoaded ="radGridView1_DataLoaded"/>
+                                     MouseDoubleClick="radGridView1_MouseDoubleClick" />
 
             </Grid>
         </telerik:RadBusyIndicator>

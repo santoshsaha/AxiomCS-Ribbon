@@ -4,12 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="550" d:DesignWidth="400" ResizeMode="NoResize" ShowInTaskbar="True" WindowStartupLocation="CenterScreen"  Title="Template" WindowStyle="ToolWindow" Width="739" Height="380" Icon="/AxiomIRISRibbon;component/Resources/Iris-Logo-Solo-Orange-40.png" Closing="Window_Closing">
-    <Grid Margin="0,0,0,-73">
+             d:DesignHeight="400" d:DesignWidth="400" ResizeMode="NoResize" ShowInTaskbar="True" WindowStartupLocation="CenterScreen"  Title="Template" WindowStyle="ToolWindow" Width="739" Height="380" Icon="/AxiomIRISRibbon;component/Resources/Iris-Logo-Solo-Orange-40.png" Closing="Window_Closing">
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="328*"/>
-            <ColumnDefinition Width="397*"/>
-            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="247*"/>
+
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="306*" />
@@ -80,7 +80,7 @@
                     <Button Grid.Row="1" Content="Cancel" Height="23" Name="btnCancel" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="btnCancel_Click" Margin="0,11,6,0" Grid.Column="1" />
 
                     <Grid Grid.ColumnSpan="2" Margin="-10,-10,10,10" />
-                    <Label Content="Playbook:" HorizontalAlignment="Left" Margin="10,67,0,130" x:Name="lblPlaybookLink" Width="66" />
+                    <Label Content="Playbook:" HorizontalAlignment="Left" Margin="6,67,0,0" x:Name="lblPlaybookLink" Width="66" />
                     <TextBox Height="20" Margin="89,70,6,0" x:Name="tbPlaybookLink__c" VerticalAlignment="Top" Width="Auto" TextChanged="formTextBoxChanged" MaxLength="255" Grid.ColumnSpan="2"/>
 
                 </Grid>

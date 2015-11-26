@@ -87,15 +87,14 @@
                                     </telerik:RadContextMenu>
                                 </telerik:RadDropDownButton.DropDownContent>
                             </telerik:RadDropDownButton>
-                            <!-- Code PES
-                            <telerik:RadButton Name="rbFullView" BorderThickness="0" Height="22" Margin="0,0,0,0" Visibility="Hidden" >
-                                Full View
+                            <!--Code PES-->
+                            <telerik:RadButton Name="btnAmendment" Click="btnAmendment_Click" IsEnabled="False" BorderThickness="0" Height="22">
+                                Amend
                             </telerik:RadButton>
-
-                            <telerik:RadButton Name="rbAmendmentView" BorderThickness="0" Height="22" Margin="3,0,3,0" Visibility="Hidden">
-                                Aamendment View
+                            <telerik:RadButton Name="btnopenAmendment" Click="btnopenAmendment_Click" IsEnabled="False" BorderThickness="0" Height="22">
+                                Open Amend
                             </telerik:RadButton>
-                          End Code PES  -->
+                            <!--End Code PES-->
                             <Image Name="imgAttached" Source="/AxiomIRISRibbon;component/Resources/locksmall.png" Height="16" Width="16" ToolTip="Attached - Contract is Locked to Template" telerik:RadToolBar.ItemAlignment="Right"></Image>
                             <!--
                             <telerik:RadButton Content="Word"  Margin="3,0,3,0"  Name="btnSaveWord"  Click="btnSaveWord_Click" />
@@ -163,32 +162,35 @@
                                 <RowDefinition Height="40" />
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0" Name="Document" >
-                                <telerik:Label Content="File Name:" Height="28" Name="lbDocument" Margin="6,3,10,0" VerticalAlignment="Top"/>
-                                <TextBox Name="tbDocumentName" Height="23" Margin="76,6,63,0" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
-                                <telerik:RadButton Name="Save" Margin="240,6,5,10" Height="22" Click="Save_Click" Visibility="Hidden">
+                                <telerik:Label Content="File Name:" Height="28" Name="lbDocument" Margin="2,43,14,-33" VerticalAlignment="Top"/>
+                                <TextBox Name="tbDocumentName" Height="23" Margin="78,48,61,-33" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+                                <telerik:RadButton Name="Save" Margin="231,10,14,6" Height="22" Click="Save_Click" >
                                     Export
                                 </telerik:RadButton>
+                                <telerik:RadButton x:Name="btnAmendData" Height="22" IsEnabled="False" Click="btnAmendData_click"  Margin="125,10,84,6" Content="Amend" />
+                                <telerik:RadButton x:Name="btnOpenAmendData" Height="22" IsEnabled="False" Click="btnOpenAmendData_click"  Content="Open Amend" Margin="10,10,185,6"/>
                             </Grid>
-                            <ScrollViewer Name="FieldContent" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"  Margin="0,0,0,0" BorderBrush="Transparent">
+                            <ScrollViewer Name="FieldContent" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"  Margin="0,52,0,0" BorderBrush="Transparent">
                                 <StackPanel Name="Fields">
-                                    <telerik:RadExpander Header="Document" BorderBrush="#FFEF2525" BorderThickness="2">
-                                        <TextBlock Padding="5" TextWrapping="WrapWithOverflow" Height="50">This is where the Quick Edit Document/Matter/Request Fields will go ...</TextBlock>
+                                    <telerik:RadExpander Header="Document" BorderBrush="#FFEF2525" BorderThickness="2" Height="29">
+                                        <TextBlock Padding="5" TextWrapping="WrapWithOverflow" Height="50"><Run Text="This is where the Quick Edit Document/Matter/Request Fields will go ..."/></TextBlock>
                                     </telerik:RadExpander>
                                     <telerik:RadExpander Header="Matter" BorderBrush="#FFEF2525" BorderThickness="2">
-                                        <TextBlock Padding="5" TextWrapping="WrapWithOverflow" Height="50"  >This is where the Quick Edit Document/Matter/Request Fields will go ...</TextBlock>
+                                        <TextBlock Padding="5" TextWrapping="WrapWithOverflow" Height="50"  ><Run Text="This is where the Quick Edit Document/Matter/Request Fields will go ..."/></TextBlock>
                                     </telerik:RadExpander>
                                     <telerik:RadExpander Header="Activity" BorderBrush="#FFEF2525" BorderThickness="2">
-                                        <telerik:RadGridView Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Name="radGridView1"  Height="Auto" Width="Auto" IsFilteringAllowed="False" IsReadOnly="True" ShowGroupPanel="False" AllowDrop="False"  />
+                                        <telerik:RadGridView Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  x:Name="radGridView1"  Height="Auto" Width="Auto" IsFilteringAllowed="False" IsReadOnly="True" ShowGroupPanel="False" AllowDrop="False"  />
                                     </telerik:RadExpander>
                                 </StackPanel>
                             </ScrollViewer>
                             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
                                 <telerik:RadButton Name="btnSave" BorderThickness="0" Height="22" Width="70" Margin="5,5,5,5" Click="btnSave_Click" Grid.Row="2">Save</telerik:RadButton>
-                                <telerik:RadButton BorderThickness="0" Content="Cancel" Height="22" Width="70" Margin="5,5,5,5" Name="btnCancel" Grid.Row="2" Click="btnCancel_Click" />
+                                <telerik:RadButton BorderThickness="0" Content="Cancel" Height="22" Width="70" Margin="5,9" x:Name="btnCancel" Click="btnCancel_Click" />
                             </StackPanel>
                         </Grid>
                     </Grid>
                 </telerik:RadTabItem>
+
 
 
             </telerik:RadTabControl>

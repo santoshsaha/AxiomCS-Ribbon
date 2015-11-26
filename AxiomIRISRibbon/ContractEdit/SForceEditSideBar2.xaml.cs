@@ -77,6 +77,15 @@ namespace AxiomIRISRibbon.ContractEdit
         private bool _attachedmode;
         private bool _firstsave;
 
+        //Code PES
+        private static string _versionName;
+        private static string _strAmendmentTemplatePath;
+        private static string _strAmendmentDocumentPath;
+        static Microsoft.Office.Interop.Word.Document objtempAmendmentTemplate;
+        static Microsoft.Office.Interop.Word.Document objtempDocAmendment;
+
+        //End PES
+
         //a dictionary with pointer to the clauses 
         private Dictionary<string, FrameworkElement> _clauses;
 
@@ -142,6 +151,7 @@ namespace AxiomIRISRibbon.ContractEdit
             this.SizeChanged += new SizeChangedEventHandler(Fields_SizeChanged);
         }
 
+        // Side bar for data
         public SForceEditSideBar2(string AttachmentId, string FileName, string ParentType, string ParentId)
         {
 
@@ -185,6 +195,30 @@ namespace AxiomIRISRibbon.ContractEdit
             _parentType = ParentType;
             _parentId = ParentId;
 
+
+            //Code PES
+            DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(ParentId));
+            if (!drAttachemnts.success) return;
+            DataTable dtAllAttachments = drAttachemnts.dt;
+            var row = dtAllAttachments.Select("Name like '%_Amendment.doc%'").ToArray();
+            DataReturn dr1 = _d.GetAgreementTypefromParentId(ParentId);
+            if (!dr1.success) return;
+            DataTable dt = dr1.dt;
+            if (dt.Rows.Count == 0) return;
+            if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() == "Amendment" && row.Length > 0)
+            {
+                btnopenAmendment.IsEnabled = true;
+                btnOpenAmendData.IsEnabled = true;
+                //    btnAmendment.Visibility = System.Windows.Visibility.Hidden;
+                //   btnAmendData.Visibility = System.Windows.Visibility.Hidden;
+            }
+            else
+            {
+                btnAmendment.IsEnabled = true;
+                btnAmendData.IsEnabled = true;
+            }
+
+            //End PES
 
 
             BuildDataSidebar();
@@ -1095,13 +1129,41 @@ namespace AxiomIRISRibbon.ContractEdit
             this.NewVersion.IsEnabled = false;
 
         }
-
+        
+        // For Clause side bar
         public void BuildSideBarFromVersion(string VersionId, string AttachedMode, string AttachmentId)
         {
             this.SetAttachedMode(AttachedMode);
             _attachmentid = AttachmentId;
 
             _firstsave = false;
+
+            //Code PES
+
+            DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(VersionId));
+            if (!drAttachemnts.success) return;
+            DataTable dtAllAttachments = drAttachemnts.dt;
+            var row = dtAllAttachments.Select("Name like '%_Amendment.doc%'").ToArray();
+            //var res = from row in dtAllAttachments.AsEnumerable()
+            //          where
+            //          (row.Field<string>("Name").Contains("_Amendment.doc"))
+            //          select row;
+            DataReturn dr1 = _d.GetAgreementTypefromParentId(VersionId);
+            if (!dr1.success) return;
+            DataTable dt = dr1.dt;
+            if (dt.Rows.Count == 0) return;
+            if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() == "Amendment" && row.Length > 0)
+            {
+                btnopenAmendment.IsEnabled = true;
+                btnOpenAmendData.IsEnabled = true;
+            }
+            else
+            {
+                btnAmendment.IsEnabled = true;
+                btnAmendData.IsEnabled = true;
+            }
+
+            //END PES
 
             // get the required data from the version
             DataReturn dr = Utility.HandleData(_d.GetVersion(VersionId));
@@ -5487,6 +5549,103 @@ namespace AxiomIRISRibbon.ContractEdit
 
         }
 
+        //Code PES
+
+        private void btnopenAmendment_Click(object sender, RoutedEventArgs e)
+        {
+            OpenAmendmentDocuments();
+        }
+        private void btnOpenAmendData_click(object sender, RoutedEventArgs e)
+        {
+            OpenAmendmentDocuments();
+
+        }
+
+        private void OpenAmendmentDocuments()
+        {
+            object missing = System.Reflection.Missing.Value;
+            string fileAmendmentDocumentPath = string.Empty, fileAmendmentTemplatePath = string.Empty;
+            string fileNameTemplate = string.Empty, vfilename = string.Empty;
+            // string vfilename = _filename.Replace(" ", "_") + ".docx";
+            //    string fileNameTemplate = _filename;
+            DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(_parentId));
+            if (!drAttachemnts.success) return;
+            DataTable dtAllAttachments = drAttachemnts.dt;
+            var res = from row in dtAllAttachments.AsEnumerable()
+                      where
+                      (row.Field<string>("Name").Contains(".doc") ||
+                      row.Field<string>("ContentType").Contains("msword"))
+                      select row;
+            if (res.Count() > 1)
+            {
+
+                //  foreach (DataRow rw in dtAllAttachments.Rows)
+                //  {
+                //  if (rw["Name"].ToString().Contains(".doc"))
+                //  {
+
+                //  if (rw["Name"].ToString() == vfilename)
+                //   {
+                byte[] toBytes = Convert.FromBase64String(dtAllAttachments.Rows[0]["body"].ToString());
+                fileAmendmentDocumentPath = _d.GetTempFilePath(dtAllAttachments.Rows[0]["Id"].ToString() + "_" + dtAllAttachments.Rows[0]["Name"].ToString());
+                File.WriteAllBytes(fileAmendmentDocumentPath, toBytes);
+                //}
+                //  else if (rw["Name"].ToString() == fileNameTemplate)
+                //  {
+                byte[] toBytes1 = Convert.FromBase64String(dtAllAttachments.Rows[1]["body"].ToString());
+                fileAmendmentTemplatePath = _d.GetTempFilePath(dtAllAttachments.Rows[1]["Id"].ToString() + "_" + dtAllAttachments.Rows[1]["Name"].ToString());
+                File.WriteAllBytes(fileAmendmentTemplatePath, toBytes1);
+
+                //   }
+                // }
+                //   }
+                // CompareSideBySide(fileAmendmentDocument, fileAmendmentTemplate);
+                _strAmendmentTemplatePath = fileAmendmentTemplatePath;
+                _strAmendmentDocumentPath = fileAmendmentDocumentPath;
+
+                Microsoft.Office.Interop.Word.Application app = Globals.ThisAddIn.Application;
+
+                object newFilenameObject1 = fileAmendmentTemplatePath;
+                objtempAmendmentTemplate = app.Documents.Open(ref newFilenameObject1, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                ref missing, ref missing);
+
+                object newFilenameObject2 = fileAmendmentDocumentPath;
+                objtempDocAmendment = app.Documents.Open(ref newFilenameObject2, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
+
+
+
+                //AmendmentTemplate
+                Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentTemplate", "");
+                //AmendmentDocument
+                Globals.ThisAddIn.AddDocId(objtempDocAmendment, "AmendmentDocument", "");
+
+                object o = objtempAmendmentTemplate;
+                objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
+
+
+            }
+        }
+        private void btnAmendment_Click(object sender, RoutedEventArgs e)
+        {
+            SForceEdit.CompareAmendment amend = new SForceEdit.CompareAmendment();
+
+            amend.Create(_attachmentid, _parentId, _filename);
+            amend.Focus();
+            amend.Show();
+
+        }
+        private void btnAmendData_click(object sender, RoutedEventArgs e)
+        {
+            SForceEdit.CompareAmendment amend = new SForceEdit.CompareAmendment();
+
+            amend.Create(_attachmentid, _parentId, _filename);
+            amend.Focus();
+            amend.Show();
+
+        }
+        //END PES
 
 
 

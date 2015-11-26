@@ -206,19 +206,29 @@ namespace AxiomIRISRibbon.ContractEdit
             if (!dr1.success) return;
             DataTable dt = dr1.dt;
             if (dt.Rows.Count == 0) return;
-            if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() == "Amendment" && row.Length > 0)
+            if (dt.Rows[0]["Master_Agreement_Type__c"].ToString().ToLower() != "amendment")
             {
-                btnopenAmendment.IsEnabled = true;
-                btnOpenAmendData.IsEnabled = true;
-                //    btnAmendment.Visibility = System.Windows.Visibility.Hidden;
-                //   btnAmendData.Visibility = System.Windows.Visibility.Hidden;
+                btnopenAmendment.IsEnabled = false;
+                btnOpenAmendData.IsEnabled = false;
+                btnAmendment.IsEnabled = false;
+                btnAmendData.IsEnabled = false;
             }
-            else
-            {
-                btnAmendment.IsEnabled = true;
-                btnAmendData.IsEnabled = true;
+            else{
+                if (row.Length == 2)
+                {
+                    btnopenAmendment.IsEnabled = true;
+                    btnOpenAmendData.IsEnabled = true;
+                    btnAmendment.IsEnabled = false;
+                    btnAmendData.IsEnabled = false;
+                }
+                else if (row.Length == 1)
+                {
+                    btnAmendment.IsEnabled = true;
+                    btnAmendData.IsEnabled = true;
+                    btnopenAmendment.IsEnabled = false;
+                    btnOpenAmendData.IsEnabled = false;
+                }
             }
-
             //End PES
 
 

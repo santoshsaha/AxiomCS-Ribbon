@@ -336,74 +336,8 @@ namespace AxiomIRISRibbon.SForceEdit
                 Globals.Ribbons.Ribbon1.CloseWindows();
             }
         }
-        public static void OpenExistingAmendment(string documentPath, string templatePath, string documentAttachmentId, string templateAttachmentId, string documentName,
-            string templateName, string versionId)
-        {
-
-          
-            _strAmendmentDocumentPath = documentPath;
-            _strNewAttachmentId=documentAttachmentId;
-             _strAmendmentDocumentName = documentName;
-
-              _strAmendmentTemplatePath = templatePath;            
-            _strAmendmentAttachmentId = templateAttachmentId;
-            _strAmendmentTemplateName = templateName;
-            _versionid = versionId;
-            _d = Globals.ThisAddIn.getData();
-
-            CompareSideBySide(_strAmendmentDocumentPath, _strAmendmentTemplatePath);
-
-        }
-        private static void CompareSplitView(string fileAmendmentDocumentPath, string fileAmendmentTemplatePath)
-        {
-            //Compare Split view
-
-            object missing = System.Reflection.Missing.Value;
-            Word.Application app = Globals.ThisAddIn.Application;
-
-            objtempDocAmendment = Globals.ThisAddIn.Application.Documents.Add(fileAmendmentDocumentPath);
-            // wordAttachment.TrackRevisions = false;
-            //  wordAttachment.ShowRevisions = false;
-            //  wordAttachment.AcceptAllRevisions();
-            object objTemplate = fileAmendmentTemplatePath;
-            objtempAmendmentTemplate = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
-            ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
-
-            //Compare
-            Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentDocument", "");
-            objtempAmendmentTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
-            // objtempAmendmentTemplate.TrackRevisions = false;
-            //  objtempAmendmentTemplate.ShowRevisions = false;
-            //   objtempAmendmentTemplate.AcceptAllRevisions();
-
-            //Remove Markup from template doc
-            Word.Fields fields = objtempAmendmentTemplate.Fields;
-            foreach (Microsoft.Office.Interop.Word.Field f in fields)
-            {
-                f.Select();
-                objtempAmendmentTemplate.Application.Selection.InsertParagraph();
-
-            }
-
-            //  Compare code
-            objtempAmendmentTemplate.Compare(fileAmendmentDocumentPath, missing, Word.WdCompareTarget.wdCompareTargetNew, true, true, false, false, false);
-            app.ActiveWindow.View.SplitSpecial = Word.WdSpecialPane.wdPaneRevisionsVert;
-            app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
-            app.ActiveWindow.View.RevisionsFilter.Markup = 0;
-
-            // close the temp files
-            // var docTemplateClose = (Word._Document)objtempAmendmentTemplate;
-            //  docTemplateClose.Close(SaveChanges: false);
-            //   var docAttachmentClose = (Word._Document)objtempDocAmendment;
-            //  docAttachmentClose.Close(SaveChanges: false);
-
-            objtempAmendmentTemplate.Activate();
-
-            //End Compare
-
-
-        }
-
+    
+  
         private  static void CompareSideBySide(string fileAmendmentDocumentPath, string fileAmendmentTemplatePath)
         {
             object missing = System.Reflection.Missing.Value;
@@ -454,7 +388,76 @@ namespace AxiomIRISRibbon.SForceEdit
 
             objtempAmendmentTemplate.Activate();
         }
-       
+
+        private static void CompareSplitView(string fileAmendmentDocumentPath, string fileAmendmentTemplatePath)
+        {
+            //Compare Split view
+
+            object missing = System.Reflection.Missing.Value;
+            Word.Application app = Globals.ThisAddIn.Application;
+
+            objtempDocAmendment = Globals.ThisAddIn.Application.Documents.Add(fileAmendmentDocumentPath);
+            // wordAttachment.TrackRevisions = false;
+            //  wordAttachment.ShowRevisions = false;
+            //  wordAttachment.AcceptAllRevisions();
+            object objTemplate = fileAmendmentTemplatePath;
+            objtempAmendmentTemplate = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+            ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
+
+            //Compare
+            Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentDocument", "");
+            objtempAmendmentTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
+            // objtempAmendmentTemplate.TrackRevisions = false;
+            //  objtempAmendmentTemplate.ShowRevisions = false;
+            //   objtempAmendmentTemplate.AcceptAllRevisions();
+
+            //Remove Markup from template doc
+            Word.Fields fields = objtempAmendmentTemplate.Fields;
+            foreach (Microsoft.Office.Interop.Word.Field f in fields)
+            {
+                f.Select();
+                objtempAmendmentTemplate.Application.Selection.InsertParagraph();
+
+            }
+
+            //  Compare code
+            objtempAmendmentTemplate.Compare(fileAmendmentDocumentPath, missing, Word.WdCompareTarget.wdCompareTargetNew, true, true, false, false, false);
+            app.ActiveWindow.View.SplitSpecial = Word.WdSpecialPane.wdPaneRevisionsVert;
+            app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
+            app.ActiveWindow.View.RevisionsFilter.Markup = 0;
+
+            // close the temp files
+            // var docTemplateClose = (Word._Document)objtempAmendmentTemplate;
+            //  docTemplateClose.Close(SaveChanges: false);
+            //   var docAttachmentClose = (Word._Document)objtempDocAmendment;
+            //  docAttachmentClose.Close(SaveChanges: false);
+
+            objtempAmendmentTemplate.Activate();
+
+            //End Compare
+
+
+        }
+
+        public static void OpenExistingAmendment(string documentPath, string templatePath, string documentAttachmentId, string templateAttachmentId, string documentName,
+        string templateName, string versionId)
+        {
+
+
+            _strAmendmentDocumentPath = documentPath;
+            _strNewAttachmentId = documentAttachmentId;
+            _strAmendmentDocumentName = documentName;
+
+            _strAmendmentTemplatePath = templatePath;
+            _strAmendmentAttachmentId = templateAttachmentId;
+            _strAmendmentTemplateName = templateName;
+            _versionid = versionId;
+            _d = Globals.ThisAddIn.getData();
+
+            CompareSideBySide(_strAmendmentDocumentPath, _strAmendmentTemplatePath);
+
+        }
+
         public static void TrackDocument()
         {
             try

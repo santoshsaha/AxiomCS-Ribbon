@@ -131,6 +131,14 @@ namespace AxiomIRISRibbon.SForceEdit
                     wordAttachment.ShowRevisions = false;
                     wordAttachment.AcceptAllRevisions();
 
+                    for (int i = 1; i <= wordAttachment.ContentControls.Count; i++)
+                    {
+                        wordAttachment.ContentControls[i].LockContents = false;
+
+                    }
+
+         
+
                     /*   object objAttachment = _fileName;
                       wordAttachment = app.Documents.Open(ref objAttachment, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                         ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,

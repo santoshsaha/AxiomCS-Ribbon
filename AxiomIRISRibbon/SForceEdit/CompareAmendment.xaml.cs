@@ -52,6 +52,16 @@ namespace AxiomIRISRibbon.SForceEdit
         RadComboBoxItem selected = null;
 
 
+        //static Microsoft.Office.Interop.Word.Document tempDoc1;
+        //static Microsoft.Office.Interop.Word.Document tempDoc2;
+        static object szPassword = "Pass";
+        static object bFalse = false;
+        static object bTrue = true;  
+
+
+
+
+
 
         public CompareAmendment()
         {
@@ -457,11 +467,24 @@ namespace AxiomIRISRibbon.SForceEdit
             CompareSideBySide(_strAmendmentDocumentPath, _strAmendmentTemplatePath);
 
         }
+        private static void UndoAllChanges(Word.Document doc)
+        {
+            object times = 1;
+            int i = 0;
+            while (doc.Undo(ref times))
+            {
+                Console.Write(i++);
+                
+            }
+        }
 
         public static void TrackDocument()
         {
             try
             {
+               
+
+                objtempDocAmendment.TrackRevisions = false;
 
                 object missing = System.Reflection.Missing.Value;
                 Microsoft.Office.Interop.Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
@@ -472,7 +495,8 @@ namespace AxiomIRISRibbon.SForceEdit
                 int milliseconds = 5000;
                 List<String> pText = new List<String>();
 
-                objtempAmendmentTemplate.RejectAllRevisions();
+                //objtempAmendmentTemplate.RejectAllRevisions();
+                UndoAllChanges(objtempAmendmentTemplate);
                 objtempAmendmentTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                 objtempAmendmentTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupAll;
 
@@ -489,6 +513,13 @@ namespace AxiomIRISRibbon.SForceEdit
                     string sText = parRng.Text;
                     String listVal = parRng.ListFormat.ListString;
                     int flag = 0;
+                    int flag1 = 0;
+                    bool isTemplateTrackenabled = false;
+                    if (objtempAmendmentTemplate.TrackRevisions == true)
+                    {
+                        objtempAmendmentTemplate.TrackRevisions = false;
+                        isTemplateTrackenabled = true;
+                    }
                     for (int rnumber = 1; rnumber <= p.Range.Revisions.Count; rnumber++)
                     {
                         Microsoft.Office.Interop.Word.Revision r = p.Range.Revisions[rnumber];
@@ -497,24 +528,11 @@ namespace AxiomIRISRibbon.SForceEdit
                         {
                             if (flag == 0)
                             {
-                                if (sText.Equals(r.Range.Text))
-                                {
-                                    wrDelete += r.Range.Text;
-                                    wrDelete += "\u000A";
+                                    
+                                    p.Range.Copy();
+                                    rngInsert.PasteSpecial();
                                     flag = 1;
                                 }
-                                else
-                                {
-                                    // var result = Regex.Replace(sText,r.Range.Text,"<b>$0</b>", RegexOptions.IgnoreCase);   
-                                    wrDel = r.Range.Text.ToUpper();
-                                    wrDelete += r.Range.Text;
-                                    sText.Replace(r.Range.Text, wrDel);
-                                    wrDelete += sText;
-                                    wrDelete += "\u000A";
-                                    flag = 1;
-                                }
-                            }
-                            //pText.Add(sText);
 
                         }
 
@@ -531,12 +549,42 @@ namespace AxiomIRISRibbon.SForceEdit
                                 flag = 1;
                             }
                         }
+
+                            if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Property
+                            {
+                                if (flag == 0)
+                                {
+                                    // Thread.Sleep(milliseconds);
+                                    p.Range.Copy();
+                                   // Thread.Sleep(milliseconds);
+                                    rngInsert.PasteSpecial();
+                                    flag = 1;
+                                }
+                            }
+                        //}
+                        //flag1 = 1;
+                    }
+                    if (isTemplateTrackenabled == true)
+                    {
+                        objtempAmendmentTemplate.TrackRevisions = true;
                     }
                 }
+
+                //objtempDocAmendment.TrackRevisions = true;
+
+                //if (objtempDocAmendment.ProtectionType == Word.WdProtectionType.wdNoProtection)
+                //{
+                //    objtempDocAmendment.Protect(Word.WdProtectionType.wdAllowOnlyReading, ref bFalse, ref szPassword, ref bFalse, ref bTrue);
+                //    objtempDocAmendment.Save();
+                //}
+
+                objtempDocAmendment.TrackRevisions = true;
+
             }
             catch (Exception exe)
             {
               //  MessageBox.Show(exe.ToString());
+                objtempDocAmendment.TrackRevisions = true;
             }
         }
 

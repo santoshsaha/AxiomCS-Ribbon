@@ -214,19 +214,16 @@ namespace AxiomIRISRibbon.ContractEdit
                 btnAmendData.IsEnabled = false;
             }
             else{
-                if (row.Length == 2)
+                if (row.Length>0)
                 {
                     btnopenAmendment.IsEnabled = true;
                     btnOpenAmendData.IsEnabled = true;
-                    btnAmendment.IsEnabled = false;
-                    btnAmendData.IsEnabled = false;
                 }
-                else if (row.Length == 1)
+                else
                 {
                     btnAmendment.IsEnabled = true;
                     btnAmendData.IsEnabled = true;
-                    btnopenAmendment.IsEnabled = false;
-                    btnOpenAmendData.IsEnabled = false;
+                   
                 }
             }
             //End PES

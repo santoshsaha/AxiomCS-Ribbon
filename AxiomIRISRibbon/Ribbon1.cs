@@ -498,7 +498,8 @@ namespace AxiomIRISRibbon
         private void btnTrack_DialogLauncherClick(object sender, RibbonControlEventArgs e)
         {
        
-            CompareAmendment.TrackDocument();
+           CompareAmendment.TrackDocument();
+           // CompareAmendment.TrackDocumentOld();
         }
         private void btnExportToWord_Click(object sender, RibbonControlEventArgs e)
         {

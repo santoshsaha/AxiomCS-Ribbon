@@ -329,8 +329,8 @@ namespace AxiomIRISRibbon.SForceEdit
                 _strAmendmentDocumentPath = fileAmendmentDocumentPath;
           
 
-               CompareSideBySide( fileAmendmentDocumentPath,  fileAmendmentTemplatePath);
-              //  CompareSplitView(fileAmendmentDocumentPath, fileAmendmentTemplatePath);
+             //  CompareSideBySide( fileAmendmentDocumentPath,  fileAmendmentTemplatePath);
+                CompareSplitView(fileAmendmentDocumentPath, fileAmendmentTemplatePath);
 
 
                 Globals.Ribbons.Ribbon1.CloseWindows();
@@ -593,8 +593,8 @@ namespace AxiomIRISRibbon.SForceEdit
 
         }
         */
-        /*
-        public static void TrackDocument()
+
+    /*    public static void TrackDocumentOld()
         {
             try
             {
@@ -645,8 +645,8 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
             }
             catch (Exception ex) { }
-        }
-
+        }*/
+        /*
         private static void CopyDeletedContent(Word.Document doc, string deletedcontent)
         {
             foreach (Word.Field myMergeField in doc.Fields)
@@ -710,6 +710,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
             return dr;
         }
+
 
         public static bool SaveContract(bool ForceSave, bool SaveDoc, bool IsTemplate)
         {

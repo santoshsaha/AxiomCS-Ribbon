@@ -50,6 +50,7 @@ namespace AxiomIRISRibbon.SForceEdit
         
         }
         ~CompareSideBar() { }
+
         public void Create(string filename, string versionid, string matterid, string templateid, string versionName, string versionNumber, string attachmentid)
         {
             _fileName = filename;
@@ -61,6 +62,7 @@ namespace AxiomIRISRibbon.SForceEdit
                _attachmentid = attachmentid;
         
         }
+
         private void LoadTemplatesDLL()
         {
             try

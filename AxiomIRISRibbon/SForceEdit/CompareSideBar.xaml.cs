@@ -38,6 +38,7 @@ namespace AxiomIRISRibbon.SForceEdit
         private string _versionNumber;
         private string _attachmentid;
         private Word.Document _doc;
+        private bool _firstsave;
 
         public CompareSideBar()
         {
@@ -214,6 +215,9 @@ namespace AxiomIRISRibbon.SForceEdit
                 //Save the Contract    
                 Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
 
+                // if this is the first save - then save everything
+                if (_firstsave) ForceSave = true;
+
                 Globals.ThisAddIn.ProcessingStart("Save Contract");
                 DataReturn dr;
                 _doc = Globals.ThisAddIn.Application.ActiveDocument;
@@ -224,7 +228,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 if (SaveDoc)
                 {
-
+                    Globals.ThisAddIn.AddDocId(_doc, "Contract", _versionid);
                     //Save the file as an attachment
                     //save this to a scratch file
                     Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
@@ -248,6 +252,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     dr = AxiomIRISRibbon.Utility.HandleData(_d.UpdateFile(_attachmentid, vfilename, filenamecopy));
 
                 }
+         
                 Globals.ThisAddIn.AddSaveHandler(); // add it back in
                 Globals.ThisAddIn.ProcessingStop("End");
                 return true;

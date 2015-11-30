@@ -766,15 +766,16 @@ namespace AxiomIRISRibbon.SForceEdit
             if (!IsTemplate)
             {
                 strFileToSave = _strAmendmentDocumentPath;
-                if (_versionName !=null)
+                if (_versionName != null)
                 {
                     strVfilename = _versionName.Replace(" ", "_") + ".docx";
                 }
                 else { strVfilename = _strAmendmentDocumentName; }
-               
 
 
                 strAttachmentId = _strNewAttachmentId;
+
+                Globals.ThisAddIn.AddDocId(objtempDocAmendment, "Contract", "");
             }
             else
             {
@@ -783,11 +784,14 @@ namespace AxiomIRISRibbon.SForceEdit
                 {
                     strVfilename = _versionName + "_Amendment.docx";
                 }
-                else {
+                else
+                {
 
-                    strVfilename =_strAmendmentTemplateName;
+                    strVfilename = _strAmendmentTemplateName;
                 }
                 strAttachmentId = _strAmendmentAttachmentId;
+
+                Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "Contract", "");
             }
 
             

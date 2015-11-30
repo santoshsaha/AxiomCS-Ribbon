@@ -438,14 +438,18 @@ namespace AxiomIRISRibbon.SForceEdit
                         // Create Version 0 or lower version in To
                         DataReturn drCreatev0 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr0));
                         string newV0VersionId = drCreatev0.id;
+
+                        _d.SaveVersionClause(strFromVersionId, newV0VersionId);
+
                         // Create Version 1 or lower version +1 in To
                         maxId = Convert.ToDouble(maxId + 1);
                         VersionName = "Version " + (maxId).ToString();
                         VersionNumber = maxId.ToString();
 
                         DataReturn drCreateV1 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr1));
-                        string newV1VersionId = drCreateV1.id;
-
+                        string newV1VersionId = drCreateV1.id;  
+                   
+                        _d.SaveVersionClause(strFromVersionId, newV1VersionId);
 
                         //Code to update supersede and superseded by
                         //call query method

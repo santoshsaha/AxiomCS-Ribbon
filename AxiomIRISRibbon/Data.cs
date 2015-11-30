@@ -444,6 +444,35 @@ namespace AxiomIRISRibbon
             return _sf.RunSOQL("SELECT Id,Name,Description__c,Type__c,State__c,PlaybookLink__c,Amendment__c,AgreementTemplate__c,Generic_Master_Agreement__c  FROM " + this.ribbontemplate + " where amendment__c = false and state__c = 'published' order by Name ");
         }
 
+
+        public DataReturn GetVersionClauses(string versionId)
+        {
+            //SQL query to fetch all the related clauses
+            string getClause = "select id,name,Document__c,SelectedClause__c,Concept__c,Sequence__c,StandardClause__c,Text__c,Version__c from clause__c where version__c = '" + versionId + "'";
+            DataReturn getClauseDataReturn = _sf.RunSOQL(getClause);
+            return getClauseDataReturn;
+        }
+
+        public void SaveVersionClause(string oldVersionId, string newVersionId)
+        {
+            //
+            //string versionId = "";
+            DataReturn drVersionClause = GetVersionClauses(oldVersionId);
+            DataTable dtVersionClause = drVersionClause.dt;
+            foreach (DataRow drowClause in dtVersionClause.Rows)
+            {
+                //
+                DataRow newRow = dtVersionClause.NewRow();
+                //newRow = drowClause;
+                newRow.ItemArray = drowClause.ItemArray.Clone() as object[];
+
+                //newRow["col"] = drowClause["col_1"]
+                newRow["id"] = "";
+                newRow["version__c"] = newVersionId;
+                _sf.Save("clause__c", newRow);
+            }
+        }
+
         //End Code PES
 
 

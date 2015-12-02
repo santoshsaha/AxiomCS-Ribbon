@@ -567,13 +567,13 @@ namespace AxiomIRISRibbon.SForceEdit
 
                                  File.WriteAllBytes(filename, toBytes);
 
-
+                                 
                                  Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);
                                  //     Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
                                  //     doc.Activate();
 
                                  attachmentid = rw["Id"].ToString();
-
+                                 Globals.ThisAddIn.SaveAttachmentId(attachmentid);
                                  //Right Panel
                                  //Dispatcher.BeginInvoke(delegate)
 

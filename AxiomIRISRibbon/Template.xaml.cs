@@ -259,7 +259,7 @@ namespace AxiomIRISRibbon
             Globals.ThisAddIn.ProcessingStart("Save ...");
 
             DataRow drow, dtr;
-
+            DataReturn dtaret;
             DataView dv = (DataView)dgTemplates.ItemsSource;
             drow = dv.Table.NewRow();
             //Update from the form
@@ -276,15 +276,22 @@ namespace AxiomIRISRibbon
                 //drow["AgreementTemplate__c"] = Agreement;
                 //Save the values
                 //DataReturn dr = Utility.HandleData(d.SaveTemplate(drow));
-              
+                dtaret = Utility.HandleData(d.SaveTemplate(dtr));
             }
-            else { }
+            else {
+                
+                drow["AgreementTemplate__c"] = "";
+                drow["Generic_Master_Agreement__c"] = false;
+                drow["Amendment__c"] = false;
+                dtaret = Utility.HandleData(d.SaveTemplate(drow));
+            
+            }
 
          
-            DataReturn dr = Utility.HandleData(d.SaveTemplate(dtr));
+           // DataReturn dr = Utility.HandleData(d.SaveTemplate(dtr));
             //End Code
-            if (!dr.success) return;
-            tbId.Text = dr.id;
+            if (!dtaret.success) return;
+            tbId.Text = dtaret.id;
 
           
 
@@ -437,6 +444,7 @@ namespace AxiomIRISRibbon
                 }
 
                 Utility.UpdateForm(new Grid[] { formGrid1, formGrid2 }, ((DataRowView)dgTemplates.SelectedItem).Row);
+         
                 {
                     string id = Convert.ToString(((DataRowView)dgTemplates.SelectedItem).Row["AgreementTemplate__c"]);
                     if (string.IsNullOrEmpty(id))
@@ -454,20 +462,14 @@ namespace AxiomIRISRibbon
                     //dgTemplates.SelectedItem.Row["AgreementTemplate__c"].tostring();
                     if (((DataRowView)dgTemplates.SelectedItem).Row["Amendment__c"].ToString() == "true")
                     {
-                        label4.Visibility = System.Windows.Visibility.Visible;
-                        cbAgreementTemplate.Visibility = System.Windows.Visibility.Visible;
-                        label5.Visibility = System.Windows.Visibility.Visible;
-                        chkAmendmewnt.Visibility = System.Windows.Visibility.Visible;
+                        showHideAgreement(true);
                         btnSave.IsEnabled = true;
                         btnCancel.IsEnabled = true;
                     
                     }
                     else
                     {
-                        label4.Visibility = System.Windows.Visibility.Hidden;
-                        cbAgreementTemplate.Visibility = System.Windows.Visibility.Hidden;
-                        label5.Visibility = System.Windows.Visibility.Hidden;
-                        chkAmendmewnt.Visibility = System.Windows.Visibility.Hidden;
+                        showHideAgreement(false);
                         btnSave.IsEnabled = false;
                         btnCancel.IsEnabled = false;
                        
@@ -479,11 +481,32 @@ namespace AxiomIRISRibbon
                 Utility.ClearForm(new Grid[] { formGrid1, formGrid2 });
                 btnSave.IsEnabled = false;
                 btnCancel.IsEnabled = false;
-                btnOpen.IsEnabled = false;
+                btnOpen.IsEnabled = true;
                 tbXML.Text = "";
             }
 
             LoadTemplatesDLL();
+        }
+        private void showHideAgreement(bool IsVisible)
+        {
+            if (IsVisible)
+            {
+                label4.Visibility = System.Windows.Visibility.Visible;
+                cbAgreementTemplate.Visibility = System.Windows.Visibility.Visible;
+                label5.Visibility = System.Windows.Visibility.Visible;
+                chkAmendmewnt.Visibility = System.Windows.Visibility.Visible;
+                
+
+            }
+            else
+            {
+                label4.Visibility = System.Windows.Visibility.Hidden;
+                cbAgreementTemplate.Visibility = System.Windows.Visibility.Hidden;
+                label5.Visibility = System.Windows.Visibility.Hidden;
+                chkAmendmewnt.Visibility = System.Windows.Visibility.Hidden;
+            
+
+            }
         }
         private void formTextBoxChanged(object sender, TextChangedEventArgs e)
         {
@@ -499,6 +522,7 @@ namespace AxiomIRISRibbon
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
+            showHideAgreement(false);
             if (btnSave.IsEnabled)
             {
                 MessageBoxResult res = MessageBox.Show("Loose Changes?", "Warning", MessageBoxButton.OKCancel);

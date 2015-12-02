@@ -497,7 +497,8 @@ namespace AxiomIRISRibbon
         //Code PES
         private void btnTrack_DialogLauncherClick(object sender, RibbonControlEventArgs e)
         {
-       
+           
+
            CompareAmendment.TrackDocument();
            // CompareAmendment.TrackDocumentOld();
         }
@@ -686,6 +687,8 @@ namespace AxiomIRISRibbon
         }
         private void btnAmend_Click(object sender, RibbonControlEventArgs e)
         {
+            //Save the doc and the data
+            Globals.ThisAddIn.GetTaskPaneControlCompare().SaveContract(false, true);
 
             // CompareAmendment.FromRibbonToCreate();
             //  Id = Globals.ThisAddIn.Application.Documents.Add(attachmentid);

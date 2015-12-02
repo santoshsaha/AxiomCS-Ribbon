@@ -91,6 +91,8 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 string attachmentid = ((RadComboBoxItem)(this.radComboAttachments.SelectedItem)).Tag.ToString();
 
+                Globals.ThisAddIn.SaveAttachmentId(attachmentid);
+
                 DataRow rw = _dt.AsEnumerable().Where(p => p.Field<string>("Id") == attachmentid).FirstOrDefault();
                 byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
                 string filename = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
@@ -118,6 +120,8 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 Globals.Ribbons.Ribbon1.CloseWindows();
                 this.Close();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(csb);
+        
             }
         }
 

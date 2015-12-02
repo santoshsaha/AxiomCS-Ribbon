@@ -448,7 +448,7 @@ namespace AxiomIRISRibbon
         public DataReturn GetVersionClauses(string versionId)
         {
             //SQL query to fetch all the related clauses
-            string getClause = "select id,name,Document__c,SelectedClause__c,Concept__c,Sequence__c,StandardClause__c,Text__c,Version__c from clause__c where version__c = '" + versionId + "'";
+            string getClause = "select id,name,Document__c,SelectedClause__c,Concept__c,Sequence__c,StandardClause__c,Text__c,Version__c from clause__c where Version__c = '" + versionId + "'";
             DataReturn getClauseDataReturn = _sf.RunSOQL(getClause);
             return getClauseDataReturn;
         }
@@ -1364,6 +1364,11 @@ namespace AxiomIRISRibbon
         {
             //code
             _sf.CloneAttachmentFile(ParentId, AttachmentName, Xml);
+        }
+        public DataReturn AttachmentInfo(string Id)
+        {
+            DataReturn dr = _sf.RunSOQL("select id, name,parentid from attachment where Id='" + Id + "'");
+            return dr;
         }
         //END PES
         public string GetInstanceInfo()

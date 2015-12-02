@@ -69,7 +69,8 @@
             this.lbSFLast = this.Factory.CreateRibbonLabel();
             this.gSFDebug = this.Factory.CreateRibbonGallery();
             this.gpIrisTrack = this.Factory.CreateRibbonGroup();
-            this.btnAmendment = this.Factory.CreateRibbonButton();
+            this.btnSync = this.Factory.CreateRibbonButton();
+            this.btnAmend = this.Factory.CreateRibbonButton();
             this.btnExportToWord = this.Factory.CreateRibbonButton();
             this.btnExportToPDF = this.Factory.CreateRibbonButton();
             this.group3 = this.Factory.CreateRibbonGroup();
@@ -396,20 +397,29 @@
             // 
             // gpIrisTrack
             // 
-            this.gpIrisTrack.Items.Add(this.btnAmendment);
-            this.gpIrisTrack.Items.Add(this.btnExportToWord);
+            this.gpIrisTrack.Items.Add(this.btnSync);
+            this.gpIrisTrack.Items.Add(this.btnAmend);
             this.gpIrisTrack.Items.Add(this.btnExportToPDF);
+            this.gpIrisTrack.Items.Add(this.btnExportToWord);
             this.gpIrisTrack.Label = "IRIS - Track";
             this.gpIrisTrack.Name = "gpIrisTrack";
             this.gpIrisTrack.Visible = false;
             // 
-            // btnAmendment
+            // btnSync
             // 
-            this.btnAmendment.Image = global::AxiomIRISRibbon.Properties.Resources.Iris_Logo_Solo_Orange_40;
-            this.btnAmendment.Label = "Sync Amendment Document";
-            this.btnAmendment.Name = "btnAmendment";
-            this.btnAmendment.ShowImage = true;
-            this.btnAmendment.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnTrack_DialogLauncherClick);
+            this.btnSync.Image = global::AxiomIRISRibbon.Properties.Resources.Iris_Logo_Solo_Orange_40;
+            this.btnSync.Label = "Sync Amendment Document";
+            this.btnSync.Name = "btnSync";
+            this.btnSync.ShowImage = true;
+            this.btnSync.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnTrack_DialogLauncherClick);
+            // 
+            // btnAmend
+            // 
+            this.btnAmend.Image = global::AxiomIRISRibbon.Properties.Resources.Iris_Logo_Solo_Orange_40;
+            this.btnAmend.Label = "Create Amendment";
+            this.btnAmend.Name = "btnAmend";
+            this.btnAmend.ShowImage = true;
+            this.btnAmend.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnAmend_Click);
             // 
             // btnExportToWord
             // 
@@ -535,7 +545,8 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnReports;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn5;
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup gpIrisTrack;
-        internal Microsoft.Office.Tools.Ribbon.RibbonButton btnAmendment;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btnSync;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btnAmend;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnExportToWord;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnExportToPDF;
     }

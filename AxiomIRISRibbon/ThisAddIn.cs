@@ -48,6 +48,8 @@ namespace AxiomIRISRibbon
         private SForceEdit.Settings _settings;
         private LocalSettings _localSettings;
 
+        private string _attachmentid;
+
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
            
@@ -126,7 +128,8 @@ namespace AxiomIRISRibbon
                 // set the autologin about to true
                 // then add the details to the login call - should be username, password, sforce token, sforce url, login description to show in the about 
                 string rtn = _d.Login("santosh.saha@cs.com.rksb1", "pass@word1", "LGZ0rTkNnuksEetJr1vrG0YS", "https://test.salesforce.com", "AutoLogin - Sales");
-             //   string rtn = "";
+               
+              //  string rtn = "";
                 if (rtn == "")
                 {
                     
@@ -2866,6 +2869,17 @@ namespace AxiomIRISRibbon
                 }
             }
         }
+        //Code PES
+        public void SaveAttachmentId(string attachment_id) 
+        {
+            _attachmentid = attachment_id;
+
+        }
+        public string GetAttachmentId()
+        {
+            return _attachmentid;
+        }
+        //End code
 
         #region VSTO generated code
 

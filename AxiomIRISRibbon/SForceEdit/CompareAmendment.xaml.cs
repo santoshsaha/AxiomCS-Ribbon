@@ -160,8 +160,11 @@ namespace AxiomIRISRibbon.SForceEdit
 
 
                     }
-                    if (strTemplateId != "selected")
+                    if (strTemplateId == "select")
                     {
+                        MessageBox.Show("Please select either one template from dropdown  or select master checkbox");
+                    }
+                    else{
                         double maxId = Convert.ToDouble(_versionNumber + 1);
                         string VersionName = "Version " + (maxId).ToString();
                         _versionName = VersionName;
@@ -218,7 +221,7 @@ namespace AxiomIRISRibbon.SForceEdit
             {
             }
             finally {
-                this.Close();
+                //this.Close();
             }
         }
 

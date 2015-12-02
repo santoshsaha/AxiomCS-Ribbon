@@ -684,6 +684,39 @@ namespace AxiomIRISRibbon
             //oWord = null;
 
         }
+        private void btnAmend_Click(object sender, RibbonControlEventArgs e)
+        {
+
+            // CompareAmendment.FromRibbonToCreate();
+            //  Id = Globals.ThisAddIn.Application.Documents.Add(attachmentid);
+            // Globals.ThisAddIn.Application.Documents.Add(attachmentid) = Id;
+            // System.Windows.Application.Current.Resources.GetValue("attachmentid") as Id;
+            string attachmentId = Globals.ThisAddIn.GetAttachmentId();
+            Id = attachmentId;
+            Word.Document docTest = Globals.ThisAddIn.Application.ActiveDocument;
+            if (this.Id == null) this.Id = Globals.ThisAddIn.GetCurrentDocId();
+            if (this.Id != "")
+            {
+                _d = Globals.ThisAddIn.getData();
+                DataReturn dr1 = AxiomIRISRibbon.Utility.HandleData(_d.AttachmentInfo(Id));
+                if (!dr1.success) return;
+                DataTable dtAllAttachments = dr1.dt;
+                string _attachmentid = dtAllAttachments.Rows[0]["id"].ToString();
+                string _filename = dtAllAttachments.Rows[0]["name"].ToString();
+                string _parentId = dtAllAttachments.Rows[0]["ParentId"].ToString();
+
+                CompareAmendment amend = new CompareAmendment();
+                amend.Create(_attachmentid, _parentId, _filename);
+                amend.Focus();
+                amend.Show();
+            }
+            else
+            {
+                //_d = Globals.ThisAddIn.getData();
+                //string id = Globals.ThisAddIn.GetCurrentDocId();
+                //Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);
+            }
+        }
 
         //End PES
 

@@ -50,7 +50,9 @@ namespace AxiomIRISRibbon.SForceEdit
            LoadTemplatesDLL();
         
         }
-        ~CompareSideBar() { }
+        ~CompareSideBar() {
+          //  System.Runtime.InteropServices.Marshal.ReleaseComObject(csb);
+        }
 
         public void Create(string filename, string versionid, string matterid, string templateid, string versionName, string versionNumber, string attachmentid)
         {
@@ -192,7 +194,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     //End Compare
                     Globals.Ribbons.Ribbon1.CloseWindows();
 
-
                 }
                 else
                 {
@@ -211,6 +212,7 @@ namespace AxiomIRISRibbon.SForceEdit
         {
             try
             {
+                int seq = 1;
                 string strFileAttached = _fileName;
                 //Save the Contract    
                 Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
@@ -221,11 +223,36 @@ namespace AxiomIRISRibbon.SForceEdit
                 Globals.ThisAddIn.ProcessingStart("Save Contract");
                 DataReturn dr;
                 _doc = Globals.ThisAddIn.Application.ActiveDocument;
+                /*
+                Globals.ThisAddIn.ProcessingUpdate("Get the Clause Values");
+                foreach (Word.ContentControl cc in _doc.Range().ContentControls)
+                {
+                    if (cc.Tag != null)
+                    {
+                        string tag = cc.Tag;
+                        string docclausename = cc.Title;
+                        Globals.ThisAddIn.ProcessingUpdate("Save " + docclausename);
 
+                        string text = cc.Range.Text;
+                        string[] taga = cc.Tag.Split('|');
+                        if (taga[0] == "Concept")
+                        {
+                            dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveDocumentClause("", _versionid, taga[1], taga[2], docclausename, seq++, text, false));
+                        }
+                        else if (taga[0] == "element")
+                        {
+
+                            dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveDocumentClauseElement("",docclausename ,taga[2],"",_templateid,text,text ));
+                                                      
+                        }
+                    }
+                }
+
+                */
                 dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveVersion(_versionid, _matterid, _templateid, _versionName, _versionNumber));
                 if (!dr.success) return false;
                 _versionid = dr.id;
-
+              
                 if (SaveDoc)
                 {
                     Globals.ThisAddIn.AddDocId(_doc, "Contract", _versionid);
@@ -252,7 +279,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     dr = AxiomIRISRibbon.Utility.HandleData(_d.UpdateFile(_attachmentid, vfilename, filenamecopy));
 
                 }
-         
+               
                 Globals.ThisAddIn.AddSaveHandler(); // add it back in
                 Globals.ThisAddIn.ProcessingStop("End");
                 return true;

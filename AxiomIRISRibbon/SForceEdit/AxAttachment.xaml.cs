@@ -379,6 +379,7 @@ namespace AxiomIRISRibbon.SForceEdit
         {
             DataReturn dr = _d.OpenFile(Id, FileName);
             e.Result = dr;
+            Globals.ThisAddIn.SaveAttachmentId(Id);
         }
 
 
@@ -435,7 +436,12 @@ namespace AxiomIRISRibbon.SForceEdit
                             Globals.ThisAddIn.Application.ActiveWindow.View.ShowRevisionsAndComments = false;
                             
                             // load the data tab
-                            u.LoadDataTab(dr.strRtn,_sObjectDef.ParentType, _sObjectDef.ParentId);
+                            /// PES:  Hack for the time being to suppress the error 
+                            /// 
+                            if (u != null)
+                            {
+                                u.LoadDataTab(dr.strRtn, _sObjectDef.ParentType, _sObjectDef.ParentId);
+                            }
 
                             Globals.ThisAddIn.ProcessingStop("Stop");
                             if (doc != null) doc.Activate();

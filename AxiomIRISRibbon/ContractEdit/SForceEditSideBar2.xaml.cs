@@ -1999,55 +1999,59 @@ namespace AxiomIRISRibbon.ContractEdit
                             }
 
                             // if Allow None is true then add a "None" selection
-                            if (Convert.ToBoolean(clauses[0]["Clause__r_Concept__r_AllowNone__c"]))
+                            if (clauses.Length>0)
                             {
-                                StackPanel spElNone = new StackPanel();
-                                spElNone.Tag = "elementsp";
-                                spElNone.Margin = new Thickness(35, 5, 5, 5);
-                                StackPanel spRbNone = new StackPanel();
-                                spRbNone.Tag = "rbsp";
-                                ClauseRadio rb1 = new ClauseRadio("", "None", conceptid, conceptname, num, null, "", "", "", false, "", "", "");
-                                rb1.GroupName = conceptname;
-                                rb1.Checked += new RoutedEventHandler(rb1_Checked);
-                                rb1.GotFocus += new RoutedEventHandler(rb1_GotFocus);
-                                spRbNone.Margin = new Thickness(5, 5, 5, 5);
-                                spRbNone.Children.Add(rb1);
-                                //Push radio button and its elements
-                                spCl.Children.Add(spRbNone);
-                                spCl.Children.Add(spElNone);
+                                if (Convert.ToBoolean(clauses[0]["Clause__r_Concept__r_AllowNone__c"]))
+                                {
+                                    StackPanel spElNone = new StackPanel();
+                                    spElNone.Tag = "elementsp";
+                                    spElNone.Margin = new Thickness(35, 5, 5, 5);
+                                    StackPanel spRbNone = new StackPanel();
+                                    spRbNone.Tag = "rbsp";
+                                    ClauseRadio rb1 = new ClauseRadio("", "None", conceptid, conceptname, num, null, "", "", "", false, "", "", "");
+                                    rb1.GroupName = conceptname;
+                                    rb1.Checked += new RoutedEventHandler(rb1_Checked);
+                                    rb1.GotFocus += new RoutedEventHandler(rb1_GotFocus);
+                                    spRbNone.Margin = new Thickness(5, 5, 5, 5);
+                                    spRbNone.Children.Add(rb1);
+                                    //Push radio button and its elements
+                                    spCl.Children.Add(spRbNone);
+                                    spCl.Children.Add(spElNone);
 
-                                // put in the approval button even though it'll never get triggered for None
-                                // Approvals put in the button ---------------------------------------------------
-                                Button ApprovalButton = new Button();
-                                ApprovalButton.Margin = new Thickness(2, 2, 2, 0);
-                                // ApprovalButton.ToolTip = ConvertHTMLToToolTip(pbInfo);
-                                ApprovalButton.Content = "Get Approval";
-                                ApprovalButton.Tag = conceptid + "|" + conceptname + "|" + "";
-                                ApprovalButton.Height = 22;
-                                ApprovalButton.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
-                                ApprovalButton.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                                ApprovalButton.Click += new RoutedEventHandler(ApprovalButton_Click);
+                                    // put in the approval button even though it'll never get triggered for None
+                                    // Approvals put in the button ---------------------------------------------------
+                                    Button ApprovalButton = new Button();
+                                    ApprovalButton.Margin = new Thickness(2, 2, 2, 0);
+                                    // ApprovalButton.ToolTip = ConvertHTMLToToolTip(pbInfo);
+                                    ApprovalButton.Content = "Get Approval";
+                                    ApprovalButton.Tag = conceptid + "|" + conceptname + "|" + "";
+                                    ApprovalButton.Height = 22;
+                                    ApprovalButton.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+                                    ApprovalButton.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                                    ApprovalButton.Click += new RoutedEventHandler(ApprovalButton_Click);
 
-                                System.Windows.Controls.Label lbl = new System.Windows.Controls.Label();
-                                lbl.Content = "Requires Approval from: " + "";
-                                lbl.Margin = new Thickness(4, 4 + (num * 27), 10, 0);
-                                lbl.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                                //lbl.Width = 120;
+                                    System.Windows.Controls.Label lbl = new System.Windows.Controls.Label();
+                                    lbl.Content = "Requires Approval from: " + "";
+                                    lbl.Margin = new Thickness(4, 4 + (num * 27), 10, 0);
+                                    lbl.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                                    //lbl.Width = 120;
 
-                                Grid gApproval = new Grid();
-                                gApproval.Height = 32;
-                                gApproval.Children.Add(lbl);
-                                gApproval.Children.Add(ApprovalButton);
+                                    Grid gApproval = new Grid();
+                                    gApproval.Height = 32;
+                                    gApproval.Children.Add(lbl);
+                                    gApproval.Children.Add(ApprovalButton);
 
-                                spElNone.Children.Add(gApproval);
+                                    spElNone.Children.Add(gApproval);
 
-                                // just hide
-                                gApproval.Visibility = System.Windows.Visibility.Collapsed;
+                                    // just hide
+                                    gApproval.Visibility = System.Windows.Visibility.Collapsed;
 
-                                //Approvals ---------------------------------------------------
+                                    //Approvals ---------------------------------------------------
 
 
+                                } 
                             }
+                            
 
                             //push the last one
                             newExp.Content = spCl;

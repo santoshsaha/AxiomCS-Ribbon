@@ -344,8 +344,6 @@
 		<row><td>ISX_DEFAULTCOMPONENT</td><td>{BC2CADEE-D304-41ED-879C-2AE9DB52F982}</td><td>AXIOMLAW</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td>{E7D3985C-C45C-43BA-9C4F-EB83C92ED968}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT2</td><td>{842D1C84-5286-453F-B7E3-34646ABB4C5E}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>ISX_DEFAULTCOMPONENT3</td><td>{1F4C7E1F-E402-48CB-AB56-1B435426203E}</td><td>LOGS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>ISX_DEFAULTCOMPONENT4</td><td>{AF6087EC-FD57-4557-8D7A-BEEEAF2ADA0F}</td><td>LOGS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Condition">
@@ -1059,10 +1057,6 @@
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT1</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT2</td></row>
-		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT3</td></row>
-		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT4</td></row>
-		<row><td>LOGS</td><td>ISX_DEFAULTCOMPONENT3</td></row>
-		<row><td>LOGS</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 	</table>
 
 	<table name="CustomAction">
@@ -1158,7 +1152,6 @@
 		<row><td>ISCommonFilesFolder</td><td>CommonFilesFolder</td><td>Instal~1|InstallShield</td><td/><td>0</td><td/></row>
 		<row><td>ISMyProductDir</td><td>AXIOMLAW</td><td>ALRibbon</td><td/><td>0</td><td/></row>
 		<row><td>ISYourDataBaseDir</td><td>INSTALLDIR</td><td>Database</td><td/><td>0</td><td/></row>
-		<row><td>LOGS</td><td>INSTALLDIR</td><td>Logs</td><td/><td>0</td><td/></row>
 		<row><td>LocalAppDataFolder</td><td>TARGETDIR</td><td>.:LocalA~1|LocalAppData</td><td/><td>0</td><td/></row>
 		<row><td>MyPicturesFolder</td><td>TARGETDIR</td><td>.:MyPict~1|MyPictures</td><td/><td>0</td><td/></row>
 		<row><td>NEW_FOLDER_1</td><td>TARGETDIR</td><td>NEW_FOLDER_1</td><td/><td>0</td><td/></row>
@@ -1877,8 +1870,6 @@
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT1</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT2</td></row>
-		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT3</td></row>
-		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 	</table>
 
 	<table name="File">
@@ -1894,7 +1885,6 @@
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
 		<row><td>axiomirisribbon.dll.manifest</td><td>ISX_DEFAULTCOMPONENT1</td><td>AXIOMI~1.MAN|AxiomIRISRibbon.dll.manifest</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Axiom\AxiomCS-Ribbon\AxiomIRISRibbon\bin\Release\AxiomIRISRibbon.dll.manifest</td><td>1</td><td/></row>
-		<row><td>axiomirisribbon.log</td><td>ISX_DEFAULTCOMPONENT4</td><td>AXIOMI~1.LOG|AxiomIRISRibbon.log</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Axiom\AxiomCS-Ribbon\AxiomIRISRibbon\bin\Release\Logs\AxiomIRISRibbon.log</td><td>1</td><td/></row>
 		<row><td>axiomirisribbon.primary_outp</td><td>AxiomIRISRibbon.Primary_output</td><td>AxiomIRISRibbon.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AxiomIRISRibbon&gt;|Built</td><td>3</td><td/></row>
 		<row><td>axiomirisribbon.vsto</td><td>ISX_DEFAULTCOMPONENT1</td><td>AXIOMI~1.VST|AxiomIRISRibbon.vsto</td><td>0</td><td/><td/><td/><td>1</td><td>D:\Axiom\AxiomCS-Ribbon\AxiomIRISRibbon\bin\Release\AxiomIRISRibbon.vsto</td><td>1</td><td/></row>
 	</table>
@@ -2044,8 +2034,6 @@
 		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_FB74CC09_A9B5_4BE7_97C6_6CC49F602086_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT1</td><td/><td/><td>_92BAA34F_71C4_4586_A98E_709696321ABA_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT2</td><td/><td/><td>_DCD4EE0D_62E9_48D1_AE4B_11E8F7559ADD_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>ISX_DEFAULTCOMPONENT3</td><td/><td/><td>_67DB3E27_22FB_4BB0_94CF_B6EC796F63D6_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>ISX_DEFAULTCOMPONENT4</td><td/><td/><td>_761FD533_29C7_42DF_A8A2_DEACB9E44885_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISCustomActionReference">

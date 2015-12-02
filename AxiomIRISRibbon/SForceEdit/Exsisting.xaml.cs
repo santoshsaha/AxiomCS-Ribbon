@@ -347,15 +347,24 @@ namespace AxiomIRISRibbon.SForceEdit
                 {
                     strFromAgreementId = dtr["Id"].ToString();
                     DataReturn dataReturnVersionRecord = _d.getLatestVersionDetails(strFromAgreementId);
-                    DataTable dataTableVersionRecord = dataReturnVersionRecord.dt;
 
-                    if (dataTableVersionRecord.Rows.Count == 0)
+                   // DataTable dataTableVersionRecord = dataReturnVersionRecord.dt;
+
+                    if (dataReturnVersionRecord.dt.Rows.Count == 0)
                     {
+
                         this.btnclone.IsEnabled = true;
                         bsyIndc.IsBusy = false;
 
-                        //Displaying a message to indicate the selected matter's latest version doesnt have attachments
-                        MessageBox.Show("Cloning cannot occur since selected Agreement does not have an available attachment.", "Alert");
+                        if (dataReturnVersionRecord.errormessage != "")
+                        {
+                            MessageBox.Show("Cloning cannot occur since selected Agreement does not have an available Version.", "Alert");
+                        }
+                        else
+                        {
+                            //Displaying a message to indicate the selected matter's latest version doesnt have attachments
+                            MessageBox.Show("Cloning cannot occur since selected Agreement does not have an available attachment.", "Alert");
+                        }
                     }
                     else
                     {

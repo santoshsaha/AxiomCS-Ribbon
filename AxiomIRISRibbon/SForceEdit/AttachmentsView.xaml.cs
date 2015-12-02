@@ -120,7 +120,6 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 Globals.Ribbons.Ribbon1.CloseWindows();
                 this.Close();
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(csb);
         
             }
         }

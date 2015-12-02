@@ -368,12 +368,18 @@ namespace AxiomIRISRibbon.SForceEdit
             objtempDocAmendment = app.Documents.Open(ref newFilenameObject2, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
             ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
+            // To unlock Clauses
             for (int i = 1; i <= objtempDocAmendment.ContentControls.Count; i++)
             {
                 objtempDocAmendment.ContentControls[i].LockContents = false;
-
+                objtempDocAmendment.ContentControls[i].LockContentControl = false;
             }
 
+            for (int i = 1; i <= objtempAmendmentTemplate.ContentControls.Count; i++)
+            {
+                 objtempAmendmentTemplate.ContentControls[i].LockContents = false;
+                objtempAmendmentTemplate.ContentControls[i].LockContentControl = false;
+            }
 
             //AmendmentTemplate - For Save
             Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentTemplate", "");
@@ -485,7 +491,7 @@ namespace AxiomIRISRibbon.SForceEdit
         {
             try
             {
-               
+
 
                 objtempDocAmendment.TrackRevisions = false;
 
@@ -493,9 +499,6 @@ namespace AxiomIRISRibbon.SForceEdit
                 Microsoft.Office.Interop.Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
                 Microsoft.Office.Interop.Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
                 Microsoft.Office.Interop.Word.Range rngOther = objtempAmendmentTemplate.Range(0, 0);
-                String wrDel = null;
-                String wrDelete = null;
-                int milliseconds = 5000;
                 List<String> pText = new List<String>();
 
                 //objtempAmendmentTemplate.RejectAllRevisions();
@@ -504,19 +507,12 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempAmendmentTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupAll;
 
 
-                /* if (tempDoc1.ProtectionType != WdProtectionType.wdNoProtection)
-                 {
-                     tempDoc1.Unprotect(ref szPassword);
-                     tempDoc1.Save();
-                 } */
-
                 foreach (Microsoft.Office.Interop.Word.Paragraph p in objtempDocAmendment.Paragraphs)
                 {
                     Microsoft.Office.Interop.Word.Range parRng = p.Range;
                     string sText = parRng.Text;
                     String listVal = parRng.ListFormat.ListString;
                     int flag = 0;
-                    int flag1 = 0;
                     bool isTemplateTrackenabled = false;
                     if (objtempAmendmentTemplate.TrackRevisions == true)
                     {
@@ -531,11 +527,11 @@ namespace AxiomIRISRibbon.SForceEdit
                         {
                             if (flag == 0)
                             {
-                                    
-                                    p.Range.Copy();
-                                    rngInsert.PasteSpecial();
-                                    flag = 1;
-                                }
+
+                                p.Range.Copy();
+                                rngInsert.PasteSpecial();
+                                flag = 1;
+                            }
 
                         }
 
@@ -543,9 +539,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         {
                             if (flag == 0)
                             {
-                             //   Thread.Sleep(milliseconds);
                                 p.Range.Copy();
-                           //     Thread.Sleep(milliseconds);
                                 // parRng.ListFormat.ApplyListTemplateWithLevel level = ListGalleries(wdNumberGallery).ListTemplates(1).ListLevels(1).
 
                                 rngInsert.PasteSpecial();
@@ -553,17 +547,15 @@ namespace AxiomIRISRibbon.SForceEdit
                             }
                         }
 
-                            if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Property
+                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Property
+                        {
+                            if (flag == 0)
                             {
-                                if (flag == 0)
-                                {
-                                    // Thread.Sleep(milliseconds);
-                                    p.Range.Copy();
-                                   // Thread.Sleep(milliseconds);
-                                    rngInsert.PasteSpecial();
-                                    flag = 1;
-                                }
+                                p.Range.Copy();
+                                rngInsert.PasteSpecial();
+                                flag = 1;
                             }
+                        }
                         //}
                         //flag1 = 1;
                     }
@@ -571,6 +563,15 @@ namespace AxiomIRISRibbon.SForceEdit
                     {
                         objtempAmendmentTemplate.TrackRevisions = true;
                     }
+                }
+
+                //Remove Markup from template doc
+                Word.Fields fields = objtempAmendmentTemplate.Fields;
+                foreach (Microsoft.Office.Interop.Word.Field f in fields)
+                {
+                    f.Select();
+                    objtempAmendmentTemplate.Application.Selection.InsertParagraph();
+
                 }
 
                 //objtempDocAmendment.TrackRevisions = true;
@@ -581,16 +582,20 @@ namespace AxiomIRISRibbon.SForceEdit
                 //    objtempDocAmendment.Save();
                 //}
 
-                objtempDocAmendment.TrackRevisions = true;
+              //  objtempDocAmendment.TrackRevisions = true;
 
             }
             catch (Exception exe)
             {
-              //  MessageBox.Show(exe.ToString());
-                objtempDocAmendment.TrackRevisions = true;
+                //  MessageBox.Show(exe.ToString());
+              
             }
+            finally{
+              if (objtempDocAmendment != null)
+                {
+                    objtempDocAmendment.TrackRevisions = true;
+                }}
         }
-
         /*
         public static void TrackDocument()
         {

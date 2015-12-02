@@ -42,28 +42,29 @@ namespace AxiomIRISRibbon.SForceEdit
 
         public CompareSideBar()
         {
-           InitializeComponent();
-           AxiomIRISRibbon.Utility.setTheme(this);
+            InitializeComponent();
+            AxiomIRISRibbon.Utility.setTheme(this);
 
-           _d = Globals.ThisAddIn.getData();
+            _d = Globals.ThisAddIn.getData();
 
-           LoadTemplatesDLL();
-        
+            LoadTemplatesDLL();
+
         }
-        ~CompareSideBar() {
-          //  System.Runtime.InteropServices.Marshal.ReleaseComObject(csb);
+        ~CompareSideBar()
+        {
+            //  System.Runtime.InteropServices.Marshal.ReleaseComObject(csb);
         }
 
         public void Create(string filename, string versionid, string matterid, string templateid, string versionName, string versionNumber, string attachmentid)
         {
             _fileName = filename;
             _matterid = matterid;
-               _versionid = versionid;
-               _templateid = templateid;
-               _versionName = versionName;
-               _versionNumber = versionNumber;
-               _attachmentid = attachmentid;
-        
+            _versionid = versionid;
+            _templateid = templateid;
+            _versionName = versionName;
+            _versionNumber = versionNumber;
+            _attachmentid = attachmentid;
+
         }
 
         private void LoadTemplatesDLL()
@@ -73,7 +74,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 //DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplates(true));
                 DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementTemplates(true));
-                
+
                 if (!dr.success) return;
 
                 DataTable dt = dr.dt;
@@ -85,7 +86,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 foreach (DataRow r in dt.Rows)
                 {
                     i = new RadComboBoxItem();
-                    i.Tag = r["Id"].ToString() ;
+                    i.Tag = r["Id"].ToString();
                     i.Content = r["Name"].ToString();
                     this.cbTemplates.Items.Add(i);
 
@@ -136,13 +137,15 @@ namespace AxiomIRISRibbon.SForceEdit
                     wordAttachment.ShowRevisions = false;
                     wordAttachment.AcceptAllRevisions();
 
+                    // To unlock Clauses
                     for (int i = 1; i <= wordAttachment.ContentControls.Count; i++)
                     {
                         wordAttachment.ContentControls[i].LockContents = false;
+                        wordAttachment.ContentControls[i].LockContentControl = false;
 
                     }
 
-         
+
 
                     /*   object objAttachment = _fileName;
                       wordAttachment = app.Documents.Open(ref objAttachment, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
@@ -160,10 +163,19 @@ namespace AxiomIRISRibbon.SForceEdit
                     wordTemplate = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
+
+                    // To unlock Clauses
+                    for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
+                    {
+                        wordTemplate.ContentControls[i].LockContents = false;
+                        wordTemplate.ContentControls[i].LockContentControl = false;
+
+                    }
+
                     //Compare
                     Globals.ThisAddIn.AddDocId(wordTemplate, "Compare", "");
                     wordTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
-                    wordTemplate.TrackRevisions = false;
+                    wordTemplate.TrackRevisions = true;
                     wordTemplate.ShowRevisions = false;
                     wordTemplate.AcceptAllRevisions();
 
@@ -172,17 +184,17 @@ namespace AxiomIRISRibbon.SForceEdit
                     wordTemplate.Windows.CompareSideBySideWith(ref o);*/
 
                     //  Compare code
-                    wordTemplate.Compare(_fileName, missing,Word.WdCompareTarget.wdCompareTargetNew, true, true, false, false, false);
-                    app.ActiveWindow.View.SplitSpecial =Word.WdSpecialPane.wdPaneRevisionsVert;
-                    app.ActiveWindow.ShowSourceDocuments =Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
+                    wordTemplate.Compare(_fileName, missing, Word.WdCompareTarget.wdCompareTargetNew, true, true, false, false, false);
+                    app.ActiveWindow.View.SplitSpecial = Word.WdSpecialPane.wdPaneRevisionsVert;
+                    app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
                     app.ActiveWindow.View.RevisionsFilter.Markup = 0;
                     app.Activate();
 
                     // close the temp files
                     var docTemplateClose = (Word._Document)wordTemplate;
-                   docTemplateClose.Close(SaveChanges: false);
+                    docTemplateClose.Close(SaveChanges: false);
                     var docAttachmentClose = (Word._Document)wordAttachment;
-                   docAttachmentClose.Close(SaveChanges: false);
+                    docAttachmentClose.Close(SaveChanges: false);
 
 
                     // System.Runtime.InteropServices.Marshal.ReleaseComObject(newdoc);
@@ -190,7 +202,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     //  docclose.Close(SaveChanges: false);
                     //  System.Runtime.InteropServices.Marshal.ReleaseComObject(olddoc);
 
-                  //  wordTemplate.Activate();
+                    //  wordTemplate.Activate();
                     //End Compare
                     Globals.Ribbons.Ribbon1.CloseWindows();
 
@@ -206,13 +218,13 @@ namespace AxiomIRISRibbon.SForceEdit
                 //Logger.Log(ex, "Clone");
             }
         }
-       
-     
+
+
         public bool SaveContract(bool ForceSave, bool SaveDoc)
         {
             try
             {
-                int seq = 1;
+                //  int seq = 1;
                 string strFileAttached = _fileName;
                 //Save the Contract    
                 Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
@@ -252,7 +264,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveVersion(_versionid, _matterid, _templateid, _versionName, _versionNumber));
                 if (!dr.success) return false;
                 _versionid = dr.id;
-              
+
                 if (SaveDoc)
                 {
                     Globals.ThisAddIn.AddDocId(_doc, "Contract", _versionid);
@@ -279,7 +291,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     dr = AxiomIRISRibbon.Utility.HandleData(_d.UpdateFile(_attachmentid, vfilename, filenamecopy));
 
                 }
-               
+
                 Globals.ThisAddIn.AddSaveHandler(); // add it back in
                 Globals.ThisAddIn.ProcessingStop("End");
                 return true;
@@ -287,8 +299,5 @@ namespace AxiomIRISRibbon.SForceEdit
             catch (Exception ex) { return false; }
         }
 
-
-
-        public Word.WdRevisionsMarkup wdRevisionsMarkupNone { get; set; }
     }
 }

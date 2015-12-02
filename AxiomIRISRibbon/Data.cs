@@ -424,19 +424,25 @@ namespace AxiomIRISRibbon
         }*/
         public DataReturn GetAgreementFalse(bool published) 
         {
-            return _sf.RunSOQL("SELECT Id,Name,state__c,Amendment__c FROM RibbonTemplate__c where Amendment__c = false and state__c = 'published' order by name");
+            return _sf.RunSOQL("SELECT Id,Name,state__c,Amendment__c FROM RibbonTemplate__c WHERE Amendment__c = false and state__c = 'published' order by name");
         }
         public DataReturn getLatestVersionDetails(string matterId)
         {
             //
-            string LatestVersionDetail, matterRecord;
+            DataReturn matterRecordDataReturn=new DataReturn();
             string latestVersionId;
-            LatestVersionDetail = "select Id from version__c where matter__c = '" + matterId + "' and version_number__c != null order by version_number__c desc limit 1";
-            DataReturn latestVersionDataReturn = _sf.RunSOQL(LatestVersionDetail);
-            DataTable latestVersionDataTable = latestVersionDataReturn.dt;
-            latestVersionId = latestVersionDataTable.Rows[0][0].ToString();
-            matterRecord = "select parentid from attachment where parentid = '" + latestVersionId + "'";
-            DataReturn matterRecordDataReturn = _sf.RunSOQL(matterRecord);
+            //string LatestVersionDetail;
+           // LatestVersionDetail = "SELECT Id FROM version__c WHERE matter__c = '" + matterId + "' and version_number__c != null order by version_number__c desc limit 1";
+            DataReturn latestVersionDataReturn = _sf.RunSOQL("SELECT Id FROM version__c WHERE matter__c = '" + matterId + "' and version_number__c != null order by version_number__c desc limit 1");
+          //  DataTable latestVersionDataTable = latestVersionDataReturn.dt;
+            if (latestVersionDataReturn.dt.Rows.Count > 0)
+            {
+                latestVersionId = latestVersionDataReturn.dt.Rows[0][0].ToString();
+                matterRecordDataReturn = _sf.RunSOQL("SELECT parentid FROM attachment WHERE parentid = '" + latestVersionId + "'");
+            }
+            else {
+                matterRecordDataReturn.errormessage = "Cloning cannot occur since selected Agreement does not have an available Version.";
+            }
             return matterRecordDataReturn;
         }
         public DataReturn GetAgreementTemplates(bool published)

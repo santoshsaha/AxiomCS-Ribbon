@@ -258,24 +258,35 @@ namespace AxiomIRISRibbon
 
             Globals.ThisAddIn.ProcessingStart("Save ...");
 
-            DataRow drow;
+            DataRow drow, dtr;
 
             DataView dv = (DataView)dgTemplates.ItemsSource;
-            DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
             drow = dv.Table.NewRow();
             //Update from the form
-            string Agreement = (this.cbAgreementTemplate.SelectedValue).ToString();
-            bool genericMasterAgreement = (bool)this.chkAmendmewnt.IsChecked;
-            dtr["AgreementTemplate__c"] = Agreement;
-            dtr["Generic_Master_Agreement__c"] = genericMasterAgreement;
-            //drow["AgreementTemplate__c"] = Agreement;
-            Utility.UpdateRow(new Grid[] { formGrid1, formGrid2 }, drow);         
+            Utility.UpdateRow(new Grid[] { formGrid1, formGrid2 }, drow);   
 
-            //Save the values
-            //DataReturn dr = Utility.HandleData(d.SaveTemplate(drow));
+            //Code PES
+            if (cbAgreementTemplate.IsVisible)
+            {
+                dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
+                string Agreement = (this.cbAgreementTemplate.SelectedValue).ToString();
+                bool genericMasterAgreement = (bool)this.chkAmendmewnt.IsChecked;
+                dtr["AgreementTemplate__c"] = Agreement;
+                dtr["Generic_Master_Agreement__c"] = genericMasterAgreement;
+                //drow["AgreementTemplate__c"] = Agreement;
+                //Save the values
+                //DataReturn dr = Utility.HandleData(d.SaveTemplate(drow));
+              
+            }
+            else { }
+
+         
             DataReturn dr = Utility.HandleData(d.SaveTemplate(dtr));
+            //End Code
             if (!dr.success) return;
             tbId.Text = dr.id;
+
+          
 
             Globals.ThisAddIn.ProcessingStart("Save Template Data");
 

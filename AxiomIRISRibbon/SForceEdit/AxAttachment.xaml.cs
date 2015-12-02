@@ -342,6 +342,23 @@ namespace AxiomIRISRibbon.SForceEdit
             if(r!=null){
 
                 string filename = r["Name"].ToString();
+
+                //Code PES
+                //For Visibility of Create Amend button in ribbbon based on Master_Agreement_Type__c value
+                string agrementId = r["parentid"].ToString();
+                DataReturn dr1 = _d.GetAgreementTypefromParentId(agrementId);
+                if (!dr1.success) return;
+                DataTable dt = dr1.dt;
+                if (dt.Rows.Count == 0) return;
+                if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() == "Amendment")
+                {
+                    Globals.Ribbons.Ribbon1.btnAmend.Enabled = true;
+                }
+                else
+                {
+                    Globals.Ribbons.Ribbon1.btnAmend.Enabled = false;
+                }
+                //End Code
                 if (!filename.Contains("."))
                 {
                     //No doc extension - read the content type and add the extension from that

@@ -116,7 +116,7 @@ namespace AxiomIRISRibbon
 
             // ----------------------------------------------------------------------------------------------------------------------------------------------------
             // Change Nov : Auto Login
-            bool autologin = true;
+            bool autologin = false;
 
             if (autologin && _localSettings.Debug)
             {
@@ -127,9 +127,9 @@ namespace AxiomIRISRibbon
                 // This can be used for testing so you don't have to login every time
                 // set the autologin about to true
                 // then add the details to the login call - should be username, password, sforce token, sforce url, login description to show in the about 
-                string rtn = _d.Login("santosh.saha@cs.com.rksb1", "pass@word1", "LGZ0rTkNnuksEetJr1vrG0YS", "https://test.salesforce.com", "AutoLogin - Sales");
+               // string rtn = _d.Login("santosh.saha@cs.com.rksb1", "pass@word1", "LGZ0rTkNnuksEetJr1vrG0YS", "https://test.salesforce.com", "AutoLogin - Sales");
                
-              //  string rtn = "";
+                string rtn = "";
                 if (rtn == "")
                 {
                     

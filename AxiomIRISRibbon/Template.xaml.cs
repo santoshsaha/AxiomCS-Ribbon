@@ -100,7 +100,7 @@ namespace AxiomIRISRibbon
             cbAgreementTemplate.SelectedValuePath = "Id";
             cbAgreementTemplate.ItemsSource = cbp;
             //End Code
-           
+
 
         }
         public class AgreementComboBoxPair
@@ -118,32 +118,32 @@ namespace AxiomIRISRibbon
 
         private void LoadTemplatesDLL()
         {
-          /*  try
-            {
-                d = Globals.ThisAddIn.getData();
-                DataReturn dr = AxiomIRISRibbon.Utility.HandleData(d.GetTemplates(true));
-                if (!dr.success) return;
+            /*  try
+              {
+                  d = Globals.ThisAddIn.getData();
+                  DataReturn dr = AxiomIRISRibbon.Utility.HandleData(d.GetTemplates(true));
+                  if (!dr.success) return;
 
-                DataTable dt1 = dr.dt;
-                //cbAmendmewnt.Items.Clear();
+                  DataTable dt1 = dr.dt;
+                  //cbAmendmewnt.Items.Clear();
 
-                ComboBoxItem i;
+                  ComboBoxItem i;
 
-                // RadComboBoxItem selected = null;
-                foreach (DataRow r in dt1.Rows)
-                {
-                    i = new ComboBoxItem();
-                    i.Tag = r["Id"].ToString();
-                    i.Content = r["Name"].ToString();
-                    this.cbAmendmewnt.Items.Add(i);
+                  // RadComboBoxItem selected = null;
+                  foreach (DataRow r in dt1.Rows)
+                  {
+                      i = new ComboBoxItem();
+                      i.Tag = r["Id"].ToString();
+                      i.Content = r["Name"].ToString();
+                      this.cbAmendmewnt.Items.Add(i);
 
-                }
+                  }
 
-            }
-            catch (Exception ex)
-            {
+              }
+              catch (Exception ex)
+              {
 
-            }*/
+              }*/
         }
 
         public void UpdateOptions(ComboBox c, string[] options)
@@ -258,42 +258,60 @@ namespace AxiomIRISRibbon
 
             Globals.ThisAddIn.ProcessingStart("Save ...");
 
-            DataRow drow, dtr;
-            DataReturn dtaret;
+            DataRow drow;
+
             DataView dv = (DataView)dgTemplates.ItemsSource;
             drow = dv.Table.NewRow();
-            //Update from the form
-            Utility.UpdateRow(new Grid[] { formGrid1, formGrid2 }, drow);   
-
-            //Code PES
-            if (cbAgreementTemplate.IsVisible)
+            string Agreement = string.Empty;
+            bool genericMasterAgreement;
+            DataRow dtr;
+            DataReturn dr;
+            if (dgTemplates.SelectedItem != null)
             {
                 dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
-                string Agreement = (this.cbAgreementTemplate.SelectedValue).ToString();
-                bool genericMasterAgreement = (bool)this.chkAmendmewnt.IsChecked;
+
+                //Update from the form
+                cbAgreementTemplate.IsEnabled = false;
+                chkAmendmewnt.IsEnabled = false;
+                Agreement = (this.cbAgreementTemplate.SelectedValue).ToString();
+                genericMasterAgreement = (bool)this.chkAmendmewnt.IsChecked;
+                cbAgreementTemplate.IsEnabled = true;
+                chkAmendmewnt.IsEnabled = true;
+                dtr["Name"] = tbName.Text;
+                dtr["State__c"] = cbState.SelectionBoxItem;
+                dtr["Description__c"] = tbDescription.Text;
+                dtr["PlaybookLink__c"] = tbPlaybookLink__c.Text;
+                dtr["type__C"] = cbType.SelectionBoxItem;
                 dtr["AgreementTemplate__c"] = Agreement;
                 dtr["Generic_Master_Agreement__c"] = genericMasterAgreement;
                 //drow["AgreementTemplate__c"] = Agreement;
-                //Save the values
-                //DataReturn dr = Utility.HandleData(d.SaveTemplate(drow));
-                dtaret = Utility.HandleData(d.SaveTemplate(dtr));
+                //Utility.UpdateRow(new Grid[] { formGrid1, formGrid2 }, dtr);
+                DataReturn drUpdate = Utility.HandleData(d.SaveTemplate(dtr));
+                dr = drUpdate;
             }
-            else {
-                
+
+            else
+            {
+                // Agreement = (this.cbAgreementTemplate.SelectedValue).ToString();
+                genericMasterAgreement = (bool)this.chkAmendmewnt.IsChecked;
+                cbAgreementTemplate.IsEnabled = false;
+                chkAmendmewnt.IsEnabled = false;
+                drow["Name"] = tbName.Text;
+                drow["State__c"] = cbState.SelectionBoxItem;
+                drow["Description__c"] = tbDescription.Text;
+                drow["PlaybookLink__c"] = tbPlaybookLink__c.Text;
+                drow["type__C"] = cbType.SelectionBoxItem;
                 drow["AgreementTemplate__c"] = "";
-                drow["Generic_Master_Agreement__c"] = false;
+                drow["Generic_Master_Agreement__c"] = genericMasterAgreement;
                 drow["Amendment__c"] = false;
-                dtaret = Utility.HandleData(d.SaveTemplate(drow));
-            
+                DataReturn drNew = Utility.HandleData(d.SaveTemplate(drow));
+                dr = drNew;
             }
+            //Save the values
 
-         
-           // DataReturn dr = Utility.HandleData(d.SaveTemplate(dtr));
-            //End Code
-            if (!dtaret.success) return;
-            tbId.Text = dtaret.id;
 
-          
+            if (!dr.success) return;
+            tbId.Text = dr.id;
 
             Globals.ThisAddIn.ProcessingStart("Save Template Data");
 
@@ -360,7 +378,7 @@ namespace AxiomIRISRibbon
             dgTemplates.SelectedIndex = -1;
             btnSave.IsEnabled = true;
             btnCancel.IsEnabled = true;
-            tbName.Focus();
+            //tbName.Focus();
             btnOpen.IsEnabled = false;
         }
 
@@ -388,10 +406,48 @@ namespace AxiomIRISRibbon
         {
             Open();
         }
-/*
+        /*
+                private void dgTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
+                {
+                    Utility.ReadOnlyForm(false, new Grid[] { formGrid1, formGrid2 });
+
+                    if (dgTemplates.SelectedIndex > -1)
+                    {
+                        if (btnSave.IsEnabled)
+                        {
+                            MessageBoxResult res = MessageBox.Show("Loose Changes?", "Warning", MessageBoxButton.OKCancel);
+                            if (res == MessageBoxResult.Cancel)
+                            {
+                                dgTemplates.SelectedIndex = -1;
+                                return;
+                            }
+                        }
+
+                        Utility.UpdateForm(new Grid[] { formGrid1, formGrid2 }, ((DataRowView)dgTemplates.SelectedItem).Row);
+
+                        btnSave.IsEnabled = false;
+                        btnCancel.IsEnabled = false;
+                        btnOpen.IsEnabled = true;
+                        tbXML.Text = "";
+                    }
+                    else
+                    {
+                        Utility.ClearForm(new Grid[] { formGrid1, formGrid2 });
+                        btnSave.IsEnabled = false;
+                        btnCancel.IsEnabled = false;
+                        btnOpen.IsEnabled = false;
+                        tbXML.Text = "";
+                    }
+
+                    LoadTemplatesDLL();
+                }
+
+        */
+
         private void dgTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Utility.ReadOnlyForm(false, new Grid[] { formGrid1, formGrid2 });
+
 
             if (dgTemplates.SelectedIndex > -1)
             {
@@ -406,45 +462,6 @@ namespace AxiomIRISRibbon
                 }
 
                 Utility.UpdateForm(new Grid[] { formGrid1, formGrid2 }, ((DataRowView)dgTemplates.SelectedItem).Row);
-
-                btnSave.IsEnabled = false;
-                btnCancel.IsEnabled = false;
-                btnOpen.IsEnabled = true;
-                tbXML.Text = "";
-            }
-            else
-            {
-                Utility.ClearForm(new Grid[] { formGrid1, formGrid2 });
-                btnSave.IsEnabled = false;
-                btnCancel.IsEnabled = false;
-                btnOpen.IsEnabled = false;
-                tbXML.Text = "";
-            }
-
-            LoadTemplatesDLL();
-        }
-
-*/
-
-        private void dgTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Utility.ReadOnlyForm(false, new Grid[] { formGrid1, formGrid2 });
-
-
-            if (dgTemplates.SelectedIndex > -1)
-            {
-                if (btnSave.IsEnabled)
-                {
-                    MessageBoxResult res = MessageBox.Show("Loose Changes?", "Warning", MessageBoxButton.OKCancel);
-                    if (res == MessageBoxResult.Cancel)
-                    {
-                        dgTemplates.SelectedIndex = -1;
-                        return;
-                    }
-                }
-
-                Utility.UpdateForm(new Grid[] { formGrid1, formGrid2 }, ((DataRowView)dgTemplates.SelectedItem).Row);
-         
                 {
                     string id = Convert.ToString(((DataRowView)dgTemplates.SelectedItem).Row["AgreementTemplate__c"]);
                     if (string.IsNullOrEmpty(id))
@@ -462,17 +479,25 @@ namespace AxiomIRISRibbon
                     //dgTemplates.SelectedItem.Row["AgreementTemplate__c"].tostring();
                     if (((DataRowView)dgTemplates.SelectedItem).Row["Amendment__c"].ToString() == "true")
                     {
-                        showHideAgreement(true);
-                        btnSave.IsEnabled = true;
-                        btnCancel.IsEnabled = true;
-                    
+                        label4.Visibility = System.Windows.Visibility.Visible;
+                        cbAgreementTemplate.Visibility = System.Windows.Visibility.Visible;
+                        label5.Visibility = System.Windows.Visibility.Visible;
+                        chkAmendmewnt.Visibility = System.Windows.Visibility.Visible;
+                        btnSave.IsEnabled = false;
+                        btnCancel.IsEnabled = false;
+                        btnOpen.IsEnabled = true;  //jyoti
+
                     }
                     else
                     {
-                        showHideAgreement(false);
+                        label4.Visibility = System.Windows.Visibility.Hidden;
+                        cbAgreementTemplate.Visibility = System.Windows.Visibility.Hidden;
+                        label5.Visibility = System.Windows.Visibility.Hidden;
+                        chkAmendmewnt.Visibility = System.Windows.Visibility.Hidden;
                         btnSave.IsEnabled = false;
                         btnCancel.IsEnabled = false;
-                       
+                        btnOpen.IsEnabled = true;  //jyoti
+
                     }
                 }
             }
@@ -481,32 +506,11 @@ namespace AxiomIRISRibbon
                 Utility.ClearForm(new Grid[] { formGrid1, formGrid2 });
                 btnSave.IsEnabled = false;
                 btnCancel.IsEnabled = false;
-                btnOpen.IsEnabled = true;
+                btnOpen.IsEnabled = false;
                 tbXML.Text = "";
             }
 
             LoadTemplatesDLL();
-        }
-        private void showHideAgreement(bool IsVisible)
-        {
-            if (IsVisible)
-            {
-                label4.Visibility = System.Windows.Visibility.Visible;
-                cbAgreementTemplate.Visibility = System.Windows.Visibility.Visible;
-                label5.Visibility = System.Windows.Visibility.Visible;
-                chkAmendmewnt.Visibility = System.Windows.Visibility.Visible;
-                
-
-            }
-            else
-            {
-                label4.Visibility = System.Windows.Visibility.Hidden;
-                cbAgreementTemplate.Visibility = System.Windows.Visibility.Hidden;
-                label5.Visibility = System.Windows.Visibility.Hidden;
-                chkAmendmewnt.Visibility = System.Windows.Visibility.Hidden;
-            
-
-            }
         }
         private void formTextBoxChanged(object sender, TextChangedEventArgs e)
         {
@@ -522,9 +526,10 @@ namespace AxiomIRISRibbon
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            showHideAgreement(false);
             if (btnSave.IsEnabled)
             {
+                cbAgreementTemplate.IsEnabled = false;
+                chkAmendmewnt.IsEnabled = false;
                 MessageBoxResult res = MessageBox.Show("Loose Changes?", "Warning", MessageBoxButton.OKCancel);
                 if (res == MessageBoxResult.Cancel)
                 {
@@ -535,10 +540,15 @@ namespace AxiomIRISRibbon
 
             //Clear the form 
             Utility.ClearForm(new Grid[] { formGrid1, formGrid2 });
+            Utility.ReadOnlyForm(false, new Grid[] { formGrid2 });
+            label4.Visibility = System.Windows.Visibility.Hidden;
+            label5.Visibility = System.Windows.Visibility.Hidden;
+            cbAgreementTemplate.Visibility = System.Windows.Visibility.Hidden;
+            chkAmendmewnt.Visibility = System.Windows.Visibility.Hidden;
             dgTemplates.SelectedIndex = -1;
             btnSave.IsEnabled = true;
             btnCancel.IsEnabled = true;
-            tbName.Focus();
+            tbName.Text = "";
             btnOpen.IsEnabled = false;
             tbXML.Text = "";
         }
@@ -660,16 +670,19 @@ namespace AxiomIRISRibbon
         {
             this.Hide();
         }
-       //Code PES
+        //Code PES
         private void cbAgreement_SelectionChanged(object sender, RoutedEventArgs e)
         {
-
+            btnSave.IsEnabled = true;
+            btnCancel.IsEnabled = true;
             this.chkAmendmewnt.IsChecked = false;
 
         }
 
         private void chkAmendmewnt_checked(object sender, RoutedEventArgs e)
         {
+            btnSave.IsEnabled = true;
+            btnCancel.IsEnabled = true;
             this.cbAgreementTemplate.SelectedIndex = 0;
 
         }

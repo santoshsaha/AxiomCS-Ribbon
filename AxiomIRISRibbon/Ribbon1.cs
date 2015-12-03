@@ -585,12 +585,10 @@ namespace AxiomIRISRibbon
             }
 
         }
-
-        /*
-
         private void btnExportToPDF_Click(object sender, RibbonControlEventArgs e)
         {
             object oMissing = System.Reflection.Missing.Value;
+
 
             Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
             Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
@@ -598,7 +596,22 @@ namespace AxiomIRISRibbon
             Word.Range source = template.Range(template.Content.Start, template.Content.End);
             export.Range(export.Content.Start).InsertXML(source.WordOpenXML);
 
-            export.Activate();
+            Word.Shape logoWatermark = null;
+
+            foreach (Word.Section section in export.Sections)
+            {
+                logoWatermark = section.Headers[Word.WdHeaderFooterIndex.wdHeaderFooterPrimary].Shapes.AddTextEffect(Microsoft.Office.Core.MsoPresetTextEffect.msoTextEffect1, "Draft", "Ariel", 72, Microsoft.Office.Core.MsoTriState.msoCTrue, Microsoft.Office.Core.MsoTriState.msoFalse, 0, 0);
+                logoWatermark.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
+                logoWatermark.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
+                logoWatermark.Fill.Solid();
+                logoWatermark.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray20;
+                logoWatermark.RelativeHorizontalPosition = Word.WdRelativeHorizontalPosition.wdRelativeHorizontalPositionMargin;
+                logoWatermark.RelativeVerticalPosition = Word.WdRelativeVerticalPosition.wdRelativeVerticalPositionMargin;
+                // center location
+                logoWatermark.Left = (float)Word.WdShapePosition.wdShapeCenter;
+                logoWatermark.Top = (float)Word.WdShapePosition.wdShapeCenter;
+            }
+
 
             object fileFormat = Word.WdSaveFormat.wdFormatPDF;
             SaveFileDialog dlg = new SaveFileDialog();
@@ -610,16 +623,17 @@ namespace AxiomIRISRibbon
             export.SaveAs(ref outputFileName, ref fileFormat, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                 ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                 ref oMissing, ref oMissing, ref oMissing);
-            export.Activate();
-            object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
-            ((Microsoft.Office.Interop.Word._Document)export).Close(ref saveChanges, ref oMissing, ref oMissing);
-            export = null;
 
+            // Close the Word document, but leave the Word application open.
+            // doc has to be cast to type _Document so that it will find the
+            // correct Close method.                
+            object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
+            ((Word._Document)export).Close(ref saveChanges, ref oMissing, ref oMissing);
+            export = null;
 
         }
 
-        */
-
+        /*
         private void btnExportToPDF_Click(object sender, RibbonControlEventArgs e)
         {
             object oMissing = System.Reflection.Missing.Value;
@@ -685,40 +699,47 @@ namespace AxiomIRISRibbon
             //oWord = null;
 
         }
+        */
         private void btnAmend_Click(object sender, RibbonControlEventArgs e)
         {
-            //Save the doc and the data
-            Globals.ThisAddIn.GetTaskPaneControlCompare().SaveContract(false, true);
-
-            // CompareAmendment.FromRibbonToCreate();
-            //  Id = Globals.ThisAddIn.Application.Documents.Add(attachmentid);
-            // Globals.ThisAddIn.Application.Documents.Add(attachmentid) = Id;
-            // System.Windows.Application.Current.Resources.GetValue("attachmentid") as Id;
-            string attachmentId = Globals.ThisAddIn.GetAttachmentId();
-            Id = attachmentId;
-            Word.Document docTest = Globals.ThisAddIn.Application.ActiveDocument;
-            if (this.Id == null) this.Id = Globals.ThisAddIn.GetCurrentDocId();
-            if (this.Id != "")
+            try
             {
-                _d = Globals.ThisAddIn.getData();
-                DataReturn dr1 = AxiomIRISRibbon.Utility.HandleData(_d.AttachmentInfo(Id));
-                if (!dr1.success) return;
-                DataTable dtAllAttachments = dr1.dt;
-                string _attachmentid = dtAllAttachments.Rows[0]["id"].ToString();
-                string _filename = dtAllAttachments.Rows[0]["name"].ToString();
-                string _parentId = dtAllAttachments.Rows[0]["ParentId"].ToString();
+                //Save the doc and the data
+                if (Globals.ThisAddIn.GetTaskPaneControlCompare() != null)
+                {
+                    Globals.ThisAddIn.GetTaskPaneControlCompare().SaveContract(false, true);
+                }
+                // CompareAmendment.FromRibbonToCreate();
+                //  Id = Globals.ThisAddIn.Application.Documents.Add(attachmentid);
+                // Globals.ThisAddIn.Application.Documents.Add(attachmentid) = Id;
+                // System.Windows.Application.Current.Resources.GetValue("attachmentid") as Id;
+                string attachmentId = Globals.ThisAddIn.GetAttachmentId();
+                Id = attachmentId;
+                Word.Document docTest = Globals.ThisAddIn.Application.ActiveDocument;
+                if (this.Id == null) this.Id = Globals.ThisAddIn.GetCurrentDocId();
+                if (this.Id != "")
+                {
+                    _d = Globals.ThisAddIn.getData();
+                    DataReturn dr1 = AxiomIRISRibbon.Utility.HandleData(_d.AttachmentInfo(Id));
+                    if (!dr1.success) return;
+                    DataTable dtAllAttachments = dr1.dt;
+                    string _attachmentid = dtAllAttachments.Rows[0]["id"].ToString();
+                    string _filename = dtAllAttachments.Rows[0]["name"].ToString();
+                    string _parentId = dtAllAttachments.Rows[0]["ParentId"].ToString();
 
-                CompareAmendment amend = new CompareAmendment();
-                amend.Create(_attachmentid, _parentId, _filename);
-                amend.Focus();
-                amend.Show();
+                    CompareAmendment amend = new CompareAmendment();
+                    amend.Create(_attachmentid, _parentId, _filename);
+                    amend.Focus();
+                    amend.Show();
+                }
+                else
+                {
+                    //_d = Globals.ThisAddIn.getData();
+                    //string id = Globals.ThisAddIn.GetCurrentDocId();
+                    //Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);
+                }
             }
-            else
-            {
-                //_d = Globals.ThisAddIn.getData();
-                //string id = Globals.ThisAddIn.GetCurrentDocId();
-                //Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);
-            }
+            catch (Exception ex) { }
         }
 
         //End PES

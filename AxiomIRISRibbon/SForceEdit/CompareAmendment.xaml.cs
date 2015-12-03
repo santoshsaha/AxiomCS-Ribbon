@@ -151,7 +151,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     string strTemplateId = string.Empty;
                     if (chkMaster.IsChecked == true)
                     {
-                        DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAmendmentTemplate(_strTemplate, true));
+                        DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAmendmentTemplate("", true));
                         strTemplateId = dr.dt.Rows[0]["Id"].ToString();
                     }
                     else if (this.radComboAmendment.SelectedItem != null)
@@ -387,8 +387,7 @@ namespace AxiomIRISRibbon.SForceEdit
             Globals.ThisAddIn.AddDocId(objtempDocAmendment, "AmendmentDocument", "");
 
             object o = objtempAmendmentTemplate;
-            objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
-
+         
 
             //Remove Markup from template doc
             Word.Fields fields = objtempAmendmentTemplate.Fields;
@@ -399,6 +398,8 @@ namespace AxiomIRISRibbon.SForceEdit
 
             }
 
+            objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
+
             objtempDocAmendment.AcceptAllRevisions();
             objtempDocAmendment.TrackRevisions = true;
             objtempDocAmendment.ActiveWindow.View.ShowRevisionsAndComments = false;
@@ -407,7 +408,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
             objtempAmendmentTemplate.Activate();
         }
-
+        /*
         private static void CompareSplitView(string fileAmendmentDocumentPath, string fileAmendmentTemplatePath)
         {
             //Compare Split view
@@ -457,7 +458,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
 
         }
-
+        */
         public static void OpenExistingAmendment(string documentPath, string templatePath, string documentAttachmentId, string templateAttachmentId, string documentName,
         string templateName, string versionId)
         {
@@ -503,6 +504,9 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 //objtempAmendmentTemplate.RejectAllRevisions();
                 UndoAllChanges(objtempAmendmentTemplate);
+
+         
+
                 objtempAmendmentTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                 objtempAmendmentTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupAll;
 
@@ -565,7 +569,9 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
                 }
 
+           
                 //Remove Markup from template doc
+                objtempAmendmentTemplate.TrackRevisions = false;
                 Word.Fields fields = objtempAmendmentTemplate.Fields;
                 foreach (Microsoft.Office.Interop.Word.Field f in fields)
                 {
@@ -573,6 +579,8 @@ namespace AxiomIRISRibbon.SForceEdit
                     objtempAmendmentTemplate.Application.Selection.InsertParagraph();
 
                 }
+                objtempAmendmentTemplate.TrackRevisions = true;
+                // End Remove Markup
 
                 //objtempDocAmendment.TrackRevisions = true;
 
@@ -594,6 +602,7 @@ namespace AxiomIRISRibbon.SForceEdit
               if (objtempDocAmendment != null)
                 {
                     objtempDocAmendment.TrackRevisions = true;
+                    objtempDocAmendment.ActiveWindow.View.ShowRevisionsAndComments = false;
                 }}
         }
         /*

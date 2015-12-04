@@ -121,7 +121,8 @@ namespace AxiomIRISRibbon.SForceEdit
                     foreach (DataRow rw in dtAttachments.Rows)
                     {
                         byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
-                        fileTemplate = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
+                       // fileTemplate = _d.GetTempFilePath(rw["Id"].ToString() + "_" + rw["Name"].ToString());
+                        fileTemplate = _d.GetTempFilePath("Template View");
                         File.WriteAllBytes(fileTemplate, toBytes);
                         //   _source = app.Documents.Open(filename);
 

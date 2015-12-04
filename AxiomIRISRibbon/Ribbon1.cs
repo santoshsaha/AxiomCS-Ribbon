@@ -571,7 +571,7 @@ namespace AxiomIRISRibbon
                     dlg.Filter = "Word Document (*.doc;*.docx;*.docm)|*.doc;*.docx;*.docx";
                     dlg.FileName = "ExportDocument-" + dlg.Title.Replace(" ", "");
                     dlg.ShowDialog();
-                    export.SaveAs2(dlg.FileName,ReadOnlyRecommended:true);
+                    export.SaveAs2(dlg.FileName,ReadOnlyRecommended:false);
                     Globals.ThisAddIn.ProcessingStop("Finished");
 
                 }
@@ -591,8 +591,9 @@ namespace AxiomIRISRibbon
 
 
             Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
+         //   template.
             Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
-
+            export.ActiveWindow.Visible = false;
             Word.Range source = template.Range(template.Content.Start, template.Content.End);
             export.Range(export.Content.Start).InsertXML(source.WordOpenXML);
 

@@ -27,18 +27,18 @@ namespace AxiomIRISRibbon.SForceEdit
     public partial class CompareSideBar : UserControl
     {
 
-        private Data _d;
+        private static Data _d;
         static Word.Application app;
         static Word.Document _source;
-        private string _fileName;
-        private string _matterid;
-        private string _versionid;
-        private string _templateid;
-        private string _versionName;
-        private string _versionNumber;
-        private string _attachmentid;
-        private Word.Document _doc;
-        private bool _firstsave;
+        private static  string _fileName;
+        private static string _matterid;
+        private static string _versionid;
+        private static string _templateid;
+        private static string _versionName;
+        private static string _versionNumber;
+        private static string _attachmentid;
+        private static Word.Document _doc;
+        private static bool _firstsave;
 
         public CompareSideBar()
         {
@@ -175,10 +175,17 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     //Compare
                     Globals.ThisAddIn.AddDocId(wordTemplate, "Compare", "");
+                    //Globals.ThisAddIn.AddDocId(wordTemplate, "Contract",  "","Compare");
                     wordTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
                     wordTemplate.TrackRevisions = true;
                     wordTemplate.ShowRevisions = false;
                     wordTemplate.AcceptAllRevisions();
+
+                    // Code to remove   the document modified by
+
+                 //   wordTemplate.RemoveDocumentInformation(Microsoft.Office.Interop.Word.WdRemoveDocInfoType.wdRDIDocumentProperties);
+
+                    // End Code
 
                     /*
                     object o = wordTemplate;
@@ -221,7 +228,7 @@ namespace AxiomIRISRibbon.SForceEdit
         }
 
 
-        public bool SaveContract(bool ForceSave, bool SaveDoc)
+        public static bool SaveCompare(bool ForceSave, bool SaveDoc)
         {
             try
             {

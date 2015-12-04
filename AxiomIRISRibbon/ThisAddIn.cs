@@ -116,7 +116,7 @@ namespace AxiomIRISRibbon
 
             // ----------------------------------------------------------------------------------------------------------------------------------------------------
             // Change Nov : Auto Login
-            bool autologin = true;
+            bool autologin = false;
 
             if (autologin && _localSettings.Debug)
             {
@@ -127,9 +127,9 @@ namespace AxiomIRISRibbon
                 // This can be used for testing so you don't have to login every time
                 // set the autologin about to true
                 // then add the details to the login call - should be username, password, sforce token, sforce url, login description to show in the about 
-                string rtn = _d.Login("santosh.saha@cs.com.rksb1", "pass@word1", "LGZ0rTkNnuksEetJr1vrG0YS", "https://test.salesforce.com", "AutoLogin - Sales");
+               // string rtn = _d.Login("santosh.saha@cs.com.rksb1", "pass@word1", "LGZ0rTkNnuksEetJr1vrG0YS", "https://test.salesforce.com", "AutoLogin - Sales");
                
-              //  string rtn = "";
+                string rtn = "";
                 if (rtn == "")
                 {
                     
@@ -1062,6 +1062,25 @@ namespace AxiomIRISRibbon
             return;
         }
 
+          public void AddDocId(Word.Document doc, string type, string id, string comparetype)
+       {
+           string prop = ReadDocumentProperty(doc, "Axiom");
+           if (prop != null && prop != "")
+           {
+               //Delete and add
+               Office.DocumentProperties properties = (Office.DocumentProperties)doc.CustomDocumentProperties;
+
+               properties["Axiom"].Delete();
+               properties.Add("Axiom", false, Office.MsoDocProperties.msoPropertyTypeString, type + "|" + id + "|" + comparetype);
+
+           }
+           else
+           {
+               Office.DocumentProperties properties = (Office.DocumentProperties)doc.CustomDocumentProperties;
+               properties.Add("Axiom", false, Office.MsoDocProperties.msoPropertyTypeString, type + "|" + id+ "|" + comparetype);
+           }
+           return;
+       }
         public void DeleteDocId(Word.Document doc)
         {
             string prop = ReadDocumentProperty(doc, "Axiom");
@@ -2467,7 +2486,8 @@ namespace AxiomIRISRibbon
                     if (propa[0] == "Compare")
                     {
                         //Save the doc and the data
-                        GetTaskPaneControlCompare().SaveContract(false, true);
+                      ///  GetTaskPaneControlCompare().SaveContract(false, true);
+                        CompareSideBar.SaveCompare(false, true);
 
                         //Cancel the save
                         SaveAsUI = false;
@@ -2476,7 +2496,7 @@ namespace AxiomIRISRibbon
                     else if (propa[0] == "AmendmentDocument")
                     {
                         //Save the doc and the data
-                        CompareAmendment.SaveContract(false, true, false);
+                        CompareAmendment.SaveAmend(false, true, false);
 
                         //Cancel the save
                         SaveAsUI = false;
@@ -2486,7 +2506,7 @@ namespace AxiomIRISRibbon
                     else if (propa[0] == "AmendmentTemplate")
                     {
                         //Save the doc and the data
-                        CompareAmendment.SaveContract(false, true, true);
+                        CompareAmendment.SaveAmend(false, true, true);
 
                         //Cancel the save
                         SaveAsUI = false;

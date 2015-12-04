@@ -5,13 +5,36 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
-             WindowStartupLocation="CenterScreen" ResizeMode="NoResize" d:DesignWidth="350" Header="Axiom IRIS" Name="windowAttachmentsView" Height="200" Width="350">
+             WindowStartupLocation="CenterScreen" Focusable="True" ResizeMode="NoResize" d:DesignWidth="350" Header="Axiom IRIS" Name="windowAttachmentsView" Height="600" Width="800">
     <Grid Margin="0,0,0,0">
 
-        <telerik:RadComboBox Name="radComboAttachments" HorizontalAlignment="Left" Margin="27,51,0,0" VerticalAlignment="Top" Width="276"/>
-        <telerik:RadButton Name="btnOpen" Content="Open" HorizontalAlignment="Left" Margin="148,119,0,0" VerticalAlignment="Top" Width="75" Click="btnOpen_Click" IsDefault="True"/>
-        <telerik:RadButton Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="228,119,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"  IsCancel="True"/>
-        <Label Content="Select one document to open : " HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="276"/>
+        <!--<telerik:RadComboBox Name="radComboAttachments" Visibility="Hidden" HorizontalAlignment="Left" Margin="27,51,0,0" VerticalAlignment="Top" Width="276" SelectionChanged="radComboAttachments_SelectionChanged"/>-->
+        <telerik:RadButton Name="btnOpen" Content="Open" HorizontalAlignment="Left" Margin="434,526,0,0" VerticalAlignment="Top" Width="75" Click="btnOpen_Click" IsDefault="True" RenderTransformOrigin="4.12,5.591"/>
+        <telerik:RadButton Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="585,526,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"  IsCancel="True"/>
+        <Label Content="Select one document to open : " HorizontalAlignment="Left" Margin="0,27,0,0" VerticalAlignment="Top" Width="276"/>
+        <RichTextBox Name="rtbPreview" HorizontalAlignment="Left" Height="452" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="343,51,0,0" VerticalAlignment="Top" Width="413" >
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text=""/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <Label Content="Preview " HorizontalAlignment="Left" Margin="354,27,0,0" VerticalAlignment="Top" RenderTransformOrigin="4.237,0.692"/>
+        <Grid Margin="10,0,10,32" RenderTransformOrigin="0.467,0.504">
+            <DataGrid Name="dgFiles" AutoGenerateColumns="False" Margin="0,52,468,25" IsReadOnly="True"  SelectionMode="Single" AllowDrop="False"  VerticalAlignment="Stretch" SelectionChanged="dgFiles_SelectionChanged">
+                <DataGrid.RowStyle>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <EventSetter Event="MouseDoubleClick" Handler="FilesRowDoubleClick"/>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Path=Id}" Header="Id_Name" Visibility="Hidden" Width="*" IsReadOnly="True" />
+                    <DataGridTextColumn Binding="{Binding Path=Name}" Header="Name" Width="*" IsReadOnly="True" />
+
+                </DataGrid.Columns>
+
+            </DataGrid>
+        </Grid>
 
 
     </Grid>

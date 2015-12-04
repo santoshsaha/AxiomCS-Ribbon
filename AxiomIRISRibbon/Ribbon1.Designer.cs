@@ -71,6 +71,7 @@
             this.gpIrisTrack = this.Factory.CreateRibbonGroup();
             this.btnSync = this.Factory.CreateRibbonButton();
             this.btnAmend = this.Factory.CreateRibbonButton();
+            this.btnRevertClause = this.Factory.CreateRibbonButton();
             this.btnExportToWord = this.Factory.CreateRibbonButton();
             this.btnExportToPDF = this.Factory.CreateRibbonButton();
             this.group3 = this.Factory.CreateRibbonGroup();
@@ -399,8 +400,9 @@
             // 
             this.gpIrisTrack.Items.Add(this.btnSync);
             this.gpIrisTrack.Items.Add(this.btnAmend);
-            this.gpIrisTrack.Items.Add(this.btnExportToPDF);
+            this.gpIrisTrack.Items.Add(this.btnRevertClause);
             this.gpIrisTrack.Items.Add(this.btnExportToWord);
+            this.gpIrisTrack.Items.Add(this.btnExportToPDF);
             this.gpIrisTrack.Label = "IRIS - Track";
             this.gpIrisTrack.Name = "gpIrisTrack";
             this.gpIrisTrack.Visible = false;
@@ -420,6 +422,15 @@
             this.btnAmend.Name = "btnAmend";
             this.btnAmend.ShowImage = true;
             this.btnAmend.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnAmend_Click);
+            // 
+            // btnRevertClause
+            // 
+            this.btnRevertClause.Image = global::AxiomIRISRibbon.Properties.Resources.Iris_Logo_Solo_Orange_40;
+            this.btnRevertClause.Label = "Revert Clause";
+            this.btnRevertClause.Name = "btnRevertClause";
+            this.btnRevertClause.ShowImage = true;
+            this.btnRevertClause.Visible = false;
+            this.btnRevertClause.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnRevertClause_Click);
             // 
             // btnExportToWord
             // 
@@ -549,6 +560,7 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnAmend;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnExportToWord;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnExportToPDF;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btnRevertClause;
     }
 
     partial class ThisRibbonCollection

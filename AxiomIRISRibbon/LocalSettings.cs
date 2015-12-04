@@ -53,8 +53,9 @@ namespace AxiomIRISRibbon
         public bool Debug
         {
 
-          get { return true; } // Change Nov : Auto Login
-       //  get { return this.debug; }
+       //   get { return true; } // Change Nov : Auto Login
+       
+            get { return this.debug; }
             set
             {
                 this.debug = value;

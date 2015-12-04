@@ -6,15 +6,17 @@
              mc:Ignorable="d" 
              xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
              WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Header="Axiom IRIS" Name="windowAttachmentsView" Height="200" Width="481.25">
-    <Grid>
-        <telerik:RadComboBox Height="20" Margin="191,42,22,0"  Name="radComboAmendment" VerticalAlignment="Top"  SelectionChanged="cbAmendment_SelectionChanged"/>
+    <telerik:RadBusyIndicator Grid.Row="1" IsBusy="{Binding IsBusy}" IsIndeterminate="True"  BusyContent="Loading ..." Name="bsyCompareAmndIndc">
+        <Grid>
+            <telerik:RadComboBox Height="20" Margin="191,42,22,0"  Name="radComboAmendment" VerticalAlignment="Top"  SelectionChanged="cbAmendment_SelectionChanged"/>
 
-        <Label Content="Master Amendment Template:" Height="25" HorizontalAlignment="Left" Margin="10,76,0,0" Name="label5" VerticalAlignment="Top" Width="171" />
-        <CheckBox Height="20" Margin="191,81,0,0" HorizontalAlignment="Left"  Width="88"  Name="chkMaster" VerticalAlignment="Top" Checked="chkMaster_checked" />
-        <Label Content="Select Amendment :" HorizontalAlignment="Left" Margin="10,43,0,0" VerticalAlignment="Top" Width="127"/>
-        <telerik:RadButton Name="btnOpen" Content="Open" HorizontalAlignment="Left" Margin="284,126,0,0" VerticalAlignment="Top" Width="75" Click="btnOpen_Click" IsDefault="True"/>
-        <telerik:RadButton Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="364,126,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"  IsCancel="True" />
+            <Label Content="Master Amendment Template:" Height="25" HorizontalAlignment="Left" Margin="10,76,0,0" Name="label5" VerticalAlignment="Top" Width="171" />
+            <CheckBox Height="20" Margin="191,81,0,0" HorizontalAlignment="Left"  Width="88"  Name="chkMaster" VerticalAlignment="Top" Checked="chkMaster_checked" />
+            <Label Content="Select Amendment :" HorizontalAlignment="Left" Margin="10,43,0,0" VerticalAlignment="Top" Width="127"/>
+            <telerik:RadButton Name="btnOpen" Content="Open" HorizontalAlignment="Left" Margin="284,126,0,0" VerticalAlignment="Top" Width="75" Click="btnOpen_Click" IsDefault="True"/>
+            <telerik:RadButton Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="364,126,0,0" VerticalAlignment="Top" Width="75" Click="btnCancel_Click"  IsCancel="True" />
 
 
-    </Grid>
+        </Grid>
+    </telerik:RadBusyIndicator>
 </telerik:RadWindow>

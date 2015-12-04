@@ -587,51 +587,85 @@ namespace AxiomIRISRibbon
         }
         private void btnExportToPDF_Click(object sender, RibbonControlEventArgs e)
         {
-            object oMissing = System.Reflection.Missing.Value;
-
-
-            Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
-         //   template.
-            Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
-            export.ActiveWindow.Visible = false;
-            Word.Range source = template.Range(template.Content.Start, template.Content.End);
-            export.Range(export.Content.Start).InsertXML(source.WordOpenXML);
-
-            Word.Shape logoWatermark = null;
-
-            foreach (Word.Section section in export.Sections)
+            try
             {
-                logoWatermark = section.Headers[Word.WdHeaderFooterIndex.wdHeaderFooterPrimary].Shapes.AddTextEffect(Microsoft.Office.Core.MsoPresetTextEffect.msoTextEffect1, "Draft", "Ariel", 72, Microsoft.Office.Core.MsoTriState.msoCTrue, Microsoft.Office.Core.MsoTriState.msoFalse, 0, 0);
-                logoWatermark.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
-                logoWatermark.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
-                logoWatermark.Fill.Solid();
-                logoWatermark.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray20;
-                logoWatermark.RelativeHorizontalPosition = Word.WdRelativeHorizontalPosition.wdRelativeHorizontalPositionMargin;
-                logoWatermark.RelativeVerticalPosition = Word.WdRelativeVerticalPosition.wdRelativeVerticalPositionMargin;
-                // center location
-                logoWatermark.Left = (float)Word.WdShapePosition.wdShapeCenter;
-                logoWatermark.Top = (float)Word.WdShapePosition.wdShapeCenter;
+                object oMissing = System.Reflection.Missing.Value;
+
+
+                Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
+                Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
+                //   To hide active word doc.
+                //    export.ActiveWindow.Visible = false;
+                Word.Range source = template.Range(template.Content.Start, template.Content.End);
+                export.Range(export.Content.Start).InsertXML(source.WordOpenXML);
+
+                Word.Shape logoWatermark = null;
+
+                foreach (Word.ContentControl cc in export.ContentControls)
+                {
+                    cc.LockContentControl = false;
+                    cc.LockContents = false;
+                    cc.Delete(false);
+                }
+                foreach (Word.Paragraph item in export.Paragraphs)
+                {
+                    if (item.Shading.BackgroundPatternColor != Word.WdColor.wdColorAutomatic)
+                    {
+                        item.Shading.BackgroundPatternColor = Word.WdColor.wdColorAutomatic;
+                    }
+                }
+
+
+                foreach (Word.Section section in export.Sections)
+                {
+                    logoWatermark = section.Headers[Word.WdHeaderFooterIndex.wdHeaderFooterPrimary].Shapes.AddTextEffect(Microsoft.Office.Core.MsoPresetTextEffect.msoTextEffect1, "Draft", "Ariel", 100, Microsoft.Office.Core.MsoTriState.msoCTrue, Microsoft.Office.Core.MsoTriState.msoFalse, 0, 0);
+
+                    //logoWatermark.Select(ref oMissing);
+                    logoWatermark.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
+                    logoWatermark.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
+                    logoWatermark.Fill.Solid();
+                    logoWatermark.Fill.Transparency = 0.0f;
+                    //logoWatermark.Fill. = 0.2f;
+                    logoWatermark.WrapFormat.AllowOverlap = 0;
+
+                    logoWatermark.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray20;
+                    logoWatermark.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray30;
+                    logoWatermark.RelativeHorizontalPosition = Word.WdRelativeHorizontalPosition.wdRelativeHorizontalPositionMargin;
+                    logoWatermark.RelativeVerticalPosition = Word.WdRelativeVerticalPosition.wdRelativeVerticalPositionMargin;
+
+                    logoWatermark.Height = Globals.ThisAddIn.Application.InchesToPoints(2.4f);
+                    logoWatermark.Width = Globals.ThisAddIn.Application.InchesToPoints(6f);
+
+                    // center location
+                    logoWatermark.Left = (float)Word.WdShapePosition.wdShapeCenter;
+                    logoWatermark.Top = (float)Word.WdShapePosition.wdShapeCenter;
+
+                    logoWatermark.Rotation = -45;
+                    logoWatermark.ZOrder(Microsoft.Office.Core.MsoZOrderCmd.msoBringToFront);
+                    logoWatermark.WrapFormat.Type = Word.WdWrapType.wdWrapNone;
+
+                }
+                export.Activate();
+
+                object fileFormat = Word.WdSaveFormat.wdFormatPDF;
+                SaveFileDialog dlg = new SaveFileDialog();
+                dlg.Title = "MyTitle";
+                dlg.Filter = "Word Document (*.pdf)|*.pdf";
+                dlg.FileName = "ExportTemplate-" + dlg.Title.Replace(" ", "");
+                dlg.ShowDialog();
+                object outputFileName = dlg.FileName;
+                export.SaveAs(ref outputFileName, ref fileFormat, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
+                    ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
+                    ref oMissing, ref oMissing, ref oMissing);
+
+                // Close the Word document, but leave the Word application open.
+                // doc has to be cast to type _Document so that it will find the
+                // correct Close method.                
+                object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
+                ((Word._Document)export).Close(ref saveChanges, ref oMissing, ref oMissing);
+                export = null;
             }
-
-
-            object fileFormat = Word.WdSaveFormat.wdFormatPDF;
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "MyTitle";
-            dlg.Filter = "Word Document (*.pdf)|*.pdf";
-            dlg.FileName = "ExportTemplate-" + dlg.Title.Replace(" ", "");
-            dlg.ShowDialog();
-            object outputFileName = dlg.FileName;
-            export.SaveAs(ref outputFileName, ref fileFormat, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
-                ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
-                ref oMissing, ref oMissing, ref oMissing);
-
-            // Close the Word document, but leave the Word application open.
-            // doc has to be cast to type _Document so that it will find the
-            // correct Close method.                
-            object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
-            ((Word._Document)export).Close(ref saveChanges, ref oMissing, ref oMissing);
-            export = null;
-
+            catch (Exception ex) { }
         }
 
         /*
@@ -708,7 +742,8 @@ namespace AxiomIRISRibbon
                 //Save the doc and the data
                 if (Globals.ThisAddIn.GetTaskPaneControlCompare() != null)
                 {
-                    Globals.ThisAddIn.GetTaskPaneControlCompare().SaveContract(false, true);
+                  //  Globals.ThisAddIn.GetTaskPaneControlCompare().SaveContract(false, true);
+                    CompareSideBar.SaveCompare(false, true);
                 }
                 // CompareAmendment.FromRibbonToCreate();
                 //  Id = Globals.ThisAddIn.Application.Documents.Add(attachmentid);
@@ -741,6 +776,27 @@ namespace AxiomIRISRibbon
                 }
             }
             catch (Exception ex) { }
+        }
+
+        private void btnRevertClause_Click(object sender, RibbonControlEventArgs e)
+        {
+            try {
+             
+                Word.Document docToRevert = Globals.ThisAddIn.Application.ActiveDocument;
+                foreach (Word.ContentControl cc in docToRevert.Range().ContentControls)
+                {
+                    if (cc.Tag != null)
+                    { 
+                if(    cc.Range.Sections !=null)
+                {}
+                }
+                }
+            
+            }
+            catch (Exception ex) 
+            {
+            
+            }
         }
 
         //End PES

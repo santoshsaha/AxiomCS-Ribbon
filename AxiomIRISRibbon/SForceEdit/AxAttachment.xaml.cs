@@ -439,6 +439,21 @@ namespace AxiomIRISRibbon.SForceEdit
                             //if the action bar isn't open then open it
                             Globals.ThisAddIn.ShowTaskPane(true);
 
+
+                              //Code PES
+
+                            string prop = Globals.ThisAddIn.GetCurrentAxiomDocProp();
+                               if (prop != null)
+                               {
+                                   string[] propa = prop.Split('|');
+
+                                   if (propa.Length > 2)
+                                   {
+                                       Globals.ThisAddIn.AddDocId(doc, "Contract", "", "");
+                                   }
+                               }
+                            //End code
+
                             ContractEdit.SForceEditSideBar2 u = Globals.ThisAddIn.GetTaskPaneControlContract();
                             if (u != null)
                             {

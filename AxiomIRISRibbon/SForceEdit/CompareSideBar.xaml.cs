@@ -103,6 +103,7 @@ namespace AxiomIRISRibbon.SForceEdit
         {
             try
             {
+                btnCompare.IsEnabled = false;
                 object missing = System.Reflection.Missing.Value;
 
                 if (this.cbTemplates.SelectedItem != null)
@@ -139,14 +140,14 @@ namespace AxiomIRISRibbon.SForceEdit
                     wordAttachment.AcceptAllRevisions();
 
                     // To unlock Clauses
-                    for (int i = 1; i <= wordAttachment.ContentControls.Count; i++)
-                    {
-                        wordAttachment.ContentControls[i].LockContents = false;
-                        wordAttachment.ContentControls[i].LockContentControl = false;
+                    /*                   for (int i = 1; i <= wordAttachment.ContentControls.Count; i++)
+                                       {
+                                           wordAttachment.ContentControls[i].LockContents = false;
+                                           wordAttachment.ContentControls[i].LockContentControl = false;
 
-                    }
+                                       }
 
-
+                   */
 
                     /*   object objAttachment = _fileName;
                       wordAttachment = app.Documents.Open(ref objAttachment, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
@@ -166,27 +167,48 @@ namespace AxiomIRISRibbon.SForceEdit
 
 
                     // To unlock Clauses
-                    for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
+    /*                for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
                     {
                         wordTemplate.ContentControls[i].LockContents = false;
                         wordTemplate.ContentControls[i].LockContentControl = false;
 
                     }
+*/
+                    // Code to remove   the document modified by
+                  
+                    wordTemplate.RemoveDocumentInformation(Microsoft.Office.Interop.Word.WdRemoveDocInfoType.wdRDIDocumentProperties);
+
+                    // End Code
 
                     //Compare
-                    Globals.ThisAddIn.AddDocId(wordTemplate, "Compare", "");
-                    //Globals.ThisAddIn.AddDocId(wordTemplate, "Contract",  "","Compare");
+                   // Globals.ThisAddIn.AddDocId(wordTemplate, "Compare", "");
+                    Globals.ThisAddIn.AddDocId(wordTemplate, "Contract",  "","Compare");
                     wordTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
                     wordTemplate.TrackRevisions = true;
                     wordTemplate.ShowRevisions = false;
                     wordTemplate.AcceptAllRevisions();
 
-                    // Code to remove   the document modified by
 
-                 //   wordTemplate.RemoveDocumentInformation(Microsoft.Office.Interop.Word.WdRemoveDocInfoType.wdRDIDocumentProperties);
+                    //added below lines to close the open file before opening the split screen
+                    Microsoft.Office.Interop.Word.Application WordObj;
+                    WordObj = (Microsoft.Office.Interop.Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
+                    foreach (Word.Document d in WordObj.Documents)
+                    {
+                        if (d.FullName == fileTemplate)
+                        {
+                            //nothing
+                        }
+                        else
+                        {
+                            //
+                            object saveOption = Word.WdSaveOptions.wdDoNotSaveChanges;
+                            object originalFormat = Word.WdOriginalFormat.wdOriginalDocumentFormat;
+                            object routeDocument = false;
+                            d.Close(ref saveOption, ref originalFormat, ref routeDocument);
+                        }
+                    }
 
-                    // End Code
-
+                    
                     /*
                     object o = wordTemplate;
                     wordTemplate.Windows.CompareSideBySideWith(ref o);*/
@@ -234,74 +256,80 @@ namespace AxiomIRISRibbon.SForceEdit
             {
                 //  int seq = 1;
                 string strFileAttached = _fileName;
-                //Save the Contract    
-                Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
-
-                // if this is the first save - then save everything
-                if (_firstsave) ForceSave = true;
-
-                Globals.ThisAddIn.ProcessingStart("Save Contract");
-                DataReturn dr;
-                _doc = Globals.ThisAddIn.Application.ActiveDocument;
-                /*
-                Globals.ThisAddIn.ProcessingUpdate("Get the Clause Values");
-                foreach (Word.ContentControl cc in _doc.Range().ContentControls)
+                if (strFileAttached != null)
                 {
-                    if (cc.Tag != null)
+                    //Save the Contract    
+                    Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
+
+                    // if this is the first save - then save everything
+                    if (_firstsave) ForceSave = true;
+
+                    Globals.ThisAddIn.ProcessingStart("Save Contract");
+                    DataReturn dr;
+                    _doc = Globals.ThisAddIn.Application.ActiveDocument;
+
+                    /*
+                    Globals.ThisAddIn.ProcessingUpdate("Get the Clause Values");
+                    foreach (Word.ContentControl cc in _doc.Range().ContentControls)
                     {
-                        string tag = cc.Tag;
-                        string docclausename = cc.Title;
-                        Globals.ThisAddIn.ProcessingUpdate("Save " + docclausename);
-
-                        string text = cc.Range.Text;
-                        string[] taga = cc.Tag.Split('|');
-                        if (taga[0] == "Concept")
+                        if (cc.Tag != null)
                         {
-                            dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveDocumentClause("", _versionid, taga[1], taga[2], docclausename, seq++, text, false));
-                        }
-                        else if (taga[0] == "element")
-                        {
+                            string tag = cc.Tag;
+                            string docclausename = cc.Title;
+                            Globals.ThisAddIn.ProcessingUpdate("Save " + docclausename);
 
-                            dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveDocumentClauseElement("",docclausename ,taga[2],"",_templateid,text,text ));
+                            string text = cc.Range.Text;
+                            string[] taga = cc.Tag.Split('|');
+                            if (taga[0] == "Concept")
+                            {
+                                dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveDocumentClause("", _versionid, taga[1], taga[2], docclausename, seq++, text, false));
+                            }
+                            else if (taga[0] == "element")
+                            {
+
+                                dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveDocumentClauseElement("",docclausename ,taga[2],"",_templateid,text,text ));
                                                       
+                            }
                         }
                     }
+
+                    */
+                    dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveVersion(_versionid, _matterid, _templateid, _versionName, _versionNumber));
+                    if (!dr.success) return false;
+                    _versionid = dr.id;
+
+                    if (SaveDoc)
+                    {
+                        // Globals.ThisAddIn.AddDocId(_doc, "Contract", _versionid);
+
+                        //Save the file as an attachment
+                        //save this to a scratch file
+                        Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
+                        //   string filename = AxiomIRISRibbon.Utility.SaveTempFile(_versionid);
+                        _doc.SaveAs2(FileName: strFileAttached, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+
+                        //Save a copy!
+                        Globals.ThisAddIn.ProcessingUpdate("Save Copy");
+                        string filenamecopy = AxiomIRISRibbon.Utility.SaveTempFile(_versionid + "X");
+                        Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(strFileAttached, Visible: false);
+                        dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+
+                        var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
+                        docclose.Close();
+                        System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
+
+                        //Now save the file - change this to always save as the version name
+
+                        Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
+                        string vfilename = _versionName.Replace(" ", "_") + ".docx";
+                        dr = AxiomIRISRibbon.Utility.HandleData(_d.UpdateFile(_attachmentid, vfilename, filenamecopy));
+
+                    }
+
+                    Globals.ThisAddIn.AddSaveHandler(); // add it back in
+                    Globals.ThisAddIn.ProcessingStop("End");
+                   
                 }
-
-                */
-                dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveVersion(_versionid, _matterid, _templateid, _versionName, _versionNumber));
-                if (!dr.success) return false;
-                _versionid = dr.id;
-
-                if (SaveDoc)
-                {
-                    Globals.ThisAddIn.AddDocId(_doc, "Contract", _versionid);
-                    //Save the file as an attachment
-                    //save this to a scratch file
-                    Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
-                    //   string filename = AxiomIRISRibbon.Utility.SaveTempFile(_versionid);
-                    _doc.SaveAs2(FileName: strFileAttached, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
-
-                    //Save a copy!
-                    Globals.ThisAddIn.ProcessingUpdate("Save Copy");
-                    string filenamecopy = AxiomIRISRibbon.Utility.SaveTempFile(_versionid + "X");
-                    Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(strFileAttached, Visible: false);
-                    dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
-
-                    var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
-                    docclose.Close();
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
-
-                    //Now save the file - change this to always save as the version name
-
-                    Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
-                    string vfilename = _versionName.Replace(" ", "_") + ".docx";
-                    dr = AxiomIRISRibbon.Utility.HandleData(_d.UpdateFile(_attachmentid, vfilename, filenamecopy));
-
-                }
-
-                Globals.ThisAddIn.AddSaveHandler(); // add it back in
-                Globals.ThisAddIn.ProcessingStop("End");
                 return true;
             }
             catch (Exception ex) { return false; }

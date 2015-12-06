@@ -740,23 +740,27 @@ namespace AxiomIRISRibbon
             try
             {
                 //Save the doc and the data
-                if (Globals.ThisAddIn.GetTaskPaneControlCompare() != null)
-                {
+            //    if (Globals.ThisAddIn.GetTaskPaneControlCompare() != null)
+            //    {
                   //  Globals.ThisAddIn.GetTaskPaneControlCompare().SaveContract(false, true);
+                try
+                {
                     CompareSideBar.SaveCompare(false, true);
                 }
+                catch (Exception ex) { }
+           //     }
                 // CompareAmendment.FromRibbonToCreate();
                 //  Id = Globals.ThisAddIn.Application.Documents.Add(attachmentid);
                 // Globals.ThisAddIn.Application.Documents.Add(attachmentid) = Id;
                 // System.Windows.Application.Current.Resources.GetValue("attachmentid") as Id;
                 string attachmentId = Globals.ThisAddIn.GetAttachmentId();
-                Id = attachmentId;
-                Word.Document docTest = Globals.ThisAddIn.Application.ActiveDocument;
-                if (this.Id == null) this.Id = Globals.ThisAddIn.GetCurrentDocId();
-                if (this.Id != "")
+               // Id = attachmentId;
+               // Word.Document docTest = Globals.ThisAddIn.Application.ActiveDocument;
+                if (attachmentId == null) attachmentId = Globals.ThisAddIn.GetCurrentDocId();
+                if (attachmentId != "")
                 {
                     _d = Globals.ThisAddIn.getData();
-                    DataReturn dr1 = AxiomIRISRibbon.Utility.HandleData(_d.AttachmentInfo(Id));
+                    DataReturn dr1 = AxiomIRISRibbon.Utility.HandleData(_d.AttachmentInfo(attachmentId));
                     if (!dr1.success) return;
                     DataTable dtAllAttachments = dr1.dt;
                     string _attachmentid = dtAllAttachments.Rows[0]["id"].ToString();

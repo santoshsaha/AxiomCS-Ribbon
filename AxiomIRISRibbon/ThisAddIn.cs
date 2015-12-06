@@ -127,7 +127,7 @@ namespace AxiomIRISRibbon
                 // This can be used for testing so you don't have to login every time
                 // set the autologin about to true
                 // then add the details to the login call - should be username, password, sforce token, sforce url, login description to show in the about 
-               // string rtn = _d.Login("santosh.saha@cs.com.rksb1", "pass@word1", "LGZ0rTkNnuksEetJr1vrG0YS", "https://test.salesforce.com", "AutoLogin - Sales");
+            //    string rtn = _d.Login("santosh.saha@cs.com.rksb1", "pass@word1", "LGZ0rTkNnuksEetJr1vrG0YS", "https://test.salesforce.com", "AutoLogin - Sales");
                
                 string rtn = "";
                 if (rtn == "")
@@ -2402,88 +2402,137 @@ namespace AxiomIRISRibbon
                 if (prop != null)
                 {
                     string[] propa = prop.Split('|');
-                    if (propa[0] == "ContractTemplate")
+
+                    //Code PES
+                    if (propa.Length > 2)
                     {
-                        Globals.ThisAddIn.ProcessingUpdate("Save Contract Template");
+                        if (propa[2] == "Compare")
+                        {
+                            //Save the doc and the data
+                            ///  GetTaskPaneControlCompare().SaveContract(false, true);
+                            CompareSideBar.SaveCompare(false, true);
 
-                        // Get the Sidebar and save the elemnt value if that has changed
-                        TemplateEdit.TEditSidebar tsb = Globals.ThisAddIn.GetTaskPaneControlTemplate(doc);
-                        if(tsb!=null) tsb.FormSave();
+                            //Cancel the save
+                            SaveAsUI = false;
+                            Cancel = true;
+                        }
+                        else if (propa[2] == "AmendmentDocument")
+                        {
+                            //Save the doc and the data
+                            CompareAmendment.SaveAmend(false, true, false);
 
-                        //save this to a scratch file
-                        Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
-                        string filename = Utility.SaveTempFile(propa[1]);
-                        doc.SaveAs2(FileName: filename, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+                            //Cancel the save
+                            SaveAsUI = false;
+                            Cancel = true;
+                        }
 
-                        //Save a copy!
-                        Globals.ThisAddIn.ProcessingUpdate("Save Copy");
-                        string filenamecopy = Utility.SaveTempFile(propa[1] + "X");
-                        Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(filename, Visible: false);
-                        dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+                        else if (propa[2] == "AmendmentTemplate")
+                        {
+                            //Save the doc and the data
+                            CompareAmendment.SaveAmend(false, true, true);
 
-                        var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
-                        docclose.Close();
-                        System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
+                            //Cancel the save
+                            SaveAsUI = false;
+                            Cancel = true;
+                        }
+                        else if (propa[0] == "Contract" )
+                        {
+                            //Save the doc and the data
+                            GetTaskPaneControlContract().SaveContract(false, true);
 
-                        //Now 
-                        Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
-                        _d.SaveTemplateFile(propa[1], filenamecopy);
-
-                        //d.SaveTemplateXML(propa[1], doc.WordOpenXML);
-
-
-                        //Cancel the save
-                        SaveAsUI = false;
-                        Cancel = true;
+                            //Cancel the save
+                            SaveAsUI = false;
+                            Cancel = true;
+                        }
                     }
 
-                    if (propa[0] == "ClauseTemplate")
-                    {
-                        //Save!
-                        //doc = Globals.ThisAddIn.Application.ActiveDocument;
-                        //d.SaveClauseXML(propa[1],doc.Content.Text ,doc.WordOpenXML);
-                        Globals.ThisAddIn.ProcessingUpdate("Save Clause Template");
-                        // doc = Globals.ThisAddIn.Application.ActiveDocument;
 
-                        //save this to a scratch file
-                        Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
-                        string filename = Utility.SaveTempFile(propa[1]);
-                        doc.SaveAs2(FileName: filename, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+                    else
+                    {  //End Code
 
-                        //Save a copy!
-                        Globals.ThisAddIn.ProcessingUpdate("Save Copy");
-                        string filenamecopy = Utility.SaveTempFile(propa[1] + "X");
-                        Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(filename, Visible: false);
-                        dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+                        if (propa[0] == "ContractTemplate")
+                        {
+                            Globals.ThisAddIn.ProcessingUpdate("Save Contract Template");
 
-                        var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
-                        docclose.Close();
-                        System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
+                            // Get the Sidebar and save the elemnt value if that has changed
+                            TemplateEdit.TEditSidebar tsb = Globals.ThisAddIn.GetTaskPaneControlTemplate(doc);
+                            if (tsb != null) tsb.FormSave();
 
-                        //Now save the file and then refresh any other docsto reflect the change
-                        Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
-                        _d.SaveClauseFile(propa[1], doc.Content.Text, filenamecopy);
+                            //save this to a scratch file
+                            Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
+                            string filename = Utility.SaveTempFile(propa[1]);
+                            doc.SaveAs2(FileName: filename, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
 
-                        Globals.ThisAddIn.ProcessingUpdate("Update Any Templates with the clause");
-                        RefreshAllTaskPanesWithClause(propa[1], doc.WordOpenXML);
-                        doc.Activate();
+                            //Save a copy!
+                            Globals.ThisAddIn.ProcessingUpdate("Save Copy");
+                            string filenamecopy = Utility.SaveTempFile(propa[1] + "X");
+                            Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(filename, Visible: false);
+                            dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
 
-                        //Cancel the save
-                        SaveAsUI = false;
-                        Cancel = true;
-                    }
+                            var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
+                            docclose.Close();
+                            System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
 
-                    if (propa[0] == "Contract" || propa[0] == "UAContract")
-                    {
-                        //Save the doc and the data
-                        GetTaskPaneControlContract().SaveContract(false,true);
+                            //Now 
+                            Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
+                            _d.SaveTemplateFile(propa[1], filenamecopy);
 
-                        //Cancel the save
-                        SaveAsUI = false;
-                        Cancel = true;
+                            //d.SaveTemplateXML(propa[1], doc.WordOpenXML);
+
+
+                            //Cancel the save
+                            SaveAsUI = false;
+                            Cancel = true;
+                        }
+
+                        if (propa[0] == "ClauseTemplate")
+                        {
+                            //Save!
+                            //doc = Globals.ThisAddIn.Application.ActiveDocument;
+                            //d.SaveClauseXML(propa[1],doc.Content.Text ,doc.WordOpenXML);
+                            Globals.ThisAddIn.ProcessingUpdate("Save Clause Template");
+                            // doc = Globals.ThisAddIn.Application.ActiveDocument;
+
+                            //save this to a scratch file
+                            Globals.ThisAddIn.ProcessingUpdate("Save Scratch");
+                            string filename = Utility.SaveTempFile(propa[1]);
+                            doc.SaveAs2(FileName: filename, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+
+                            //Save a copy!
+                            Globals.ThisAddIn.ProcessingUpdate("Save Copy");
+                            string filenamecopy = Utility.SaveTempFile(propa[1] + "X");
+                            Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(filename, Visible: false);
+                            dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
+
+                            var docclose = (Microsoft.Office.Interop.Word._Document)dcopy;
+                            docclose.Close();
+                            System.Runtime.InteropServices.Marshal.ReleaseComObject(docclose);
+
+                            //Now save the file and then refresh any other docsto reflect the change
+                            Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
+                            _d.SaveClauseFile(propa[1], doc.Content.Text, filenamecopy);
+
+                            Globals.ThisAddIn.ProcessingUpdate("Update Any Templates with the clause");
+                            RefreshAllTaskPanesWithClause(propa[1], doc.WordOpenXML);
+                            doc.Activate();
+
+                            //Cancel the save
+                            SaveAsUI = false;
+                            Cancel = true;
+                        }
+
+                        if (propa[0] == "Contract" || propa[0] == "UAContract")
+                        {
+                            //Save the doc and the data
+                            GetTaskPaneControlContract().SaveContract(false, true);
+
+                            //Cancel the save
+                            SaveAsUI = false;
+                            Cancel = true;
+                        }
                     }
                     //Code PES
-                    if (propa[0] == "Compare")
+                    /*if (propa[0] == "Compare")
                     {
                         //Save the doc and the data
                       ///  GetTaskPaneControlCompare().SaveContract(false, true);
@@ -2513,7 +2562,7 @@ namespace AxiomIRISRibbon
                         Cancel = true;
                     }
 
-
+                    */
                         //End Code
                     if (hidep)
                     {

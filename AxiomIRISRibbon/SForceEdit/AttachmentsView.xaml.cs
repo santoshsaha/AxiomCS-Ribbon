@@ -54,14 +54,14 @@ namespace AxiomIRISRibbon.SForceEdit
         {
             _dt = dt;
 
-            // Below values need to be intialized as those required on save.
+            // Below values need to be intialized before open doc, as those required on save.
             _matterid = matterid;
             _versionid = versionid;
             _templateid = templateid;
             _versionName = versionName;
             _versionNumber = versionNumber;
 
-
+            // Load dropdown
 
             radComboAttachments.Items.Clear();
 

@@ -415,10 +415,13 @@ namespace AxiomIRISRibbon.SForceEdit
 
                             }
 
-                            DataReturn dr = SaveContract(_strNewAttachmentId, fileAmendmentTemplatePath);
-                            app.Documents.Close();
+                            DataReturn dr = SaveCombinedDoc(_strNewAttachmentId, fileAmendmentTemplatePath);
 
-                            //Open Files Sideby side
+                            //Commented below line to avoid error coming after closing base doc in compare view
+                            app.Documents.Close();
+                            //End Coments.
+
+                            //Get the documents again open Sideby side
                             OpenFiles();
                         }
                     }
@@ -499,7 +502,7 @@ namespace AxiomIRISRibbon.SForceEdit
             ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
             // To unlock Clauses
-            for (int i = 1; i <= objtempDocAmendment.ContentControls.Count; i++)
+       /*     for (int i = 1; i <= objtempDocAmendment.ContentControls.Count; i++)
             {
                 objtempDocAmendment.ContentControls[i].LockContents = false;
                 objtempDocAmendment.ContentControls[i].LockContentControl = false;
@@ -510,26 +513,27 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempAmendmentTemplate.ContentControls[i].LockContents = false;
                 objtempAmendmentTemplate.ContentControls[i].LockContentControl = false;
             }
-
+            */
             //AmendmentTemplate - For Save
-            Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentTemplate", "");
-          //  Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "Contract", "", "Compare");
+        //    Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentTemplate", "");
+            Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "Contract", "", "AmendmentTemplate");
             //AmendmentDocument - For Save
-            Globals.ThisAddIn.AddDocId(objtempDocAmendment, "AmendmentDocument", "");
-           // Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "Contract", "", "Compare");
+          //  Globals.ThisAddIn.AddDocId(objtempDocAmendment, "AmendmentDocument", "");
+            Globals.ThisAddIn.AddDocId(objtempDocAmendment, "Contract", "", "AmendmentDocument");
 
             object o = objtempAmendmentTemplate;
 
 
             //Remove Markup from template doc
-            Word.Fields fields = objtempAmendmentTemplate.Fields;
+          /*  Word.Fields fields = objtempAmendmentTemplate.Fields;
             foreach (Microsoft.Office.Interop.Word.Field f in fields)
             {
                 f.Select();
                 objtempAmendmentTemplate.Application.Selection.InsertParagraph();
 
-            }
-
+            }*/
+            
+           
             objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
 
             objtempDocAmendment.AcceptAllRevisions();
@@ -537,8 +541,8 @@ namespace AxiomIRISRibbon.SForceEdit
             objtempDocAmendment.ActiveWindow.View.ShowRevisionsAndComments = false;
             objtempAmendmentTemplate.TrackRevisions = true;
 
-
-            objtempAmendmentTemplate.Activate();
+            //objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
+            objtempDocAmendment.Activate();
         }
         /*
         private static void CompareSplitView(string fileAmendmentDocumentPath, string fileAmendmentTemplatePath)
@@ -885,7 +889,7 @@ namespace AxiomIRISRibbon.SForceEdit
         }
          * */
 
-        public DataReturn SaveContract(string newAttachmentId, string fileAmendmentTemplatePath)
+        public DataReturn SaveCombinedDoc(string newAttachmentId, string fileAmendmentTemplatePath)
         {
 
             string strFileAttached = fileAmendmentTemplatePath;
@@ -910,10 +914,17 @@ namespace AxiomIRISRibbon.SForceEdit
             return dr;
         }
 
-
+        // Save Amend Document
         public static bool SaveAmend(bool ForceSave, bool SaveDoc, bool IsTemplate)
         {
             string strFileToSave, strVfilename, strAttachmentId;
+
+            Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
+
+            Globals.ThisAddIn.ProcessingStart("Save Contract");
+            DataReturn dr;
+            _doc = Globals.ThisAddIn.Application.ActiveDocument;
+
             if (!IsTemplate)
             {
                 strFileToSave = _strAmendmentDocumentPath;
@@ -925,8 +936,8 @@ namespace AxiomIRISRibbon.SForceEdit
 
 
                 strAttachmentId = _strNewAttachmentId;
-
-                Globals.ThisAddIn.AddDocId(objtempDocAmendment, "Contract", "");
+              
+                // Globals.ThisAddIn.AddDocId(objtempDocAmendment, "Contract", "");
             }
             else
             {
@@ -942,15 +953,11 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
                 strAttachmentId = _strAmendmentAttachmentId;
 
-                Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "Contract", "");
+             //   Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "Contract", "");
             }
 
 
-            Globals.ThisAddIn.RemoveSaveHandler(); // remove the save handler to stop the save calling the save etc.
-
-            Globals.ThisAddIn.ProcessingStart("Save Contract");
-            DataReturn dr;
-            _doc = Globals.ThisAddIn.Application.ActiveDocument;
+          
 
             if (SaveDoc)
             {
@@ -972,7 +979,10 @@ namespace AxiomIRISRibbon.SForceEdit
                 Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
 
                 dr = AxiomIRISRibbon.Utility.HandleData(_d.UpdateFile(strAttachmentId, strVfilename, filenamecopy));
-
+                if (!IsTemplate)
+                {
+                    _doc.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
+                }
             }
             Globals.ThisAddIn.AddSaveHandler(); // add it back in
             Globals.ThisAddIn.ProcessingStop("End");

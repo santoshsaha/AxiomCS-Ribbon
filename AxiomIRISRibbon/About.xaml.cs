@@ -43,9 +43,9 @@ namespace AxiomIRISRibbon
 
         private string GetRunningVersion()
         {
-
+            // TO DO
          //   string v = "IRIS Ribbon | Version - UNKOWN!";
-            string v = "IRIS Ribbon | Version 1.00.00.04";
+            string v = "IRIS Ribbon | Version 1.00.00.05";
             try
             {
                     System.Deployment.Application.ApplicationDeployment ad = System.Deployment.Application.ApplicationDeployment.CurrentDeployment;

@@ -593,6 +593,8 @@ namespace AxiomIRISRibbon
 
 
                 Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
+              //  string docName = Globals.ThisAddIn.GetDocName(template);
+
                 Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
                 //   To hide active word doc.
                 //    export.ActiveWindow.Visible = false;
@@ -743,6 +745,7 @@ namespace AxiomIRISRibbon
             //    if (Globals.ThisAddIn.GetTaskPaneControlCompare() != null)
             //    {
                   //  Globals.ThisAddIn.GetTaskPaneControlCompare().SaveContract(false, true);
+                //To Do
                 try
                 {
                     CompareSideBar.SaveCompare(false, true);

@@ -174,7 +174,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     }
 */
-                    // Code to remove   the document modified by
+                    // Code to remove   the document modified by -- This code will reset all the properties in the document
                   
                     wordTemplate.RemoveDocumentInformation(Microsoft.Office.Interop.Word.WdRemoveDocInfoType.wdRDIDocumentProperties);
 

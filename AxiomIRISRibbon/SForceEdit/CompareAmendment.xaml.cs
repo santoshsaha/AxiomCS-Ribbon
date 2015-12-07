@@ -497,9 +497,12 @@ namespace AxiomIRISRibbon.SForceEdit
             ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
             ref missing, ref missing);
 
+         //   Globals.ThisAddIn.AddDocName(objtempAmendmentTemplate, fileAmendmentTemplateName, "");
+
             object newFilenameObject2 = fileAmendmentDocumentPath;
             objtempDocAmendment = app.Documents.Open(ref newFilenameObject2, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
             ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
+         //   Globals.ThisAddIn.AddDocName(objtempDocAmendment, fileAmendmentDocumentName, "");
 
             // To unlock Clauses
        /*     for (int i = 1; i <= objtempDocAmendment.ContentControls.Count; i++)
@@ -524,6 +527,7 @@ namespace AxiomIRISRibbon.SForceEdit
             object o = objtempAmendmentTemplate;
 
 
+            // Side by side was not working after added below code. TO DO
             //Remove Markup from template doc
           /*  Word.Fields fields = objtempAmendmentTemplate.Fields;
             foreach (Microsoft.Office.Interop.Word.Field f in fields)

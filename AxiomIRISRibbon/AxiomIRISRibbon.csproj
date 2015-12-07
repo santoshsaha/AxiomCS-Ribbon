@@ -38,10 +38,10 @@
     <OldToolsVersion>4.0</OldToolsVersion>
     <VSTO_TrustAssembliesLocation>true</VSTO_TrustAssembliesLocation>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <PublishUrl>D:\AxomLawCS\</PublishUrl>
+    <PublishUrl>D:\AxomLawCS-EXE\</PublishUrl>
     <InstallUrl />
     <TargetCulture>en</TargetCulture>
-    <ApplicationVersion>1.00.00.04</ApplicationVersion>
+    <ApplicationVersion>1.00.00.05</ApplicationVersion>
     <AutoIncrementApplicationRevision>false</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>

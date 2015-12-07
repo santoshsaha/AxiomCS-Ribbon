@@ -376,6 +376,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     Globals.Ribbons.Ribbon1.btnExportToWord.Enabled = false;
 
                 }
+                
                 Open(r["Id"].ToString(), filename);
             } 
         }
@@ -397,6 +398,7 @@ namespace AxiomIRISRibbon.SForceEdit
             DataReturn dr = _d.OpenFile(Id, FileName);
             e.Result = dr;
             Globals.ThisAddIn.SaveAttachmentId(Id);
+            
         }
 
 
@@ -429,6 +431,11 @@ namespace AxiomIRISRibbon.SForceEdit
 
                         // Word!
                         Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(dr.strRtn);
+
+                        //Code PES
+
+                  //      Globals.ThisAddIn.AddDocName(doc, dr.strRtn, dr.id);
+                        //End Code
 
                         Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
                         doc.Activate();                      

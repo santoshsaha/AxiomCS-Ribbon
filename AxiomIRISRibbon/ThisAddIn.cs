@@ -127,7 +127,7 @@ namespace AxiomIRISRibbon
                 // This can be used for testing so you don't have to login every time
                 // set the autologin about to true
                 // then add the details to the login call - should be username, password, sforce token, sforce url, login description to show in the about 
-            //    string rtn = _d.Login("santosh.saha@cs.com.rksb1", "pass@word1", "LGZ0rTkNnuksEetJr1vrG0YS", "https://test.salesforce.com", "AutoLogin - Sales");
+             //   string rtn = _d.Login("santosh.saha@cs.com.rksb1", "pass@word1", "LGZ0rTkNnuksEetJr1vrG0YS", "https://test.salesforce.com", "AutoLogin - Sales");
                
                 string rtn = "";
                 if (rtn == "")
@@ -1042,6 +1042,60 @@ namespace AxiomIRISRibbon
             return out1;
         }
 
+        //Code PES
+        /*
+        public string GetDocName(Word.Document doc)
+        {
+            string out0 = "";
+            string prop = ReadDocumentProperty(doc, "AxiomName");
+            if (prop != null && prop.Contains('|'))
+            {
+                string[] propa = prop.Split('|');
+                out0 = propa[0];
+            }
+            return out0;
+        }
+
+        public void AddDocName(Word.Document doc, string Name, string id)
+        {
+            string prop = ReadDocumentProperty(doc, "AxiomName");
+            if (prop != null && prop != "")
+            {
+                //Delete and add
+                Office.DocumentProperties properties = (Office.DocumentProperties)doc.CustomDocumentProperties;
+
+                properties["AxiomName"].Delete();
+                properties.Add("AxiomName", false, Office.MsoDocProperties.msoPropertyTypeString, Name + "|" + id);
+
+            }
+            else
+            {
+                Office.DocumentProperties properties = (Office.DocumentProperties)doc.CustomDocumentProperties;
+                properties.Add("AxiomName",false, Office.MsoDocProperties.msoPropertyTypeString, Name + "|" + id);
+            }
+            return;
+        }
+        */
+        public void AddDocId(Word.Document doc, string type, string id, string comparetype)
+        {
+            string prop = ReadDocumentProperty(doc, "Axiom");
+            if (prop != null && prop != "")
+            {
+                //Delete and add
+                Office.DocumentProperties properties = (Office.DocumentProperties)doc.CustomDocumentProperties;
+
+                properties["Axiom"].Delete();
+                properties.Add("Axiom", false, Office.MsoDocProperties.msoPropertyTypeString, type + "|" + id + "|" + comparetype);
+
+            }
+            else
+            {
+                Office.DocumentProperties properties = (Office.DocumentProperties)doc.CustomDocumentProperties;
+                properties.Add("Axiom", false, Office.MsoDocProperties.msoPropertyTypeString, type + "|" + id + "|" + comparetype);
+            }
+            return;
+        }
+        //End Code
         public void AddDocId(Word.Document doc, string type, string id)
         {
             string prop = ReadDocumentProperty(doc, "Axiom");
@@ -1062,25 +1116,7 @@ namespace AxiomIRISRibbon
             return;
         }
 
-          public void AddDocId(Word.Document doc, string type, string id, string comparetype)
-       {
-           string prop = ReadDocumentProperty(doc, "Axiom");
-           if (prop != null && prop != "")
-           {
-               //Delete and add
-               Office.DocumentProperties properties = (Office.DocumentProperties)doc.CustomDocumentProperties;
-
-               properties["Axiom"].Delete();
-               properties.Add("Axiom", false, Office.MsoDocProperties.msoPropertyTypeString, type + "|" + id + "|" + comparetype);
-
-           }
-           else
-           {
-               Office.DocumentProperties properties = (Office.DocumentProperties)doc.CustomDocumentProperties;
-               properties.Add("Axiom", false, Office.MsoDocProperties.msoPropertyTypeString, type + "|" + id+ "|" + comparetype);
-           }
-           return;
-       }
+        
         public void DeleteDocId(Word.Document doc)
         {
             string prop = ReadDocumentProperty(doc, "Axiom");
@@ -1956,6 +1992,7 @@ namespace AxiomIRISRibbon
         //Contract Instance Stuff - might be the same as ContractTemplate
         public void UpdateContractConcept(string conceptid, string clauseid, string xml,string lastmodified, Word.Document doc, Dictionary<string, string> elementValues)
         {
+            try { 
             //Is it one of ours
             if (isContract(doc))
             {
@@ -2180,7 +2217,8 @@ namespace AxiomIRISRibbon
                 vstoDoc.ContentControlOnExit += new Word.DocumentEvents2_ContentControlOnExitEventHandler(vstoDoc_ContentControlOnExit);
 
             }
-
+            }
+            catch (Exception ex) { }
         }
 
 
@@ -2288,6 +2326,7 @@ namespace AxiomIRISRibbon
 
         public void UnlockContractConcept(string conceptid,Word.Document doc)
         {
+            try{
             //Is it one of ours
             if (isContract(doc))
             {
@@ -2340,7 +2379,8 @@ namespace AxiomIRISRibbon
                 }
             }
           
-
+   }
+            catch (Exception ex) { }
         }
 
         public void UnlockLockTemplateConcept(Word.Document doc,string conceptid,bool lck)

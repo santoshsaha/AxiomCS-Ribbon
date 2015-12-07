@@ -2124,80 +2124,83 @@ namespace AxiomIRISRibbon.ContractEdit
 
         void unlock_Click(object sender, RoutedEventArgs e)
         {
-            // adds a new clause type of clause "free text"
-            Button b = (Button)sender;
-            string conceptid = Convert.ToString(b.Tag);
-
-            // find the clause
-            ClauseRadio rb1 = null;
-            foreach (object o in Questions.Children)
+            try
             {
-                StackPanel spCL = (StackPanel)((Expander)((Grid)o).Children[0]).Content;
-                for (int i1 = 0; i1 < spCL.Children.Count; i1++)
+                // adds a new clause type of clause "free text"
+                Button b = (Button)sender;
+                string conceptid = Convert.ToString(b.Tag);
+
+                // find the clause
+                ClauseRadio rb1 = null;
+                foreach (object o in Questions.Children)
                 {
-                    Object o1 = spCL.Children[i1];
-                    StackPanel sp = (StackPanel)o1;
-                    if ((string)sp.Tag == "rbsp")
+                    StackPanel spCL = (StackPanel)((Expander)((Grid)o).Children[0]).Content;
+                    for (int i1 = 0; i1 < spCL.Children.Count; i1++)
                     {
-                        //this is the radiobutton stack panel
-                        ClauseRadio rb = (ClauseRadio)sp.Children[0];
-                        if (rb.IsChecked == true && rb.conceptid == conceptid)
+                        Object o1 = spCL.Children[i1];
+                        StackPanel sp = (StackPanel)o1;
+                        if ((string)sp.Tag == "rbsp")
                         {
-                            rb1 = rb;
-                            break;
+                            //this is the radiobutton stack panel
+                            ClauseRadio rb = (ClauseRadio)sp.Children[0];
+                            if (rb.IsChecked == true && rb.conceptid == conceptid)
+                            {
+                                rb1 = rb;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (rb1 != null)
+                {
+                    if (!rb1.unlock)
+                    {
+                        MessageBoxResult rtn = MessageBox.Show("Are you sure, this will unlock the clause for editing.", "Are you sure?", MessageBoxButton.OKCancel);
+                        if (rtn == MessageBoxResult.OK)
+                        {
+                            //Unlock!
+
+                            //Now unlock the content control in the doc
+                            Globals.ThisAddIn.UnlockContractConcept(conceptid, Globals.ThisAddIn.Application.ActiveDocument);
+
+                            //And select
+                            Globals.ThisAddIn.SelectConcept(conceptid);
+
+                            //Now mark the button as unlocked
+                            Image icon = (Image)b.Content;
+                            icon.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/unlocksmall.png", UriKind.Relative));
+                            rb1.unlock = true;
+                            b.ToolTip = "Revert Clause back to default and lock";
+
+                            CheckApproval();
+                        }
+                    }
+                    else
+                    {
+                        MessageBoxResult rtn = MessageBox.Show("Are you sure, this will revert the text to the selected clause and lock for editing", "Are you sure?", MessageBoxButton.OKCancel);
+                        if (rtn == MessageBoxResult.OK)
+                        {
+                            //Lock!
+
+                            SelectClause(rb1);
+
+                            //Update any clauses in the doc with the select clause
+                            Globals.ThisAddIn.UpdateContractConcept(rb1.conceptid, rb1.id, rb1.xml, rb1.lastmodified, Globals.ThisAddIn.Application.ActiveDocument, GetElemetValueDict());
+                            InitiateElements();
+
+                            //Now mark the button as locked
+                            Image icon = (Image)b.Content;
+                            icon.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/locksmall.png", UriKind.Relative));
+                            rb1.unlock = true;
+                            b.ToolTip = "Unlock Clause";
+
+                            CheckApproval();
                         }
                     }
                 }
             }
-
-            if (rb1 != null)
-            {
-                if (!rb1.unlock)
-                {
-                    MessageBoxResult rtn = MessageBox.Show("Are you sure, this will unlock the clause for editing.", "Are you sure?", MessageBoxButton.OKCancel);
-                    if (rtn == MessageBoxResult.OK)
-                    {
-                        //Unlock!
-
-                        //Now unlock the content control in the doc
-                        Globals.ThisAddIn.UnlockContractConcept(conceptid, Globals.ThisAddIn.Application.ActiveDocument);
-
-                        //And select
-                        Globals.ThisAddIn.SelectConcept(conceptid);
-
-                        //Now mark the button as unlocked
-                        Image icon = (Image)b.Content;
-                        icon.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/unlocksmall.png", UriKind.Relative));
-                        rb1.unlock = true;
-                        b.ToolTip = "Revert Clause back to default and lock";
-
-                        CheckApproval();
-                    }
-                }
-                else
-                {
-                    MessageBoxResult rtn = MessageBox.Show("Are you sure, this will revert the text to the selected clause and lock for editing", "Are you sure?", MessageBoxButton.OKCancel);
-                    if (rtn == MessageBoxResult.OK)
-                    {
-                        //Lock!
-
-                        SelectClause(rb1);
-
-                        //Update any clauses in the doc with the select clause
-                        Globals.ThisAddIn.UpdateContractConcept(rb1.conceptid, rb1.id, rb1.xml, rb1.lastmodified, Globals.ThisAddIn.Application.ActiveDocument, GetElemetValueDict());
-                        InitiateElements();
-
-                        //Now mark the button as locked
-                        Image icon = (Image)b.Content;
-                        icon.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/locksmall.png", UriKind.Relative));
-                        rb1.unlock = true;
-                        b.ToolTip = "Unlock Clause";
-
-                        CheckApproval();
-                    }
-                }
-            }
-
+            catch (Exception ex) { }
         }
 
 

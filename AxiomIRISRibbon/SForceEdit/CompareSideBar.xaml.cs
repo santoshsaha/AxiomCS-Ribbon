@@ -294,6 +294,42 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
 
                     */
+
+                    List<string> clauseArray = new List<string>();
+                    DataReturn ribbonClauseDr = _d.getRibbonClause(_templateid);
+                    //check condition
+                    DataTable ribbonClauseDt = ribbonClauseDr.dt;
+                    foreach (Word.ContentControl cc in _doc.Range().ContentControls)
+                    {
+                        //
+                        if (cc.Tag != null)
+                        {
+                            //
+                            string tag = cc.Tag;
+                            string docclausename = cc.Title;
+                        }
+                        string text = cc.Range.Text;
+                        string[] taga = cc.Tag.Split('|');
+                        if (taga[0] == "Concept")
+                        {
+                            //
+                            if (!clauseArray.Contains(taga[2]))
+                            {
+                                //
+                                clauseArray.Add(taga[2]);
+                            }
+                            //dr = _d.SaveRibbonClause(ribbonClauseDt, taga[1], taga[2], _templateid);
+                        }
+                    }
+                    if (clauseArray.Count > 0)
+                    {
+                        dr = _d.SaveRibbonClause(ribbonClauseDt, clauseArray, _templateid);
+                    }
+
+
+
+
+
                     dr = AxiomIRISRibbon.Utility.HandleData(_d.SaveVersion(_versionid, _matterid, _templateid, _versionName, _versionNumber));
                     if (!dr.success) return false;
                     _versionid = dr.id;

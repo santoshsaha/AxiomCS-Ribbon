@@ -1334,6 +1334,56 @@ namespace AxiomIRISRibbon
             return temppath + filename;
         }
 
+        //pavan
+        public DataReturn getRibbonClause(string templateId)
+        {
+            //
+            string ribbonClauseQuery = "select id,name,Clause__c,Template__c from RibbonTemplateClause__c where Template__c = '" + templateId + "'";
+            DataReturn ribbonClauseQueryDataReturn = _sf.RunSOQL(ribbonClauseQuery);
+            return ribbonClauseQueryDataReturn;
+        }
+
+        //pavan
+        public DataReturn SaveRibbonClause(DataTable ribbontempCause, List<string> clauseIds, string templateId)
+        {
+            //
+            List<string> ribbonClauseIds = new List<string>();
+            int i = 0;
+            foreach (DataRow drow in ribbontempCause.Rows)
+            {
+                //
+                ribbonClauseIds.Add(drow.Table.Rows[i][2].ToString());
+                i++;
+            }
+
+            //
+            DataReturn dr = new DataReturn();
+            //foreach (string ribbonclauseId in ribbonClauseIds)
+            //{
+            //
+            //foreach (DataRow drow in ribbontempCause.Rows)
+            foreach (string clauseId in clauseIds)
+            {
+                //
+                //if(clauseId == drow.Table.Columns[2].ToString())
+                //if (drow.Table.Rows[0][2].ToString().Contains(clauseId))
+                if (ribbonClauseIds.Contains(clauseId))
+                {
+                    //nothing
+                }
+                else
+                {
+                    //
+                    DataRow drowNew = ribbontempCause.NewRow();
+                    drowNew["name"] = templateId + " - " + clauseId;
+                    drowNew["clause__c"] = clauseId;
+                    drowNew["template__c"] = templateId;
+                    dr = _sf.Save("RibbonTemplateClause__c", drowNew);
+                }
+            }
+            //}
+            return dr;
+        }
 
 
         public DataReturn GetVersionMax(string MatterId)

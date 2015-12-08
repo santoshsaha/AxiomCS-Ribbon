@@ -505,7 +505,7 @@ namespace AxiomIRISRibbon.SForceEdit
          //   Globals.ThisAddIn.AddDocName(objtempDocAmendment, fileAmendmentDocumentName, "");
 
             // To unlock Clauses
-       /*     for (int i = 1; i <= objtempDocAmendment.ContentControls.Count; i++)
+          for (int i = 1; i <= objtempDocAmendment.ContentControls.Count; i++)
             {
                 objtempDocAmendment.ContentControls[i].LockContents = false;
                 objtempDocAmendment.ContentControls[i].LockContentControl = false;
@@ -516,7 +516,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempAmendmentTemplate.ContentControls[i].LockContents = false;
                 objtempAmendmentTemplate.ContentControls[i].LockContentControl = false;
             }
-            */
+            
             //AmendmentTemplate - For Save
         //    Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentTemplate", "");
             Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "Contract", "", "AmendmentTemplate");

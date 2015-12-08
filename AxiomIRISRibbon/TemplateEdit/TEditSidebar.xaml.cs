@@ -1361,8 +1361,11 @@ namespace AxiomIRISRibbon.TemplateEdit
                 foreach (Word.Range r in sel.Range.Words)
                 {
                     //if its a little word then skip it!
-                    if (r == null || r.Text.Length > 3)
+                    //Code PES - For unhandled error
+                  //  if (r == null || r.Text.Length > 3)
+                    if (r != null && r.Text!=null && r.Text.Length > 3)
                     {
+                        //End PES
                         name = r.Text;
                         break;
                     }
@@ -1372,8 +1375,11 @@ namespace AxiomIRISRibbon.TemplateEdit
                 foreach (Word.Range r in sel.Range.Sentences)
                 {
                     //if its a little senetence then skip it!
-                    if (r == null || r.Text.Length > 5)
-                    {
+
+                    //Code PES - For unhandled error
+                  //  if (r == null || r.Text.Length > 5)
+                    if (r != null && r.Text != null && r.Text.Length > 5)
+                    {   //End PES
                         desc = r.Text;
                         if (desc.Length > 20) break;
                     }

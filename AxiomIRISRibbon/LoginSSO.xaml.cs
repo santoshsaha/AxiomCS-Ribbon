@@ -137,8 +137,7 @@ namespace AxiomIRISRibbon
                     string p = u + "/services/Soap/u/" + _soapversion + "/" + _orgid;
                     string m = u + "/services/Soap/m/" + _soapversion + "/" + _orgid;
                     string s = sid;
-                    bool? local = false;
-                    string rtn = _d.Login(s, p, m, (local == true ? "access" : "sf"),_instancename);
+                    string rtn = _d.Login(s, p, m,_instancename);
 
 
                     if (rtn == "")

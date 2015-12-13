@@ -1682,6 +1682,8 @@ namespace AxiomIRISRibbon.ContractEdit
                                         string lblstr = er["Element__r_Label__c"].ToString();
                                         if (lblstr == "") lblstr = er["Element__r_Name"].ToString();
 
+                                        // FIXME: skip if clause is duplicate. Need to know what to do here
+                                        if (_elements.ContainsKey(er["Id"].ToString())) continue;
 
                                         /* OLD TEXT BOX ONLY code
                                         TextBox tb = new TextBox();

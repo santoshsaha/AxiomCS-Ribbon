@@ -584,24 +584,24 @@ namespace AxiomIRISRibbon
             }
 
 
-                    string temppath = System.IO.Path.GetTempPath();
-                    string filename = "";
-                    int fcount = 0;
-                    string strfcount = "";
-                    while(filename==""){
-                        if (System.IO.File.Exists(temppath + id + strfcount + ".docx"))
-                        {
-                        try{
-                            System.IO.File.Delete(temppath + id + strfcount + ".docx");
-                            filename = temppath + id + strfcount + ".docx";
-                        } catch(Exception){
-                            fcount++;
-                            strfcount = "_" + fcount.ToString() + "";
-                        }
-                    } else {
+            string temppath = System.IO.Path.GetTempPath();
+            string filename = "";
+            int fcount = 0;
+            string strfcount = "";
+            while(filename==""){
+                if (System.IO.File.Exists(temppath + id + strfcount + ".docx"))
+                {
+                    try{
+                        System.IO.File.Delete(temppath + id + strfcount + ".docx");
                         filename = temppath + id + strfcount + ".docx";
+                    } catch(Exception){
+                        fcount++;
+                        strfcount = "_" + fcount.ToString() + "";
                     }
-                    }
+                } else {
+                    filename = temppath + id + strfcount + ".docx";
+                }
+            }
             return filename;
         }
 

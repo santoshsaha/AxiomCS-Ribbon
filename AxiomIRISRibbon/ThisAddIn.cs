@@ -2437,7 +2437,7 @@ namespace AxiomIRISRibbon
                     Globals.ThisAddIn.ProcessingStart("Saving");
                     hidep = true;
                 }
-
+                System.Threading.Thread.Sleep(4000);
                 string prop = GetCurrentAxiomDocProp();
                 if (prop != null)
                 {

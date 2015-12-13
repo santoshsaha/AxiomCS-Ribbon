@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<customUI onLoad="Ribbon_Load" xmlns="http://schemas.microsoft.com/office/2006/01/customui">
+    <ribbon>
+        <tabs>
+            <tab idMso="TabAddIns" label="AxiomIRIS">
+                <group id="group1" label="Connect">
+                    <button id="btnLogin" onAction="btnLogin_Click" label="Login" size="large" />
+                    <splitButton id="sbtnLoginSSO" size="large">
+                        <button id="sbtnLoginSSO__btn" label="Login" />
+                        <menu id="sbtnLoginSSO__mnu">
+                            <button id="btnLoginDev" onAction="btnLoginDev_Click" label="Dev" />
+                            <button id="btnLoginIT" onAction="btnLoginIT_Click" label="IT" />
+                            <button id="btnLoginUAT" onAction="btnLoginUAT_Click" label="UAT" />
+                            <button id="btnLoginProd" onAction="btnLoginProd_Click" label="Prod" />
+                        </menu>
+                    </splitButton>
+                    <button id="btnLoginSSO" onAction="btnLoginSSO_Click" label="Login" size="large" />
+                    <button id="btnLogout" onAction="btnLogout_Click" label="Logout" size="large" />
+                </group>
+                <group id="gpData" label="Data">
+                    <button id="btn1" onAction="btnDataEdit_Click" label="One" size="large" />
+                    <button id="btn2" onAction="btnDataEdit_Click" label="Two" size="large" />
+                    <button id="btn3" onAction="btnDataEdit_Click" label="Three" size="large" />
+                    <button id="btn4" onAction="btnDataEdit_Click" label="Four" size="large" />
+                    <button id="btn5" onAction="btnDataEdit_Click" label="Five" size="large" />
+                </group>
+                <group id="gpAdmin" label="Admin">
+                    <splitButton id="btnTemplate" size="large">
+                        <button id="btnTemplate__btn" label="Templates" />
+                        <menu id="btnTemplate__mnu">
+                            <button id="btnNewTemplate" onAction="btnNewTemplate_Click" label="New From Current Document" />
+                            <button id="btnBlankTemplate" onAction="btnBlankTemplate_Click" label="New Blank Template" />
+                        </menu>
+                    </splitButton>
+                    <button id="btnConcepts" onAction="btnConcepts_Click" label="Concepts" size="large" />
+                    <splitButton id="btnClauses" size="large">
+                        <button id="btnClauses__btn" label="Clauses" />
+                        <menu id="btnClauses__mnu">
+                            <button id="btnNewClause" onAction="btnNewClause_Click" label="New From Current Document" />
+                            <button id="btnBlankClause" onAction="btnBlankClause_Click" label="New Blank Clause" />
+                        </menu>
+                    </splitButton>
+                    <splitButton id="btnElement" size="large">
+                        <button id="btnElement__btn" label="Elements" />
+                        <menu id="btnElement__mnu" />
+                    </splitButton>
+                </group>
+                <group id="gpDraft" label="Draft">
+                    <gallery id="gContracts" onAction="gContracts_Click" label="New Contract" size="large" columns="1" rows="3" itemHeight="32" itemWidth="32" />
+                    <button id="btnOpenContract" onAction="btnOpenContract_Click" label="Open Contract" size="large" />
+                    <button id="btnSendForApproval" onAction="btnSendForApproval_Click" enabled="false" label="Send For Approval" />
+                    <button id="btnSendForNeg" onAction="btnSendForNeg_Click" enabled="false" label="Send For Negotiating" />
+                </group>
+                <group id="btnTrack" label="Debug">
+                    <labelControl id="lbSFCount" label="0" />
+                    <labelControl id="lbSFLast" label=" " />
+                    <gallery id="gSFDebug" onAction="gSFDebug_Click" label="SF Calls" showImage="false" columns="1" />
+                </group>
+                <group id="gpIrisTrack" label="Export" visible="false">
+                    <button id="btnSync" onAction="btnTrack_DialogLauncherClick" label="Sync Amendment Document" />
+                    <button id="btnAmend" onAction="btnAmend_Click" label="Create Amendment" />
+                    <button id="btnRevertClause" onAction="btnRevertClause_Click" visible="false" label="Revert Clause" />
+                    <button id="btnExportToWord" onAction="btnExportToWord_Click" label="Export To Word" />
+                    <button id="btnExportToPDF" onAction="btnExportToPDF_Click" label="Export To PDF" />
+                </group>
+                <group id="group3" label="IRIS">
+                    <button id="btnReports" onAction="btnReports_Click" label="Reports" />
+                    <button id="btnSettings" onAction="btnSettings_Click" label="Settings" />
+                    <button id="btnAbout" onAction="btnAbout_Click" label="About" />
+                </group>
+            </tab>
+        </tabs>
+    </ribbon>
+</customUI>

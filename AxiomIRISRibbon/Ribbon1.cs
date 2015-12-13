@@ -43,6 +43,7 @@ namespace AxiomIRISRibbon
 
             gpDraft.Visible = false;
             gpIrisTrack.Visible = false;
+            grpAmendment.Visible = false;
         }
 
         public void Activate()
@@ -139,6 +140,7 @@ namespace AxiomIRISRibbon
                 gpData.Visible = true;
                 //Code PES
                 gpIrisTrack.Visible = true;
+                grpAmendment.Visible = true;
                 // End PES
 
                 btn1.Visible = false;
@@ -235,13 +237,15 @@ namespace AxiomIRISRibbon
             gpAdmin.Visible = false;
             gpData.Visible = false;
             gpDraft.Visible = false;
+           
             btnLogout.Enabled = false;
             btnLogin.Enabled = true;
 
             btnReports.Enabled = false;
 
             //Code PES
-            gpIrisTrack.Visible = false;
+            gpIrisTrack.Visible = false; 
+            grpAmendment.Visible = false;
             // End PES
         }
 
@@ -651,18 +655,28 @@ namespace AxiomIRISRibbon
 
                 object fileFormat = Word.WdSaveFormat.wdFormatPDF;
                 SaveFileDialog dlg = new SaveFileDialog();
-                dlg.Title = "MyTitle";
+                string day = DateTime.Now.Day.ToString();
+                string month = DateTime.Now.Month.ToString();
+                string hour = DateTime.Now.Hour.ToString();
+                string min = DateTime.Now.Minute.ToString();
+                string sec = DateTime.Now.Second.ToString();
+
+                dlg.Title = Convert.ToString(month+day+hour+min+sec);
                 dlg.Filter = "Word Document (*.pdf)|*.pdf";
-                dlg.FileName = "ExportTemplate-" + dlg.Title.Replace(" ", "");
+                dlg.FileName = "Template-" + dlg.Title.Replace(" ", "");
                 dlg.ShowDialog();
                 object outputFileName = dlg.FileName;
                 export.SaveAs(ref outputFileName, ref fileFormat, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                     ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                     ref oMissing, ref oMissing, ref oMissing);
 
+                //dlg.FileName
+                byte[] pdf = File.ReadAllBytes(@"dlg.FileName");
+
                 // Close the Word document, but leave the Word application open.
                 // doc has to be cast to type _Document so that it will find the
-                // correct Close method.                
+                // correct Close method.   
+             
                 object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
                 ((Word._Document)export).Close(ref saveChanges, ref oMissing, ref oMissing);
                 export = null;

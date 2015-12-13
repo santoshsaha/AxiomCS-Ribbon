@@ -30,7 +30,7 @@ namespace AxiomIRISRibbon.SForceEdit
         private static Data _d;
         static Word.Application app;
         static Word.Document _source;
-        private static  string _fileName;
+        private static string _fileName;
         private static string _matterid;
         private static string _versionid;
         private static string _templateid;
@@ -132,6 +132,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     wordAttachment = app.Documents[app.ActiveDocument.FullName]; // Document already open
                     wordAttachment.TrackRevisions = false;
                     wordAttachment.ShowRevisions = false;
+                    //wordAttachment.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                     wordAttachment.AcceptAllRevisions();
 
                     // To unlock Clauses
@@ -162,23 +163,24 @@ namespace AxiomIRISRibbon.SForceEdit
 
 
                     // To unlock Clauses
-    /*                for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
-                    {
-                        wordTemplate.ContentControls[i].LockContents = false;
-                        wordTemplate.ContentControls[i].LockContentControl = false;
+                    /*                for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
+                                    {
+                                        wordTemplate.ContentControls[i].LockContents = false;
+                                        wordTemplate.ContentControls[i].LockContentControl = false;
 
-                    }
-*/
+                                    }
+                */
                     // Code to remove   the document modified by -- This code will reset all the properties in the document
-                  
+
                     wordTemplate.RemoveDocumentInformation(Microsoft.Office.Interop.Word.WdRemoveDocInfoType.wdRDIDocumentProperties);
 
                     // End Code
 
                     //Compare
-                   // Globals.ThisAddIn.AddDocId(wordTemplate, "Compare", "");
-                    Globals.ThisAddIn.AddDocId(wordTemplate, "Contract",  "","Compare");
+                    // Globals.ThisAddIn.AddDocId(wordTemplate, "Compare", "");
+                    Globals.ThisAddIn.AddDocId(wordTemplate, "Contract", "", "Compare");
                     wordTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
+                    //wordTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                     wordTemplate.TrackRevisions = true;
                     wordTemplate.ShowRevisions = false;
                     wordTemplate.AcceptAllRevisions();
@@ -187,8 +189,10 @@ namespace AxiomIRISRibbon.SForceEdit
                     //added below lines to close the open file before opening the split screen
                     foreach (Word.Document d in app.Documents)
                     {
+                        //d.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                         if (d.FullName != fileTemplate)
                         {
+
                             object saveOption = Word.WdSaveOptions.wdDoNotSaveChanges;
                             object originalFormat = Word.WdOriginalFormat.wdOriginalDocumentFormat;
                             object routeDocument = false;
@@ -196,7 +200,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         }
                     }
 
-                    
+
                     /*
                     object o = wordTemplate;
                     wordTemplate.Windows.CompareSideBySideWith(ref o);*/
@@ -206,6 +210,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     app.ActiveWindow.View.SplitSpecial = Word.WdSpecialPane.wdPaneRevisionsVert;
                     app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
                     //app.ActiveWindow.View.RevisionsFilter.Markup = 0;
+                    app.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                     app.Activate();
                     // Russel Dec11 - add in the Doc Id to the comparison doc
                     Globals.ThisAddIn.AddDocId(app.ActiveDocument, "Contract", "", "Compare");
@@ -429,38 +434,38 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     */
 
-                 /*   List<string> clauseArray = new List<string>();
-                    DataReturn ribbonClauseDr = _d.getRibbonClause(_templateid);
-                    //check condition
-                    DataTable ribbonClauseDt = ribbonClauseDr.dt;
-                    foreach (Word.ContentControl cc in _doc.Range().ContentControls)
-                    {
-                        //
-                        if (cc.Tag != null)
-                        {
-                            //
-                            string tag = cc.Tag;
-                            string docclausename = cc.Title;
-                        }
-                        string text = cc.Range.Text;
-                        string[] taga = cc.Tag.Split('|');
-                        if (taga[0] == "Concept")
-                        {
-                            //
-                            if (!clauseArray.Contains(taga[2]))
-                            {
-                                //
-                                clauseArray.Add(taga[2]);
-                            }
-                            //dr = _d.SaveRibbonClause(ribbonClauseDt, taga[1], taga[2], _templateid);
-                        }
-                    }
-                    if (clauseArray.Count > 0)
-                    {
-                        dr = _d.SaveRibbonClause(ribbonClauseDt, clauseArray, _templateid);
-                    }
+                    /*   List<string> clauseArray = new List<string>();
+                       DataReturn ribbonClauseDr = _d.getRibbonClause(_templateid);
+                       //check condition
+                       DataTable ribbonClauseDt = ribbonClauseDr.dt;
+                       foreach (Word.ContentControl cc in _doc.Range().ContentControls)
+                       {
+                           //
+                           if (cc.Tag != null)
+                           {
+                               //
+                               string tag = cc.Tag;
+                               string docclausename = cc.Title;
+                           }
+                           string text = cc.Range.Text;
+                           string[] taga = cc.Tag.Split('|');
+                           if (taga[0] == "Concept")
+                           {
+                               //
+                               if (!clauseArray.Contains(taga[2]))
+                               {
+                                   //
+                                   clauseArray.Add(taga[2]);
+                               }
+                               //dr = _d.SaveRibbonClause(ribbonClauseDt, taga[1], taga[2], _templateid);
+                           }
+                       }
+                       if (clauseArray.Count > 0)
+                       {
+                           dr = _d.SaveRibbonClause(ribbonClauseDt, clauseArray, _templateid);
+                       }
 
-                    */
+                       */
 
 
 
@@ -489,14 +494,14 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     Globals.ThisAddIn.AddSaveHandler(); // add it back in
                     Globals.ThisAddIn.ProcessingStop("End");
-                   
+
                 }
                 return true;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error saving contract");
-                return false; 
+                return false;
             }
         }
 

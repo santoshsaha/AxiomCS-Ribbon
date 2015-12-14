@@ -578,7 +578,6 @@ namespace AxiomIRISRibbon.SForceEdit
             objtempDocAmendment.ActiveWindow.View.ShowRevisionsAndComments = false;
             objtempAmendmentTemplate.TrackRevisions = true;
             //objtempAmendmentTemplate.AcceptAllRevisions();
-            objtempAmendmentTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupAll;
             //objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
             objtempDocAmendment.Activate();
         }
@@ -679,10 +678,6 @@ namespace AxiomIRISRibbon.SForceEdit
                 //objtempAmendmentTemplate.RejectAllRevisions();
                 UndoAllChanges(objtempAmendmentTemplate);
 
-
-
-                objtempAmendmentTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
-                objtempAmendmentTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupAll;
 
 
                 foreach (Microsoft.Office.Interop.Word.Paragraph p in objtempDocAmendment.Paragraphs)
@@ -1029,10 +1024,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     Globals.ThisAddIn.ProcessingUpdate("Save To SalesForce");
 
                     dr = AxiomIRISRibbon.Utility.HandleData(_d.UpdateFile(strAttachmentId, strVfilename, filenamecopy));
-                    if (!IsTemplate)
-                    {
-                        _doc.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
-                    }
                 }
                 Globals.ThisAddIn.AddSaveHandler(); // add it back in
                 Globals.ThisAddIn.ProcessingStop("End");

@@ -350,7 +350,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 if (!dr1.success) return;
                 DataTable dt = dr1.dt;
                 if (dt.Rows.Count == 0) return;
-                if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() == "Amendment")
+                if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() != "Amendment")
                 {
                     Globals.Ribbons.Ribbon1.btnAmend.Enabled = true;
                 }
@@ -428,17 +428,14 @@ namespace AxiomIRISRibbon.SForceEdit
                     {
                         // hide the windows
                         Globals.Ribbons.Ribbon1.CloseWindows();
+                        // Close previous document
+                        ((Word._Document)Globals.ThisAddIn.Application.ActiveDocument).Close();
 
                         // Word!
                         Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(dr.strRtn);
-
-                        //Code PES
-
-                  //      Globals.ThisAddIn.AddDocName(doc, dr.strRtn, dr.id);
-                        //End Code
-
+                        doc.Activate();
                         Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
-                        doc.Activate();                      
+                        
 
                         if (Globals.ThisAddIn.isContract(doc) && (_sObjectDef.ParentType=="Version__c" || _sObjectDef.ParentType=="Document__c"))
                         {

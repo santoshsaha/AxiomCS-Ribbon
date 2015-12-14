@@ -210,7 +210,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     app.ActiveWindow.View.SplitSpecial = Word.WdSpecialPane.wdPaneRevisionsVert;
                     app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
                     //app.ActiveWindow.View.RevisionsFilter.Markup = 0;
-                    app.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                     app.Activate();
                     // Russel Dec11 - add in the Doc Id to the comparison doc
                     Globals.ThisAddIn.AddDocId(app.ActiveDocument, "Contract", "", "Compare");

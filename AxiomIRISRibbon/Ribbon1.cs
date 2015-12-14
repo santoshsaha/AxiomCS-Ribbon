@@ -755,26 +755,10 @@ namespace AxiomIRISRibbon
         {
             try
             {
-                //Save the doc and the data
-            //    if (Globals.ThisAddIn.GetTaskPaneControlCompare() != null)
-            //    {
-                  //  Globals.ThisAddIn.GetTaskPaneControlCompare().SaveContract(false, true);
-                //To Do
-                try
-                {
-                    CompareSideBar.SaveCompare(false, true);
-                }
-                catch (Exception ex) { }
-           //     }
-                // CompareAmendment.FromRibbonToCreate();
-                //  Id = Globals.ThisAddIn.Application.Documents.Add(attachmentid);
-                // Globals.ThisAddIn.Application.Documents.Add(attachmentid) = Id;
-                // System.Windows.Application.Current.Resources.GetValue("attachmentid") as Id;
+                CompareSideBar.SaveCompare(false, true);
                 string attachmentId = Globals.ThisAddIn.GetAttachmentId();
-               // Id = attachmentId;
-               // Word.Document docTest = Globals.ThisAddIn.Application.ActiveDocument;
                 if (attachmentId == null) attachmentId = Globals.ThisAddIn.GetCurrentDocId();
-                if (attachmentId != "")
+                else if (attachmentId != "")
                 {
                     _d = Globals.ThisAddIn.getData();
                     DataReturn dr1 = AxiomIRISRibbon.Utility.HandleData(_d.AttachmentInfo(attachmentId));
@@ -789,14 +773,11 @@ namespace AxiomIRISRibbon
                     amend.Focus();
                     amend.Show();
                 }
-                else
-                {
-                    //_d = Globals.ThisAddIn.getData();
-                    //string id = Globals.ThisAddIn.GetCurrentDocId();
-                    //Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);
-                }
             }
-            catch (Exception ex) { }
+            catch (Exception ex) 
+            {
+                System.Windows.Forms.MessageBox.Show(ex.Message, "Create Amendment");
+            }
         }
 
         private void btnRevertClause_Click(object sender, RibbonControlEventArgs e)

@@ -755,6 +755,11 @@ namespace AxiomIRISRibbon
         {
             try
             {
+                foreach (Microsoft.Office.Tools.CustomTaskPane ctp in Globals.ThisAddIn.CustomTaskPanes)
+                {
+                    ctp.Dispose();
+                }
+                //==New code added above ==//
                 CompareSideBar.SaveCompare(false, true);
                 string attachmentId = Globals.ThisAddIn.GetAttachmentId();
                 if (attachmentId == null) attachmentId = Globals.ThisAddIn.GetCurrentDocId();

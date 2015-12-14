@@ -352,11 +352,14 @@ namespace AxiomIRISRibbon.SForceEdit
                 if (dt.Rows.Count == 0) return;
                 if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() != "Amendment")
                 {
-                    Globals.Ribbons.Ribbon1.btnAmend.Enabled = true;
+                   // Globals.Ribbons.Ribbon1.btnAmend.Enabled = true;
+                    Globals.Ribbons.Ribbon1.btnAmend.Enabled = false;
+
                 }
                 else
                 {
-                    Globals.Ribbons.Ribbon1.btnAmend.Enabled = false;
+                    //Globals.Ribbons.Ribbon1.btnAmend.Enabled = false;
+                    Globals.Ribbons.Ribbon1.btnAmend.Enabled = true;
                 }
                 //End Code
                 if (!filename.Contains("."))

@@ -158,6 +158,10 @@ namespace AxiomIRISRibbon.SForceEdit
 
 
                     object objTemplate = fileTemplate;
+
+                    // Template was not loading in right side, if file size is more. So added thread.sleep
+                    System.Threading.Thread.Sleep(8000);
+
                     wordTemplate = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
 
@@ -183,6 +187,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     //wordTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                     wordTemplate.TrackRevisions = true;
                     wordTemplate.ShowRevisions = false;
+
                     wordTemplate.AcceptAllRevisions();
 
 

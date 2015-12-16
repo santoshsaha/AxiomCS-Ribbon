@@ -273,95 +273,7 @@ namespace AxiomIRISRibbon.SForceEdit
             }
         }
 
-        //private void btnOpen_Click(object sender, RoutedEventArgs e)
-        //{
-        //    try
-        //    {
-
-        //        if (this.radComboAmendment.SelectedItem == null && this.chkMaster.IsChecked == false)
-        //        {
-        //            MessageBox.Show("Please select either one template from dropdown  or select master checkbox");
-        //        }
-        //        else
-        //        {
-        //            string strTemplateId = string.Empty;
-        //            if (chkMaster.IsChecked == true)
-        //            {
-        //                DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAmendmentTemplate("", true));
-        //                strTemplateId = dr.dt.Rows[0]["Id"].ToString();
-        //            }
-        //            else if (this.radComboAmendment.SelectedItem != null)
-        //            {
-        //                strTemplateId = ((RadComboBoxItem)(this.radComboAmendment.SelectedItem)).Tag.ToString();
-
-
-        //            }
-        //            if (strTemplateId == "select")
-        //            {
-        //                MessageBox.Show("Please select either one template from dropdown  or select master checkbox");
-        //            }
-        //            else
-        //            {
-        //                double maxId = Convert.ToDouble(_versionNumber + 1);
-        //                string VersionName = "Version " + (maxId).ToString();
-        //                _versionName = VersionName;
-        //                string VersionNumber = maxId.ToString();
-
-
-        //                // Create Version 2 or lower version in To
-        //                DataReturn drCreate = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", _strToAgreementId, _strTemplate, VersionName, VersionNumber, _allDr));
-        //                _newVersionId = drCreate.id;
-
-        //                //Create attachments in To
-        //                DataReturn drVersionAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(_versionid));
-        //                if (!drVersionAttachemnts.success) return;
-        //                DataTable dtAttachments = drVersionAttachemnts.dt;
-
-        //                if (dtAttachments.Rows.Count == 0)
-        //                {
-        //                    MessageBox.Show("Attachments not avilable in source Version");
-        //                }
-        //                else
-        //                {
-        //                    string filename = string.Empty, body = string.Empty;
-        //                    foreach (DataRow rw in dtAttachments.Rows)
-        //                    {
-        //                        filename = rw["Name"].ToString();
-        //                        if (filename == _strSelectedAttachmentName)
-        //                        {
-        //                            body = rw["body"].ToString();
-        //                            _d.saveAttachmentstoSF(_newVersionId, filename, body);
-        //                        }
-        //                    }
-
-        //                    //Save template into version as amendtment
-        //                    DataReturn drTemplate = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplateAttach(strTemplateId));
-        //                    if (!drTemplate.success) return;
-        //                    DataTable dtTemplate = drTemplate.dt;
-        //                    string fileNameTemplate = VersionName + "_Amendment.docx";
-        //                    _d.saveAttachmentstoSF(_newVersionId, fileNameTemplate, dtTemplate.Rows[0]["body"].ToString());
-
-        //                    //Get Attachments
-        //                    DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(_newVersionId));
-        //                    if (!drAttachemnts.success) return;
-        //                    DataTable dtAllAttachments = drAttachemnts.dt;
-
-        //                    //Open attachment with compare screeen
-        //                    CombineFiles(dtAllAttachments, _newVersionId, _strToAgreementId, _strTemplate, VersionName, VersionNumber, fileNameTemplate);
-        //                    Globals.Ribbons.Ribbon1.CloseWindows();
-        //                    this.Close();
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //    }
-        //    finally
-        //    {
-        //        //this.Close();
-        //    }
-        //}
+    
 
         private void CombineFiles(DataTable dt, string versionid, string matterid, string templateid, string versionName, string versionNumber, string strFileNameTemplate)
         {
@@ -776,152 +688,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
             }
         }
-        /*
-        public static void TrackDocument()
-        {
-            try
-            {
-                object missing = System.Reflection.Missing.Value;
-                Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
-                Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
-                Object insertType;
-                Object deleteType;
-                String wrInsert = null;
-                String wrOthers = null;
-                objtempAmendmentTemplate.RejectAllRevisions();
-
-                foreach (Word.Section s in objtempDocAmendment.Sections)
-                {
-                    for (int rnumber = 1; rnumber <= s.Range.Revisions.Count; rnumber++)
-                    {
-
-                        Word.Revision r = s.Range.Revisions[rnumber];
-
-                        if (r.Type == Word.WdRevisionType.wdRevisionInsert) // Inserted
-                        {
-                            insertType = r.Range.Font.TextShadow;
-                            wrInsert += r.Range.Text;
-                            wrInsert += "\u000A";
-                        }
-                        if (r.Type == Word.WdRevisionType.wdRevisionDelete) // Deleted
-                        {
-                            deleteType = r.Range.Text.GetType();
-                            wrOthers += r.Range.Text;
-                            wrOthers += "\u000A";
-                        }
-                        if (r.Type == Word.WdRevisionType.wdRevisionProperty) // Property
-                        {
-                            wrInsert += r.Range.Text;
-                            wrInsert += "\u000A";
-                        }
-                    }
-
-                    rngInsert.Text += wrInsert;
-                    rngDelete.Text += wrOthers;
-                    rngDelete.Font.StrikeThrough = 1;
-
-                }
-            }
-            catch (Exception exe)
-            {
-                MessageBox.Show(exe.ToString());
-            }
-
-        }
-        */
-
-        /*    public static void TrackDocumentOld()
-            {
-                try
-                {
-                    Object destFile = _strAmendmentTemplatePath;
-                    int delcnt = 0;
-                    int inscnt = 0;
-                    string wrInsert = string.Empty;
-                    string wrOthers = string.Empty;
-                    Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
-                    Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
-                    objtempAmendmentTemplate.RejectAllRevisions();
-
-                    foreach (Word.Section s in objtempDocAmendment.Sections)
-                    {
-                        for (int rnumber = 1; rnumber <= s.Range.Revisions.Count; rnumber++)
-                        {
-                            Word.Revision r = s.Range.Revisions[rnumber];
-
-                            if (r.Type == Word.WdRevisionType.wdRevisionInsert) // Inserted
-                            {
-                                rngInsert.Font.StrikeThrough = 0;
-                                inscnt += r.Range.Words.Count;
-                                wrInsert = r.Range.Text;
-                                rngInsert.Text += wrInsert;
-                                rngInsert.Text += "\u000A";
-                                rngInsert.Bold = 1;
-                                rngInsert.Font.StrikeThrough = 0;
-                            }
-                            if (r.Type == Word.WdRevisionType.wdRevisionDelete) // Deleted
-                            {
-                                delcnt += r.Range.Words.Count;
-                                wrOthers = r.Range.Text;
-                                //Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
-                                rngDelete.Font.StrikeThrough = 0;
-                                rngDelete.Text += wrOthers;
-                                rngDelete.Text += "\u000A";
-                                rngDelete.Font.StrikeThrough = 1;
-                              //  CopyDeletedContent(objtempAmendmentTemplate, wrOthers);
-                            }
-
-                         // if (r.Type == Word.WdRevisionType.wdRevisionProperty) // Formatting (bold,italics)
-                           //   {
-                          //        inscnt += r.Range.Words.Count;
-                          //       // Word.Range rng = objtempAmendmentTemplate.Range(0, 0);
-                          //        rngInsert.Text = wr;
-                         //     }
-                        }
-                    }
-                }
-                catch (Exception ex) { }
-            }*/
-        /*
-        private static void CopyDeletedContent(Word.Document doc, string deletedcontent)
-        {
-            foreach (Word.Field myMergeField in doc.Fields)
-            {
-                Word.Range rngFieldCode = myMergeField.Code;
-
-                String fieldText = rngFieldCode.Text.Trim();
-
-
-                if (fieldText.StartsWith("MERGEFIELD  Name  \\* MERGEFORMAT"))
-                {
-                    Int32 endMerge = fieldText.IndexOf("\\");
-
-                    Int32 fieldNameLength = fieldText.Length - endMerge;
-
-                    String fieldName = fieldText.Substring(11, endMerge - 11);
-
-
-                    fieldName = fieldName.Trim();
-
-                    // **** FIELD REPLACEMENT IMPLEMENTATION GOES HERE ****
-
-                    // THE PROGRAMMER CAN HAVE HIS OWN IMPLEMENTATIONS HERE
-
-                    if (fieldName == "Name")
-                    {
-                        myMergeField.Select();
-                        //myMergeField.Application.Selection.InsertBreak();
-                        //Word.Application wordApp = new Word.Application();
-                        myMergeField.Application.Selection.InsertAfter("\n");
-
-                        myMergeField.Application.Selection.InsertAfter(deletedcontent);
-                    }
-
-                }
-            }
-        }
-         * */
-
+     
         public DataReturn SaveCombinedDoc(string newAttachmentId, string fileAmendmentTemplatePath)
         {
             DataReturn dr = new DataReturn();
@@ -932,6 +699,11 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 //  DataReturn dr;
                 _doc = Globals.ThisAddIn.Application.ActiveDocument;
+
+                //Remove the contract refrence and id from document before save as combined doc.
+                //To avoid save as a template
+                Globals.ThisAddIn.AddDocId(_doc, "", "", "");
+                //End
 
                 _doc.SaveAs2(FileName: strFileAttached, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
                 string filenamecopy = AxiomIRISRibbon.Utility.SaveTempFile(_versionid + "Z");

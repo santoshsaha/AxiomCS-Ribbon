@@ -1146,32 +1146,38 @@ namespace AxiomIRISRibbon.ContractEdit
 
             _firstsave = false;
 
-            //Code PES
 
+            //Code PES
             DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(VersionId));
             if (!drAttachemnts.success) return;
             DataTable dtAllAttachments = drAttachemnts.dt;
             var row = dtAllAttachments.Select("Name like '%_Amendment.doc%'").ToArray();
-            //var res = from row in dtAllAttachments.AsEnumerable()
-            //          where
-            //          (row.Field<string>("Name").Contains("_Amendment.doc"))
-            //          select row;
             DataReturn dr1 = _d.GetAgreementTypefromParentId(VersionId);
             if (!dr1.success) return;
             DataTable dt = dr1.dt;
             if (dt.Rows.Count == 0) return;
-            if (dt.Rows[0]["Master_Agreement_Type__c"].ToString() == "Amendment" && row.Length > 0)
+            if (dt.Rows[0]["Master_Agreement_Type__c"].ToString().ToLower() != "amendment")
             {
-                btnopenAmendment.IsEnabled = true;
-                btnOpenAmendData.IsEnabled = true;
+                btnopenAmendment.IsEnabled = false;
+                btnOpenAmendData.IsEnabled = false;
+                btnAmendment.IsEnabled = false;
+                btnAmendData.IsEnabled = false;
             }
             else
             {
-                btnAmendment.IsEnabled = true;
-                btnAmendData.IsEnabled = true;
-            }
+                if (row.Length > 0)
+                {
+                    btnopenAmendment.IsEnabled = true;
+                    btnOpenAmendData.IsEnabled = true;
+                }
+                else
+                {
+                    btnAmendment.IsEnabled = true;
+                    btnAmendData.IsEnabled = true;
 
-            //END PES
+                }
+            }
+            //End PES
 
             // get the required data from the version
             DataReturn dr = Utility.HandleData(_d.GetVersion(VersionId));
@@ -5720,7 +5726,8 @@ namespace AxiomIRISRibbon.ContractEdit
 
             foreach (Microsoft.Office.Tools.CustomTaskPane ctp in Globals.ThisAddIn.CustomTaskPanes)
             {
-                ctp.Dispose();
+               // ctp.Dispose();
+                ctp.Visible = false;
             }
 
 
@@ -5735,7 +5742,7 @@ namespace AxiomIRISRibbon.ContractEdit
         {
             foreach (Microsoft.Office.Tools.CustomTaskPane ctp in Globals.ThisAddIn.CustomTaskPanes)
             {
-                ctp.Dispose();
+                ctp.Visible = false;
             }
             SForceEdit.CompareAmendment amend = new SForceEdit.CompareAmendment();
 

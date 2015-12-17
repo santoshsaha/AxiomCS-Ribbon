@@ -41,7 +41,7 @@
     <PublishUrl>D:\AxomLawCS-EXE\</PublishUrl>
     <InstallUrl />
     <TargetCulture>en</TargetCulture>
-    <ApplicationVersion>1.1.31.02</ApplicationVersion>
+    <ApplicationVersion>1.1.31.04</ApplicationVersion>
     <AutoIncrementApplicationRevision>false</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>

@@ -64,16 +64,6 @@ namespace AxiomIRISRibbon.SForceEdit
             _objname = objname;
             _id = id;
             _name = name;
-
-            /*  DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplateAllsearch(true));
-              if (!dr.success) return;
-
-              DataTable dt = dr.dt;
-
-              _dtAgreement = dt;
-              this.dgTemplates.ItemsSource = dt.DefaultView;*/
-
-            //  dgTemplates.Items.Clear();
             DataTable emptyMatterDatatable = new DataTable();
             this.dgTemplates.ItemsSource = emptyMatterDatatable.DefaultView;
             dgTemplates.Focus();
@@ -81,17 +71,9 @@ namespace AxiomIRISRibbon.SForceEdit
         public void btnReset_Click(object sender, RoutedEventArgs e)
         {
             CNID.Text = "";
-            AgreemntNumber.Text = "";
-            /*  DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplatesFromExsisting(true));
-              if (!dr.success) return;
-
-              DataTable dt = dr.dt;
-              // dgTemplates.Items.Clear();
-              this.dgTemplates.ItemsSource = dt.DefaultView;*/
-
+            AgreemntNumber.Text = "";        
 
             this.dgTemplates.ItemsSource = _dtAgreement.DefaultView;
-
             dgTemplates.Focus();
         }
 
@@ -119,7 +101,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     if (!dr.success) return;
 
                     DataTable dt = dr.dt;
-                    //dgTemplates.Items.Clear();
 
                     if (dt.Rows.Count == 0)
                     {
@@ -132,7 +113,6 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
                 catch (Exception ex)
                 {
-                    //Logger.Log(ex, "btnSearch_Click");
                     MessageBoxResult result = MessageBox.Show("Error text here", "Caption", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
@@ -150,7 +130,6 @@ namespace AxiomIRISRibbon.SForceEdit
         void busyIndicatorBackgroundWorker_DoWork(object sender, DoWorkEventArgs e, string strFromAgreementId)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-            //e.Result = 
             PerformCloning(worker, e, strFromAgreementId);
         }
         void busyIndicatorBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -160,168 +139,12 @@ namespace AxiomIRISRibbon.SForceEdit
             busyIndicatorBackgroundWorker.RunWorkerCompleted -= busyIndicatorBackgroundWorker_RunWorkerCompleted;
 
             bsyIndc.IsBusy = false;
-            //this.bsyIndc.IsBusy = false;
             bsyIndc.BusyContent = "";
             this.btnclone.IsEnabled = true;
             Globals.Ribbons.Ribbon1.CloseWindows();
             this.Close();
         }
-        //protected void btnClone_Click(object sender, RoutedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        bsyIndc.IsBusy = true;
-        //        bsyIndc.BusyContent = "Cloning ...";
-
-
-        //        if ((DataRowView)dgTemplates.SelectedItem == null)
-        //        {
-        //            MessageBox.Show("Select an item", "Alert");
-        //        }
-        //        else
-        //        {
-
-        //            double dVersionNumber = 0;
-        //            string strFromAgreementId, strToAgreementId, strFromVersionId = string.Empty, strTemplate = string.Empty;
-        //            strToAgreementId = _id;
-
-        //            DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
-        //            DataRow allDr0, allDr1;// = new DataRow();
-        //            DataRow drSupersede, drSuperseded;// = new DataRow();
-        //            strFromAgreementId = dtr["Id"].ToString();
-
-        //            //Get version from 
-
-        //            DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strFromAgreementId, ""));
-
-        //            if (!dr.success) return;
-        //            if (dr.dt.Rows.Count == 0)
-        //            {
-        //                MessageBox.Show("Version not avilable in source Agreement");
-        //            }
-        //            else
-        //            {
-        //                DataTable dtv = dr.dt;
-        //                //  DataTable dtv1 = dr.dt;
-        //                allDr0 = dtv.NewRow();
-        //                allDr1 = dtv.NewRow();
-
-        //                foreach (DataRow rv in dtv.Rows)
-        //                {
-        //                    strFromVersionId = rv["Id"].ToString();
-        //                    //   dVersionNumber = Convert.ToDouble(r["version_number__c"]);
-        //                    strTemplate = Convert.ToString(rv["Template__c"]);
-        //                }
-        //                allDr0 = dtv.Rows[0];
-        //                allDr1.ItemArray = dtv.Rows[0].ItemArray.Clone() as object[];
-
-        //                //Get version to 
-        //                DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId, ""));
-        //             //   DataTable dtrTo = drTo.dt;
-        //                //   allDr0 = dtv.Rows[0];
-        //               // dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
-
-        //                //    allDr1.ItemArray = dtrTo.Rows[0].ItemArray.Clone() as object[];
-
-        //                double maxId;
-        //                if (drTo.dt.Rows.Count == 0)
-        //                {
-        //                    maxId = 0;
-        //                }
-        //                else
-        //                {
-        //                    dVersionNumber = Convert.ToDouble(drTo.dt.Rows[0]["version_number__c"]);
-        //                    maxId = Convert.ToDouble(dVersionNumber + 1);
-        //                }
-
-        //                string VersionName = "Version " + (maxId).ToString();
-        //                string VersionNumber = maxId.ToString();
-
-        //                // Create Version 0 or lower version in To
-        //                DataReturn drCreatev0 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr0));
-        //                string newV0VersionId = drCreatev0.id;
-        //                // Create Version 1 or lower version +1 in To
-        //                maxId = Convert.ToDouble(maxId + 1);
-        //                VersionName = "Version " + (maxId).ToString();
-        //                VersionNumber = maxId.ToString();
-
-        //                DataReturn drCreateV1 = AxiomIRISRibbon.Utility.HandleData(_d.CreateVersion("", strToAgreementId, strTemplate, VersionName, VersionNumber, allDr1));
-        //                string newV1VersionId = drCreateV1.id;
-
-
-        //                //Code to update supersede and superseded by
-        //                //call query method
-        //                DataReturn dreturnSupersede = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedes(strFromAgreementId));
-        //                DataTable dtSupersede = new DataTable();
-        //                dtSupersede = dreturnSupersede.dt;
-        //                //drSupersede = new DataRow();
-        //                drSupersede = dtSupersede.NewRow();
-        //                foreach (DataRow r in dtSupersede.Rows)
-        //                {
-        //                    drSupersede = r;
-        //                }
-        //               // drSupersede["Supersedes__c"] = strToAgreementId;
-        //                drSupersede["Superseded_By__c"] = strToAgreementId;
-        //                //call save method
-        //                _d.SaveMatter(drSupersede);
-        //                //call query method
-        //                DataReturn dreturnSuperseded = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedeby(strToAgreementId));
-        //                DataTable dtSuperseded = dreturnSuperseded.dt;
-        //                drSuperseded = dtSuperseded.NewRow();
-        //                //call save method
-        //                foreach (DataRow r in dtSuperseded.Rows)
-        //                {
-        //                    drSuperseded = r;
-        //                }
-        //             ///   drSuperseded["Superseded_By__c"] = strFromAgreementId;
-        //                drSuperseded["Supersedes__c"] = strFromAgreementId;
-        //                //call save method
-        //                _d.SaveMatter(drSuperseded);
-
-
-
-
-
-        //                //Create attachments in To
-        //                DataReturn drVersionAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(strFromVersionId));
-        //                if (!drVersionAttachemnts.success) return;
-        //                DataTable dtAttachments = drVersionAttachemnts.dt;
-
-        //                if (dtAttachments.Rows.Count == 0)
-        //                {
-        //                    MessageBox.Show("Attachments not avilable in source Version");
-        //                }
-        //                else
-        //                {
-        //                    string filename = "";
-        //                    foreach (DataRow rw in dtAttachments.Rows)
-        //                    {
-        //                        filename = rw["Name"].ToString();
-        //                        string body = rw["body"].ToString();
-        //                        _d.saveAttachmentstoSF(newV0VersionId, filename, body);
-        //                        _d.saveAttachmentstoSF(newV1VersionId, filename, body);
-        //                    }
-
-        //                    //Get Attachments
-        //                    DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(newV1VersionId));
-        //                    if (!drAttachemnts.success) return;
-        //                    DataTable dtAllAttachments = drAttachemnts.dt;
-
-        //                    //Open attachment with compare screeen
-        //                    OpenAttachment(dtAllAttachments, newV1VersionId, strToAgreementId, strTemplate, VersionName, VersionNumber);
-        //                    Globals.Ribbons.Ribbon1.CloseWindows();
-        //                    this.Close();
-        //                }
-        //            }
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //Logger.Log(ex, "Clone");
-        //    }
-        //    finally { bsyIndc.IsBusy = false; }
-        //}
+     
 
         protected void btnClone_Click(object sender, RoutedEventArgs e)
         {
@@ -330,7 +153,6 @@ namespace AxiomIRISRibbon.SForceEdit
             bsyIndc.IsBusy = true;
             bsyIndc.BusyContent = "Cloning ...";
             busyIndicatorBackgroundWorker = new BackgroundWorker();
-            //Application.Current.Dispatcher.BeginInvoke();
             string strFromAgreementId = string.Empty;
             if ((DataRowView)dgTemplates.SelectedItem == null)
             {
@@ -348,8 +170,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     strFromAgreementId = dtr["Id"].ToString();
                     DataReturn dataReturnVersionRecord = _d.getLatestVersionDetails(strFromAgreementId);
 
-                   // DataTable dataTableVersionRecord = dataReturnVersionRecord.dt;
-
                     if (dataReturnVersionRecord.dt.Rows.Count == 0)
                     {
 
@@ -362,7 +182,6 @@ namespace AxiomIRISRibbon.SForceEdit
                         }
                         else
                         {
-                            //Displaying a message to indicate the selected matter's latest version doesnt have attachments
                             MessageBox.Show("Cloning cannot occur since selected Agreement does not have an available attachment.", "Alert");
                         }
                     }
@@ -392,10 +211,8 @@ namespace AxiomIRISRibbon.SForceEdit
                     string strToAgreementId, strFromVersionId = string.Empty, strTemplate = string.Empty;
                     strToAgreementId = _id;
 
-                    //DataRow dtr = ((DataRowView)dgTemplates.SelectedItem).Row;
-                    DataRow allDr0, allDr1;// = new DataRow();
-                    DataRow drSupersede, drSuperseded;// = new DataRow();
-                    //strFromAgreementId = dtr["Id"].ToString();
+                    DataRow allDr0, allDr1;
+                    DataRow drSupersede, drSuperseded;
 
                     //Get version from 
 
@@ -409,14 +226,12 @@ namespace AxiomIRISRibbon.SForceEdit
                     else
                     {
                         DataTable dtv = dr.dt;
-                        //  DataTable dtv1 = dr.dt;
                         allDr0 = dtv.NewRow();
                         allDr1 = dtv.NewRow();
 
                         foreach (DataRow rv in dtv.Rows)
                         {
                             strFromVersionId = rv["Id"].ToString();
-                            //   dVersionNumber = Convert.ToDouble(r["version_number__c"]);
                             strTemplate = Convert.ToString(rv["Template__c"]);
                         }
                         allDr0 = dtv.Rows[0];
@@ -424,11 +239,6 @@ namespace AxiomIRISRibbon.SForceEdit
 
                         //Get version to 
                         DataReturn drTo = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementsForVersion(strToAgreementId, ""));
-                        //   DataTable dtrTo = drTo.dt;
-                        //   allDr0 = dtv.Rows[0];
-                        // dVersionNumber = Convert.ToDouble(dtrTo.Rows[0]["version_number__c"]);
-
-                        //    allDr1.ItemArray = dtrTo.Rows[0].ItemArray.Clone() as object[];
 
                         double maxId;
                         if (drTo.dt.Rows.Count == 0)
@@ -465,33 +275,30 @@ namespace AxiomIRISRibbon.SForceEdit
                         DataReturn dreturnSupersede = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedes(strFromAgreementId));
                         DataTable dtSupersede = new DataTable();
                         dtSupersede = dreturnSupersede.dt;
-                        //drSupersede = new DataRow();
                         drSupersede = dtSupersede.NewRow();
                         foreach (DataRow r in dtSupersede.Rows)
                         {
                             drSupersede = r;
                         }
-                        // drSupersede["Supersedes__c"] = strToAgreementId;
                         drSupersede["Superseded_By__c"] = strToAgreementId;
+
                         //call save method
                         _d.SaveMatter(drSupersede);
+
                         //call query method
                         DataReturn dreturnSuperseded = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementSupersedeby(strToAgreementId));
                         DataTable dtSuperseded = dreturnSuperseded.dt;
                         drSuperseded = dtSuperseded.NewRow();
+
                         //call save method
                         foreach (DataRow r in dtSuperseded.Rows)
                         {
                             drSuperseded = r;
                         }
-                        ///   drSuperseded["Superseded_By__c"] = strFromAgreementId;
                         drSuperseded["Supersedes__c"] = strFromAgreementId;
+
                         //call save method
                         _d.SaveMatter(drSuperseded);
-
-
-
-
 
                         //Create attachments in To
                         DataReturn drVersionAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(strFromVersionId));
@@ -527,9 +334,9 @@ namespace AxiomIRISRibbon.SForceEdit
             }
             catch (Exception ex)
             {
-                //Logger.Log(ex, "Clone");
+               
             }
-            //finally { bsyIndc.IsBusy = false; }
+           
         }
 
         private void OpenAttachment(DataTable dt, string versionid, string matterid, string templateid, string versionName, string versionNumber)
@@ -569,14 +376,11 @@ namespace AxiomIRISRibbon.SForceEdit
 
                                  
                                  Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(filename);
-                                 //     Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
-                                 //     doc.Activate();
-
+                               
                                  attachmentid = rw["Id"].ToString();
                                  Globals.ThisAddIn.SaveAttachmentId(attachmentid);
-                                 //Right Panel
-                                 //Dispatcher.BeginInvoke(delegate)
 
+                                 //Right Panel
                                  System.Windows.Forms.Integration.ElementHost elHost = new System.Windows.Forms.Integration.ElementHost();
                                  SForceEdit.CompareSideBar csb = new SForceEdit.CompareSideBar();
                                  csb.Create(filename, versionid, matterid, templateid, versionName, versionNumber, attachmentid);
@@ -597,7 +401,7 @@ namespace AxiomIRISRibbon.SForceEdit
             }
             catch (Exception ex)
             {
-                //Logger.Log(ex, "OpenAttachment"); 
+               
             }
 
 

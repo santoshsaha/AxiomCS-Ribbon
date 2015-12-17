@@ -49,11 +49,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
             LoadTemplatesDLL();
 
-        }
-        ~CompareSideBar()
-        {
-            //  System.Runtime.InteropServices.Marshal.ReleaseComObject(csb);
-        }
+        }      
 
         public void Create(string filename, string versionid, string matterid, string templateid, string versionName, string versionNumber, string attachmentid)
         {
@@ -72,7 +68,6 @@ namespace AxiomIRISRibbon.SForceEdit
             try
             {
 
-                //DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplates(true));
                 DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetAgreementTemplates(true));
 
                 if (!dr.success) return;
@@ -82,7 +77,6 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 RadComboBoxItem i;
 
-                // RadComboBoxItem selected = null;
                 foreach (DataRow r in dt.Rows)
                 {
                     i = new RadComboBoxItem();
@@ -95,7 +89,6 @@ namespace AxiomIRISRibbon.SForceEdit
             }
             catch (Exception ex)
             {
-                //Logger.Log(ex, "Clone");
             }
         }
 
@@ -132,7 +125,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     wordAttachment = app.Documents[app.ActiveDocument.FullName]; // Document already open
                     wordAttachment.TrackRevisions = false;
                     wordAttachment.ShowRevisions = false;
-                    //wordAttachment.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                     wordAttachment.AcceptAllRevisions();
 
                     // To unlock Clauses
@@ -143,18 +135,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                                        }
 
-                   */
-
-                    /*   object objAttachment = _fileName;
-                      wordAttachment = app.Documents.Open(ref objAttachment, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
-                        ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
-                       ref missing, ref missing);*/
-                    /*  wordAttachment = app.Documents.Open(ref objAttachment, ref missing,true, ref missing, ref missing, ref missing, ref missing, ref missing,
-                 ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
-                ref missing, ref missing);
-                    wordTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
-                      //Compare
-                 Globals.ThisAddIn.AddDocId(wordAttachment, "Compare", "");*/
+                   */              
 
 
                     object objTemplate = fileTemplate;
@@ -184,7 +165,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     // Globals.ThisAddIn.AddDocId(wordTemplate, "Compare", "");
                     Globals.ThisAddIn.AddDocId(wordTemplate, "Contract", "", "Compare");
                     wordTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
-                    //wordTemplate.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                     wordTemplate.TrackRevisions = true;
                     wordTemplate.ShowRevisions = false;
 
@@ -194,7 +174,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     //added below lines to close the open file before opening the split screen
                     foreach (Word.Document d in app.Documents)
                     {
-                        //d.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                         if (d.FullName != fileTemplate)
                         {
 
@@ -206,15 +185,17 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
 
 
-                    /*
-                    object o = wordTemplate;
-                    wordTemplate.Windows.CompareSideBySideWith(ref o);*/
+                
 
                     //  Compare code
                     wordTemplate.Compare(_fileName, missing, Word.WdCompareTarget.wdCompareTargetNew, true, true, false, false, false);
                     app.ActiveWindow.View.SplitSpecial = Word.WdSpecialPane.wdPaneRevisionsVert;
                     app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
-                    //app.ActiveWindow.View.RevisionsFilter.Markup = 0;
+
+                   
+                    app.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
+                    app.ActiveWindow.Document.AcceptAllRevisions();
+
                     app.Activate();
                     // Russel Dec11 - add in the Doc Id to the comparison doc
                     Globals.ThisAddIn.AddDocId(app.ActiveDocument, "Contract", "", "Compare");
@@ -229,7 +210,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     //  docclose.Close(SaveChanges: false);
                     //  System.Runtime.InteropServices.Marshal.ReleaseComObject(olddoc);
 
-                    //  wordTemplate.Activate();
+             
                     //End Compare
                     Globals.Ribbons.Ribbon1.CloseWindows();
 
@@ -243,7 +224,7 @@ namespace AxiomIRISRibbon.SForceEdit
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error generating Compare");
-                //Logger.Log(ex, "Clone");
+               
             }
         }
    

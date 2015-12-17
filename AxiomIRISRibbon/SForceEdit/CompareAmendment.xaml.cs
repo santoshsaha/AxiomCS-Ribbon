@@ -52,18 +52,7 @@ namespace AxiomIRISRibbon.SForceEdit
         private static string _strAmendmentTemplateName;
         private static string _strAmendmentDocumentName;
         RadComboBoxItem selected = null;
-
-
-        //static Microsoft.Office.Interop.Word.Document tempDoc1;
-        //static Microsoft.Office.Interop.Word.Document tempDoc2;
-        static object szPassword = "Pass";
-        static object bFalse = false;
-        static object bTrue = true;
-
         BackgroundWorker bsyCompareAmndIndicatorBackgroundWorker;
-
-
-
 
         public CompareAmendment()
         {
@@ -96,7 +85,6 @@ namespace AxiomIRISRibbon.SForceEdit
                 if (!dr.success) return;
 
                 DataTable dt = dr.dt;
-
                 RadComboBoxItem i;
 
                 i = new RadComboBoxItem();
@@ -117,7 +105,6 @@ namespace AxiomIRISRibbon.SForceEdit
             }
             catch (Exception ex)
             {
-                //Logger.Log(ex, "Clone");
             }
         }
 
@@ -142,7 +129,6 @@ namespace AxiomIRISRibbon.SForceEdit
         void bsyCompareAmndIndicatorBackgroundWorker_DoWork(object sender, DoWorkEventArgs e, string strTemplateId)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-            //e.Result = 
             PerformOpening(worker, e, strTemplateId);
         }
         void bsyCompareAmndIndicatorBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -152,9 +138,7 @@ namespace AxiomIRISRibbon.SForceEdit
             bsyCompareAmndIndicatorBackgroundWorker.RunWorkerCompleted -= bsyCompareAmndIndicatorBackgroundWorker_RunWorkerCompleted;
 
             bsyCompareAmndIndc.IsBusy = false;
-            //this.bsyIndc.IsBusy = false;
             bsyCompareAmndIndc.BusyContent = "";
-            //this.btnclone.IsEnabled = true;
             Globals.Ribbons.Ribbon1.CloseWindows();
             this.Close();
         }
@@ -188,9 +172,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     foreach (DataRow rw in dtAttachments.Rows)
                     {
                         filename = rw["Name"].ToString();
-
-                        /// filename = VersionName + ".docx";
-                        //   string vfilename = _versionName.Replace(" ", "_") + ".docx";
                         if (filename == _strSelectedAttachmentName)
                         {
                             body = rw["body"].ToString();
@@ -212,15 +193,17 @@ namespace AxiomIRISRibbon.SForceEdit
                     if (!drAttachemnts.success) return;
                     DataTable dtAllAttachments = drAttachemnts.dt;
 
-                    //Open attachment with compare screeen
-                    CombineFiles(dtAllAttachments, _newVersionId, _strToAgreementId, _strTemplate, VersionName, VersionNumber, fileNameTemplate);
-                    //Globals.Ribbons.Ribbon1.CloseWindows();
-                    //this.Close();
+                    //Open attachment with compare view
+                    OpenFiles();
+
+                    //Combine docs and compare screeen
+                   // CombineFiles(dtAllAttachments, _newVersionId, _strToAgreementId, _strTemplate, VersionName, VersionNumber, fileNameTemplate);
+                  
                 }
             }
             catch (Exception ex)
             {
-                throw;
+                
             }
         }
         private void btnOpen_Click(object sender, RoutedEventArgs e)
@@ -254,7 +237,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     {
                         bsyCompareAmndIndc.IsBusy = true;
                         bsyCompareAmndIndc.BusyContent = "Loading ...";
-                        //Thread.Sleep(500);
                         bsyCompareAmndIndicatorBackgroundWorker = new BackgroundWorker();
 
                         bsyCompareAmndIndicatorBackgroundWorker.DoWork += (obj, ev) => bsyCompareAmndIndicatorBackgroundWorker_DoWork(obj, ev, strTemplateId);
@@ -267,10 +249,7 @@ namespace AxiomIRISRibbon.SForceEdit
             catch (Exception ex)
             {
             }
-            finally
-            {
-                //this.Close();
-            }
+            
         }
 
     
@@ -335,7 +314,10 @@ namespace AxiomIRISRibbon.SForceEdit
                             {
                                 tempAmendmentTemplate.ContentControls[i].LockContents = false;
                                 tempAmendmentTemplate.ContentControls[i].LockContentControl = false;
+                               
                             }
+                     
+                        
                             Word.Fields fs = tempAmendmentTemplate.Fields;
                             bool isMarkerAvailable = false;
                             bool firstMarkerFound = false;
@@ -360,7 +342,7 @@ namespace AxiomIRISRibbon.SForceEdit
                                 DataReturn dr = SaveCombinedDoc(_strNewAttachmentId, fileAmendmentTemplatePath);
                             }
 
-                            //Commented below line to avoid error coming after closing base doc in compare view
+                      
                             app.Documents.Close();
                             //End Coments.
 
@@ -378,54 +360,61 @@ namespace AxiomIRISRibbon.SForceEdit
 
         private void OpenFiles()
         {
-            string fileAmendmentDocumentPath = string.Empty, fileAmendmentTemplatePath = string.Empty;
-            string vfilename = _versionName.Replace(" ", "_") + ".docx";
-            string fileNameTemplate = _versionName + "_Amendment.docx";
-            DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(_newVersionId));
-            if (!drAttachemnts.success) return;
-            DataTable dtAllAttachments = drAttachemnts.dt;
-            var res = from row in dtAllAttachments.AsEnumerable()
-                      where
-                      (row.Field<string>("Name").Contains(".doc") ||
-                      row.Field<string>("ContentType").Contains("msword"))
-                      select row;
-            if (res.Count() > 1)
-            {
+            this.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+               new Action(
+               delegate
+               {
+                   string fileAmendmentDocumentPath = string.Empty, fileAmendmentTemplatePath = string.Empty;
+                   string vfilename = _versionName.Replace(" ", "_") + ".docx";
+                   string fileNameTemplate = _versionName + "_Amendment.docx";
+                   DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetAllAttachments(_newVersionId));
+                   if (!drAttachemnts.success) return;
+                   DataTable dtAllAttachments = drAttachemnts.dt;
+                   var res = from row in dtAllAttachments.AsEnumerable()
+                             where
+                             (row.Field<string>("Name").Contains(".doc") ||
+                             row.Field<string>("ContentType").Contains("msword"))
+                             select row;
+                   if (res.Count() > 1)
+                   {
 
-                foreach (DataRow rw in dtAllAttachments.Rows)
-                {
-                    if (rw["Name"].ToString().Contains(".doc"))
-                    {
+                       foreach (DataRow rw in dtAllAttachments.Rows)
+                       {
+                           if (rw["Name"].ToString().Contains(".doc"))
+                           {
 
-                        if (rw["Name"].ToString() == vfilename)
-                        {
-                            byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
-                            fileAmendmentDocumentPath = _d.GetTempFilePath(rw["Id"].ToString() + "_" + vfilename);
-                            File.WriteAllBytes(fileAmendmentDocumentPath, toBytes);
-                        }
-                        else if (rw["Name"].ToString() == fileNameTemplate)
-                        {
-                            byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
-                            fileAmendmentTemplatePath = _d.GetTempFilePath(rw["Id"].ToString() + "_" + fileNameTemplate);
-                            File.WriteAllBytes(fileAmendmentTemplatePath, toBytes);
+                               if (rw["Name"].ToString() == vfilename)
+                               {
+                                   byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
+                                   fileAmendmentDocumentPath = _d.GetTempFilePath(rw["Id"].ToString() + "_" + vfilename);
+                                   File.WriteAllBytes(fileAmendmentDocumentPath, toBytes);
 
-                        }
-                    }
-                }
+                                   _strNewAttachmentId = rw["Id"].ToString();
+                               }
+                               else if (rw["Name"].ToString() == fileNameTemplate)
+                               {
+                                   byte[] toBytes = Convert.FromBase64String(rw["body"].ToString());
+                                   fileAmendmentTemplatePath = _d.GetTempFilePath(rw["Id"].ToString() + "_" + fileNameTemplate);
+                                   File.WriteAllBytes(fileAmendmentTemplatePath, toBytes);
 
-
-                _strAmendmentTemplatePath = fileAmendmentTemplatePath;
-                _strAmendmentDocumentPath = fileAmendmentDocumentPath;
-
-
-                CompareSideBySide(fileAmendmentDocumentPath, fileAmendmentTemplatePath);
-                //  CompareSplitView(fileAmendmentDocumentPath, fileAmendmentTemplatePath);
+                                   _strAmendmentAttachmentId = rw["Id"].ToString();
+                               }
+                           }
+                       }
 
 
-                Globals.Ribbons.Ribbon1.CloseWindows();
-            }
+                       _strAmendmentTemplatePath = fileAmendmentTemplatePath;
+                       _strAmendmentDocumentPath = fileAmendmentDocumentPath;
+
+
+                       CompareSideBySide(fileAmendmentDocumentPath, fileAmendmentTemplatePath);
+                       //  CompareSplitView(fileAmendmentDocumentPath, fileAmendmentTemplatePath);
+
+
+                       Globals.Ribbons.Ribbon1.CloseWindows();
+                   }
+               }));
         }
-
 
         private static void CompareSideBySide(string fileAmendmentDocumentPath, string fileAmendmentTemplatePath)
         {
@@ -440,12 +429,10 @@ namespace AxiomIRISRibbon.SForceEdit
             ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
             ref missing, ref missing);
 
-            //   Globals.ThisAddIn.AddDocName(objtempAmendmentTemplate, fileAmendmentTemplateName, "");
 
             object newFilenameObject2 = fileAmendmentDocumentPath;
             objtempDocAmendment = app.Documents.Open(ref newFilenameObject2, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
             ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
-            //   Globals.ThisAddIn.AddDocName(objtempDocAmendment, fileAmendmentDocumentName, "");
 
             // To unlock Clauses
              for (int i = 1; i <= objtempDocAmendment.ContentControls.Count; i++)
@@ -461,10 +448,8 @@ namespace AxiomIRISRibbon.SForceEdit
                }
               
             //AmendmentTemplate - For Save
-            //    Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "AmendmentTemplate", "");
             Globals.ThisAddIn.AddDocId(objtempAmendmentTemplate, "Contract", "", "AmendmentTemplate");
             //AmendmentDocument - For Save
-            //  Globals.ThisAddIn.AddDocId(objtempDocAmendment, "AmendmentDocument", "");
             Globals.ThisAddIn.AddDocId(objtempDocAmendment, "Contract", "", "AmendmentDocument");
 
             object o = objtempAmendmentTemplate;
@@ -481,7 +466,6 @@ namespace AxiomIRISRibbon.SForceEdit
               }*/
 
             //objtempDocAmendment.Activate();
-            //objtempDocAmendment.Activate();
             objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
 
             objtempDocAmendment.AcceptAllRevisions();
@@ -489,8 +473,6 @@ namespace AxiomIRISRibbon.SForceEdit
             objtempDocAmendment.TrackRevisions = true;
             objtempDocAmendment.ActiveWindow.View.ShowRevisionsAndComments = false;
             objtempAmendmentTemplate.TrackRevisions = true;
-            //objtempAmendmentTemplate.AcceptAllRevisions();
-            //objtempDocAmendment.Windows.CompareSideBySideWith(ref o);
             objtempDocAmendment.Activate();
         }
         /*
@@ -582,74 +564,97 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempDocAmendment.TrackRevisions = false;
 
                 object missing = System.Reflection.Missing.Value;
-                Microsoft.Office.Interop.Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
-                Microsoft.Office.Interop.Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
-                Microsoft.Office.Interop.Word.Range rngOther = objtempAmendmentTemplate.Range(0, 0);
+                //Microsoft.Office.Interop.Word.Range rngInsert = objtempAmendmentTemplate.Range(0, 0);
+                //Microsoft.Office.Interop.Word.Range rngDelete = objtempAmendmentTemplate.Range(0, 0);
+                //Microsoft.Office.Interop.Word.Range rngOther = objtempAmendmentTemplate.Range(0, 0);
                 List<String> pText = new List<String>();
 
                 //objtempAmendmentTemplate.RejectAllRevisions();
                 UndoAllChanges(objtempAmendmentTemplate);
 
+                // To get range \ location of axiom marker
 
-
-                foreach (Microsoft.Office.Interop.Word.Paragraph p in objtempDocAmendment.Paragraphs)
+                Word.Fields markerFields = objtempAmendmentTemplate.Fields;
+                Word.Range rngField = objtempAmendmentTemplate.Range(0, 0);
+                // bool isMarkerAvailable = false;
+                bool firstMarkerFound = false;
+                foreach (Microsoft.Office.Interop.Word.Field f in markerFields)
                 {
-                    Microsoft.Office.Interop.Word.Range parRng = p.Range;
-                    string sText = parRng.Text;
-                    String listVal = parRng.ListFormat.ListString;
-                    int flag = 0;
-                    bool isTemplateTrackenabled = false;
-                    if (objtempAmendmentTemplate.TrackRevisions == true)
+                    if (f.Type == Word.WdFieldType.wdFieldMergeField)
                     {
-                        objtempAmendmentTemplate.TrackRevisions = false;
-                        isTemplateTrackenabled = true;
-                    }
-                    for (int rnumber = 1; rnumber <= p.Range.Revisions.Count; rnumber++)
-                    {
-                        Microsoft.Office.Interop.Word.Revision r = p.Range.Revisions[rnumber];
 
-                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionDelete) // Deleted
+                        if (!firstMarkerFound)
                         {
-                            if (flag == 0)
-                            {
+                            rngField = f.Code;
+                            f.Delete();
 
-                                p.Range.Copy();
-                                rngInsert.PasteSpecial();
-                                flag = 1;
-                            }
-
+                            firstMarkerFound = true;
                         }
-
-                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionInsert) // Inserted
-                        {
-                            if (flag == 0)
-                            {
-                                p.Range.Copy();
-                                // parRng.ListFormat.ApplyListTemplateWithLevel level = ListGalleries(wdNumberGallery).ListTemplates(1).ListLevels(1).
-
-                                rngInsert.PasteSpecial();
-                                flag = 1;
-                            }
-                        }
-
-                        if (r.Type == Microsoft.Office.Interop.Word.WdRevisionType.wdRevisionProperty) // Property
-                        {
-                            if (flag == 0)
-                            {
-                                p.Range.Copy();
-                                rngInsert.PasteSpecial();
-                                flag = 1;
-                            }
-                        }
-                        //}
-                        //flag1 = 1;
-                    }
-                    if (isTemplateTrackenabled == true)
-                    {
-                        objtempAmendmentTemplate.TrackRevisions = true;
                     }
                 }
+                Microsoft.Office.Interop.Word.Range rngInsert = objtempAmendmentTemplate.Range(rngField.Start, rngField.End);
+                //end
+                List<string> strIds = new List<string>();
 
+                foreach (Microsoft.Office.Interop.Word.ContentControl contentControl in objtempDocAmendment.ContentControls)
+                {
+                    foreach (Word.Paragraph p in contentControl.Range.Paragraphs)
+                    {
+                        bool isTemplateTrackenabled = false;
+                        if (objtempAmendmentTemplate.TrackRevisions == true)
+                        {
+                            objtempAmendmentTemplate.TrackRevisions = false;
+                            isTemplateTrackenabled = true;
+                        }
+
+                        if (p.Range.Revisions.Count > 0)
+                        {
+                            contentControl.Range.Copy();
+                            rngInsert.PasteSpecial();
+                            if (isTemplateTrackenabled == true)
+                            {
+                                objtempAmendmentTemplate.TrackRevisions = true;
+                            }
+                            break;
+                        }
+
+                        if (isTemplateTrackenabled == true)
+                        {
+                            objtempAmendmentTemplate.TrackRevisions = true;
+                        }
+                    }
+
+                }
+                ///FIXME: Needs to change for paragraphs without clauses
+                ///
+                /// 
+                    //foreach (Word.Paragraph p in objtempDocAmendment.Paragraphs)
+                    //{
+                    //    bool isTemplateTrackenabled = false;
+                    //    if (objtempAmendmentTemplate.TrackRevisions == true)
+                    //    {
+                    //        objtempAmendmentTemplate.TrackRevisions = false;
+                    //        isTemplateTrackenabled = true;
+                    //    }
+
+                    //    if (p.Range.ParentContentControl!=null) continue;
+
+                    //    if (p.Range.Revisions.Count > 0)
+                    //    {
+                    //        p.Range.Copy();
+                    //        rngInsert.PasteSpecial();
+                    //    }
+
+                    //    if (isTemplateTrackenabled == true)
+                    //    {
+                    //        objtempAmendmentTemplate.TrackRevisions = true;
+                    //    }
+                    //}
+                ///
+                ///
+
+
+              
 
                 //Remove Markup from template doc
                 objtempAmendmentTemplate.TrackRevisions = false;
@@ -663,15 +668,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempAmendmentTemplate.TrackRevisions = true;
                 // End Remove Markup
 
-                //objtempDocAmendment.TrackRevisions = true;
-
-                //if (objtempDocAmendment.ProtectionType == Word.WdProtectionType.wdNoProtection)
-                //{
-                //    objtempDocAmendment.Protect(Word.WdProtectionType.wdAllowOnlyReading, ref bFalse, ref szPassword, ref bFalse, ref bTrue);
-                //    objtempDocAmendment.Save();
-                //}
-
-                //  objtempDocAmendment.TrackRevisions = true;
+             
 
             }
             catch (Exception exe)
@@ -688,6 +685,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
             }
         }
+
      
         public DataReturn SaveCombinedDoc(string newAttachmentId, string fileAmendmentTemplatePath)
         {
@@ -707,7 +705,6 @@ namespace AxiomIRISRibbon.SForceEdit
 
                 _doc.SaveAs2(FileName: strFileAttached, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
                 string filenamecopy = AxiomIRISRibbon.Utility.SaveTempFile(_versionid + "Z");
-                //  string filenamecopy = AxiomIRISRibbon.Utility.SaveTempFile(_newVersionId + "X");
                 Word.Document dcopy = Globals.ThisAddIn.Application.Documents.Add(strFileAttached, Visible: false);
                 dcopy.SaveAs2(FileName: filenamecopy, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);
 

@@ -504,7 +504,6 @@ namespace AxiomIRISRibbon
            
 
            CompareAmendment.TrackDocument();
-           // CompareAmendment.TrackDocumentOld();
         }
         private void btnExportToWord_Click(object sender, RibbonControlEventArgs e)
         {
@@ -684,80 +683,14 @@ namespace AxiomIRISRibbon
             catch (Exception ex) { }
         }
 
-        /*
-        private void btnExportToPDF_Click(object sender, RibbonControlEventArgs e)
-        {
-            object oMissing = System.Reflection.Missing.Value;
-
-
-            Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
-            Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
-
-            Word.Range source = template.Range(template.Content.Start, template.Content.End);
-            export.Range(export.Content.Start).InsertXML(source.WordOpenXML);
-
-            Word.Shape logoWatermark = null;
-
-            foreach (Word.Window item in export.Windows)
-            {
-                logoWatermark = item.Selection.Document.Content.Document.Shapes.AddTextEffect(
-                            Microsoft.Office.Core.MsoPresetTextEffect.msoTextEffect1,
-                            "Draft", "Arial", (float)60,
-                            Microsoft.Office.Core.MsoTriState.msoTrue,
-                            Microsoft.Office.Core.MsoTriState.msoFalse,
-                            0, 0, ref oMissing);
-                logoWatermark.Select(ref oMissing);
-                logoWatermark.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
-                logoWatermark.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
-                logoWatermark.Fill.Solid();
-                logoWatermark.Fill.Transparency = 0.2f;
-                logoWatermark.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray30;
-                logoWatermark.RelativeHorizontalPosition = Word.WdRelativeHorizontalPosition.wdRelativeHorizontalPositionMargin;
-                logoWatermark.RelativeVerticalPosition = Word.WdRelativeVerticalPosition.wdRelativeVerticalPositionMargin;
-                logoWatermark.Left = (float)Word.WdShapePosition.wdShapeCenter;
-                logoWatermark.Top = (float)Word.WdShapePosition.wdShapeCenter;
-                logoWatermark.Height = Globals.ThisAddIn.Application.InchesToPoints(2.4f);
-                logoWatermark.Width = Globals.ThisAddIn.Application.InchesToPoints(6f);
-            }
-
-
-            /// 
-            /// 
-            ///
-
-            export.Activate();
-
-            object fileFormat =Word.WdSaveFormat.wdFormatPDF;
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "MyTitle";
-            dlg.Filter = "Word Document (*.pdf)|*.pdf";
-            dlg.FileName = "ExportTemplate-" + dlg.Title.Replace(" ", "");
-            dlg.ShowDialog();
-            object outputFileName = dlg.FileName;
-            export.SaveAs(ref outputFileName, ref fileFormat, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
-                ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
-                ref oMissing, ref oMissing, ref oMissing);
-            //export.Activate();
-
-            // Close the Word document, but leave the Word application open.
-            // doc has to be cast to type _Document so that it will find the
-            // correct Close method.                
-            object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
-            ((Word._Document)export).Close(ref saveChanges, ref oMissing, ref oMissing);
-            export = null;
-            //oWord.Quit();
-            //System.Runtime.InteropServices.Marshal.ReleaseComObject(oWord); 
-            //oWord = null;
-
-        }
-        */
+   
         private void btnAmend_Click(object sender, RibbonControlEventArgs e)
         {
             try
             {
                 foreach (Microsoft.Office.Tools.CustomTaskPane ctp in Globals.ThisAddIn.CustomTaskPanes)
                 {
-                    ctp.Dispose();
+                    ctp.Visible = false;
                 }
                 //==New code added above ==//
                 CompareSideBar.SaveCompare(false, true);

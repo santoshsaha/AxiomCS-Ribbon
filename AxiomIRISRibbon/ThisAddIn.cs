@@ -2458,16 +2458,21 @@ namespace AxiomIRISRibbon
                         else if (propa[2] == "AmendmentDocument")
                         {
                             //Save the doc and the data
+                            // Agreement
                             CompareAmendment.SaveAmend(false, true, false);
+                            // Amendment
+                            CompareAmendment.SaveAmend(false, true, true);
 
                             //Cancel the save
                             SaveAsUI = false;
                             Cancel = true;
                         }
-
                         else if (propa[2] == "AmendmentTemplate")
                         {
                             //Save the doc and the data
+                            // Agreement
+                            CompareAmendment.SaveAmend(false, true, false);
+                            // Amendment
                             CompareAmendment.SaveAmend(false, true, true);
 
                             //Cancel the save

@@ -692,6 +692,9 @@ namespace AxiomIRISRibbon
                 {
                     ctp.Visible = false;
                 }
+                int cnt = Globals.ThisAddIn.CustomTaskPanes.Count;
+                for (int i = 0; i < cnt; i++) Globals.ThisAddIn.CustomTaskPanes.RemoveAt(0);
+
                 //==New code added above ==//
                 CompareSideBar.SaveCompare(false, true);
                 string attachmentId = Globals.ThisAddIn.GetAttachmentId();

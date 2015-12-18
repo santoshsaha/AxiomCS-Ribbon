@@ -5723,13 +5723,13 @@ namespace AxiomIRISRibbon.ContractEdit
         }
         private void btnAmendment_Click(object sender, RoutedEventArgs e)
         {
-
             foreach (Microsoft.Office.Tools.CustomTaskPane ctp in Globals.ThisAddIn.CustomTaskPanes)
             {
                // ctp.Dispose();
                 ctp.Visible = false;
             }
-
+            int cnt = Globals.ThisAddIn.CustomTaskPanes.Count;
+            for (int i = 0; i < cnt; i++) Globals.ThisAddIn.CustomTaskPanes.RemoveAt(0);
 
             SForceEdit.CompareAmendment amend = new SForceEdit.CompareAmendment();
 
@@ -5740,10 +5740,15 @@ namespace AxiomIRISRibbon.ContractEdit
         }
         private void btnAmendData_click(object sender, RoutedEventArgs e)
         {
+
             foreach (Microsoft.Office.Tools.CustomTaskPane ctp in Globals.ThisAddIn.CustomTaskPanes)
             {
                 ctp.Visible = false;
             }
+            int cnt = Globals.ThisAddIn.CustomTaskPanes.Count;
+            for (int i = 0; i < cnt; i++) Globals.ThisAddIn.CustomTaskPanes.RemoveAt(0);
+
+
             SForceEdit.CompareAmendment amend = new SForceEdit.CompareAmendment();
 
             amend.Create(_attachmentid, _parentId, _filename);

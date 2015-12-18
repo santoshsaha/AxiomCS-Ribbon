@@ -135,7 +135,7 @@ namespace AxiomIRISRibbon.SForceEdit
 
                                        }
 
-                   */              
+                   */
 
 
                     object objTemplate = fileTemplate;
@@ -185,14 +185,14 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
 
 
-                
+
 
                     //  Compare code
                     wordTemplate.Compare(_fileName, missing, Word.WdCompareTarget.wdCompareTargetNew, true, true, false, false, false);
                     app.ActiveWindow.View.SplitSpecial = Word.WdSpecialPane.wdPaneRevisionsVert;
                     app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
 
-                   
+
                     app.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                     app.ActiveWindow.Document.AcceptAllRevisions();
 
@@ -210,7 +210,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     //  docclose.Close(SaveChanges: false);
                     //  System.Runtime.InteropServices.Marshal.ReleaseComObject(olddoc);
 
-             
+
                     //End Compare
                     Globals.Ribbons.Ribbon1.CloseWindows();
 
@@ -224,7 +224,11 @@ namespace AxiomIRISRibbon.SForceEdit
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error generating Compare");
-               
+
+            }
+            finally
+            {
+                btnCompare.IsEnabled = true;
             }
         }
    

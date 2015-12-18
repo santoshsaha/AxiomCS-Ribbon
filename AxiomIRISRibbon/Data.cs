@@ -1416,10 +1416,10 @@ namespace AxiomIRISRibbon
             return dr;
         }
 
-        public void saveAttachmentstoSF(string ParentId, string AttachmentName, string Xml)
+        public DataReturn saveAttachmentstoSF(string ParentId, string AttachmentName, string Xml)
         {
             //code
-            _sf.CloneAttachmentFile(ParentId, AttachmentName, Xml);
+            return _sf.CloneAttachmentFile(ParentId, AttachmentName, Xml);
         }
         public DataReturn AttachmentInfo(string Id)
         {

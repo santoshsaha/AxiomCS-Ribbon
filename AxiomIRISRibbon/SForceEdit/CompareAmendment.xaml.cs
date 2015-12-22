@@ -288,6 +288,21 @@ namespace AxiomIRISRibbon.SForceEdit
                                                          ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                                                          ref missing, ref missing, ref missing, ref missing, ref missing);
 
+                Word.Fields amdFields = amendment.Fields;
+                Word.Range insMarker = null;
+                foreach (Word.Field f in amdFields)
+                {
+                    if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
+                    {
+                        insMarker = f.Result;
+
+                        //To hide axiom marker
+                        insMarker.Font.ColorIndex = Word.WdColorIndex.wdWhite;
+                        amendment.ActiveWindow.View.FieldShading = 0;
+                        break;
+                    }
+                }
+
                 // Unlock for edits
                 for (int i = 1; i <= agreement.ContentControls.Count; i++)
                 {
@@ -305,10 +320,12 @@ namespace AxiomIRISRibbon.SForceEdit
                 agreement.ActiveWindow.View.ShowRevisionsAndComments = true;
                 amendment.TrackRevisions = true;
                 agreement.Activate();
-                object o = agreement;
-                amendment.Windows.CompareSideBySideWith(ref o);
+                object o = amendment;
+                agreement.Windows.CompareSideBySideWith(ref o);
                 // Reposition side by side
-                amendment.Windows.ResetPositionsSideBySide();
+            // FIXME: Side by side documents interchanged. Need to fix
+              //  agreement.Windows.ResetPositionsSideBySide();
+
 
                 Globals.Ribbons.Ribbon1.CloseWindows();
                 this.windowAttachmentsView.Close();
@@ -319,6 +336,11 @@ namespace AxiomIRISRibbon.SForceEdit
             }
         }
         // AH
+
+     
+
+
+
         private class CompareAmendmentArgs
         {
 

@@ -36,10 +36,8 @@ namespace AxiomIRISRibbon
             this.tbUser.Text = Globals.ThisAddIn.getData().GetUserInfo();
 
             //Code PES
-            string timestamp = RetrieveLinkerTimestamp().ToString();
-            if (timestamp == string.Empty)
-            { timestamp = "UNKOWN!"; }
-            this.verTimestamp.Text = "Build Time : " + timestamp;
+            string bildtimestamp = GetBuildNumber().ToString();
+            this.tbBuildNo.Text = bildtimestamp;
             //End Code
         }
 
@@ -68,8 +66,9 @@ namespace AxiomIRISRibbon
             return v;
         }
         //Code PES
-        private DateTime RetrieveLinkerTimestamp()
+        private string GetBuildNumber()
         {
+            string strBuildNumber = string.Empty, timestamp = string.Empty;
             string filePath = System.Reflection.Assembly.GetCallingAssembly().Location;
             const int c_PeHeaderOffset = 60;
             const int c_LinkerTimestampOffset = 8;
@@ -91,10 +90,14 @@ namespace AxiomIRISRibbon
 
             int i = System.BitConverter.ToInt32(b, c_PeHeaderOffset);
             int secondsSince1970 = System.BitConverter.ToInt32(b, i + c_LinkerTimestampOffset);
-            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            dt = dt.AddSeconds(secondsSince1970);
-            dt = dt.ToLocalTime();
-            return dt;
+            DateTime dtDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            dtDate = dtDate.AddSeconds(secondsSince1970);
+            dtDate = dtDate.ToLocalTime();
+            timestamp = dtDate.ToString("yyyyMMddHHmmss");
+            if (timestamp == string.Empty)
+            { timestamp = "UNKOWN!"; }
+            strBuildNumber = "Build  : " + timestamp;
+            return strBuildNumber;
         }
         // end code
         private void Hyperlink_Click(object sender, RoutedEventArgs e)

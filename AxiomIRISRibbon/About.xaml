@@ -10,7 +10,7 @@
         <TextBlock HorizontalAlignment="Center" Name="tbVersion" Margin="10,238,28,8">Version Info</TextBlock>
         <TextBlock HorizontalAlignment="Center" Name="tbSF" Margin="10,266,28,8" TextWrapping="Wrap">Logged into</TextBlock>
         <TextBlock HorizontalAlignment="Center" Name="tbUser" Margin="10,286,28,8" TextWrapping="Wrap">User</TextBlock>
-        <TextBlock HorizontalAlignment="Center" Name="verTimestamp" Margin="10,309,28,5" TextWrapping="Wrap">Build</TextBlock>
+        <TextBlock HorizontalAlignment="Center" Name="tbBuildNo" Margin="10,309,28,5" TextWrapping="Wrap">Build</TextBlock>
         <Button Content="OK" Height="23" HorizontalAlignment="Left" Margin="170,340,0,0" x:Name="btnOK" VerticalAlignment="Top" Width="75" Click="btnOK_Click"/>
         <TextBlock Margin="10,344,293,41">           
             <Hyperlink Click="Hyperlink_Click">

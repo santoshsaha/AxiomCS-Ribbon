@@ -588,15 +588,14 @@ namespace AxiomIRISRibbon
             }
 
         }
+
         private void btnExportToPDF_Click(object sender, RibbonControlEventArgs e)
         {
             try
             {
                 object oMissing = System.Reflection.Missing.Value;
-
-
                 Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
-              //  string docName = Globals.ThisAddIn.GetDocName(template);
+                //  string docName = Globals.ThisAddIn.GetDocName(template);
 
                 Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
                 //   To hide active word doc.
@@ -623,9 +622,18 @@ namespace AxiomIRISRibbon
 
                 foreach (Word.Section section in export.Sections)
                 {
-                    logoWatermark = section.Headers[Word.WdHeaderFooterIndex.wdHeaderFooterPrimary].Shapes.AddTextEffect(Microsoft.Office.Core.MsoPresetTextEffect.msoTextEffect1, "Draft", "Ariel", 100, Microsoft.Office.Core.MsoTriState.msoCTrue, Microsoft.Office.Core.MsoTriState.msoFalse, 0, 0);
+                    int height = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.Height;
 
-                    //logoWatermark.Select(ref oMissing);
+                    //FIXME: Need to find a better way to position the marker at centre
+                    //float margin = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.Document.OMathLeftMargin ;
+                    float margin = 70.0f;
+                    int usableHeight = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.UsableHeight;
+
+                    int width = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.Width;
+                    int usableWidth = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.UsableWidth;
+
+                    logoWatermark = section.Headers[Word.WdHeaderFooterIndex.wdHeaderFooterPrimary].Shapes.AddTextEffect(Microsoft.Office.Core.MsoPresetTextEffect.msoTextEffect1, "Draft", "Arial", 50, Microsoft.Office.Core.MsoTriState.msoCTrue, Microsoft.Office.Core.MsoTriState.msoFalse, Convert.ToSingle(margin), Convert.ToSingle(height / 2));
+
                     logoWatermark.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
                     logoWatermark.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
                     logoWatermark.Fill.Solid();
@@ -635,15 +643,14 @@ namespace AxiomIRISRibbon
 
                     logoWatermark.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray20;
                     logoWatermark.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray30;
+
                     logoWatermark.RelativeHorizontalPosition = Word.WdRelativeHorizontalPosition.wdRelativeHorizontalPositionMargin;
                     logoWatermark.RelativeVerticalPosition = Word.WdRelativeVerticalPosition.wdRelativeVerticalPositionMargin;
 
                     logoWatermark.Height = Globals.ThisAddIn.Application.InchesToPoints(2.4f);
                     logoWatermark.Width = Globals.ThisAddIn.Application.InchesToPoints(6f);
 
-                    // center location
-                    logoWatermark.Left = (float)Word.WdShapePosition.wdShapeCenter;
-                    logoWatermark.Top = (float)Word.WdShapePosition.wdShapeCenter;
+
 
                     logoWatermark.Rotation = -45;
                     logoWatermark.ZOrder(Microsoft.Office.Core.MsoZOrderCmd.msoBringToFront);
@@ -660,7 +667,7 @@ namespace AxiomIRISRibbon
                 string min = DateTime.Now.Minute.ToString();
                 string sec = DateTime.Now.Second.ToString();
 
-                dlg.Title = Convert.ToString(month+day+hour+min+sec);
+                dlg.Title = Convert.ToString(month + day + hour + min + sec);
                 dlg.Filter = "Word Document (*.pdf)|*.pdf";
                 dlg.FileName = "Template-" + dlg.Title.Replace(" ", "");
                 dlg.ShowDialog();
@@ -668,14 +675,11 @@ namespace AxiomIRISRibbon
                 export.SaveAs(ref outputFileName, ref fileFormat, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                     ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                     ref oMissing, ref oMissing, ref oMissing);
-
-                //dlg.FileName
-                byte[] pdf = File.ReadAllBytes(@"dlg.FileName");
-
+                              
                 // Close the Word document, but leave the Word application open.
                 // doc has to be cast to type _Document so that it will find the
-                // correct Close method.   
-             
+                // correct Close method.  
+
                 object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
                 ((Word._Document)export).Close(ref saveChanges, ref oMissing, ref oMissing);
                 export = null;

@@ -1116,6 +1116,42 @@ namespace AxiomIRISRibbon
             return;
         }
 
+        public static string GetTimestamp(DateTime value)
+        {
+            //return value.ToString("yyyyMMddHHmmssffff");
+            return value.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
+            //TimeSpan ts = new TimeSpan(value.Day, value.Hour, value.Minute, value.Second, value.Millisecond);
+            //return ts.ToString();
+        }
+        public void AddDocTimeStamp(Word.Document doc)
+        {
+            string timeStamp = GetTimestamp(DateTime.Now);
+            string prop = ReadDocumentProperty(doc, "AxiomTimeStamp");
+            if (prop != null && prop != "")
+            {
+                //Delete and add
+                Office.DocumentProperties properties = (Office.DocumentProperties)doc.CustomDocumentProperties;
+
+                properties["AxiomTimeStamp"].Delete();
+                properties.Add("AxiomTimeStamp", false, Office.MsoDocProperties.msoPropertyTypeString, timeStamp);
+
+            }
+            else
+            {
+                Office.DocumentProperties properties = (Office.DocumentProperties)doc.CustomDocumentProperties;
+                properties.Add("AxiomTimeStamp", false, Office.MsoDocProperties.msoPropertyTypeString, timeStamp);
+            }
+        }
+        public string GetDocTimeStamp(Word.Document doc)
+        {
+            string out1 = "";
+            string prop = ReadDocumentProperty(doc, "AxiomTimeStamp");
+            if (prop != null )
+            {
+				out1 = prop.ToString();
+            }
+            return out1;
+        }
         
         public void DeleteDocId(Word.Document doc)
         {

@@ -288,7 +288,8 @@ namespace AxiomIRISRibbon.SForceEdit
                                                          ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                                                          ref missing, ref missing, ref missing, ref missing, ref missing);
 
-                Word.Fields amdFields = amendment.Fields;
+                //To hide Marker. Uncomment for prod move
+                /*Word.Fields amdFields = amendment.Fields;
                 Word.Range insMarker = null;
                 foreach (Word.Field f in amdFields)
                 {
@@ -302,7 +303,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         break;
                     }
                 }
-
+                */
                 // Unlock for edits
                 for (int i = 1; i <= agreement.ContentControls.Count; i++)
                 {

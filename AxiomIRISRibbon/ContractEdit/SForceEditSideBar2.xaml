@@ -78,7 +78,7 @@
                                 </telerik:RadDropDownButton.DropDownContent>
                             </telerik:RadDropDownButton>
 
-                            <telerik:RadDropDownButton Name="Export" Content="Export" BorderThickness="0" Height="22">
+                            <telerik:RadDropDownButton Name="Export" Content="Export" BorderThickness="0" Height="22" Visibility="Hidden">
                                 <telerik:RadDropDownButton.DropDownContent>
                                     <telerik:RadContextMenu Name="ExportContent" IconColumnWidth="0" ItemClick="ExportContent_ItemClick">
                                         <telerik:RadMenuItem Name="rmiWord" Tag="Word" Header="Export As Word"/>
@@ -164,7 +164,7 @@
                             <Grid Grid.Row="0" Name="Document" >
                                 <telerik:Label Content="File Name:" Height="28" Name="lbDocument" Margin="2,43,14,-33" VerticalAlignment="Top"/>
                                 <TextBox Name="tbDocumentName" Height="23" Margin="78,48,61,-33" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
-                                <telerik:RadButton Name="Save" Margin="231,10,14,6" Height="22" Click="Save_Click" >
+                                <telerik:RadButton Name="Save" Margin="231,10,14,6" Height="22" Click="Save_Click" Visibility="Hidden">
                                     Export
                                 </telerik:RadButton>
                                 <telerik:RadButton x:Name="btnAmendData" Height="22" IsEnabled="False" Click="btnAmendData_click"  Margin="125,10,84,6" Content="Amend" />

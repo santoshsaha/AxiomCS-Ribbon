@@ -1123,7 +1123,7 @@ namespace AxiomIRISRibbon
             //TimeSpan ts = new TimeSpan(value.Day, value.Hour, value.Minute, value.Second, value.Millisecond);
             //return ts.ToString();
         }
-        public void AddDocTimeStamp(Word.Document doc)
+        public void SetDocTimeStamp(Word.Document doc)
         {
             string timeStamp = GetTimestamp(DateTime.Now);
             string prop = ReadDocumentProperty(doc, "AxiomTimeStamp");

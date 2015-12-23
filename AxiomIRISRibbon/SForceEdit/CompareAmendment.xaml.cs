@@ -320,12 +320,19 @@ namespace AxiomIRISRibbon.SForceEdit
                 agreement.TrackRevisions = true;
                 agreement.ActiveWindow.View.ShowRevisionsAndComments = true;
                 amendment.TrackRevisions = true;
-                agreement.Activate();
-                object o = amendment;
-                agreement.Windows.CompareSideBySideWith(ref o);
+
+                //    agreement.Activate();
+                //    object o = amendment;
+                //    agreement.Windows.CompareSideBySideWith(ref o);
+                //    // Reposition side by side
+                //// FIXME: Side by side documents interchanged. Need to fix
+                //    agreement.Windows.ResetPositionsSideBySide();
+
+                amendment.Activate();
+                object o = agreement;
+                amendment.Windows.CompareSideBySideWith(ref o);
                 // Reposition side by side
-            // FIXME: Side by side documents interchanged. Need to fix
-              //  agreement.Windows.ResetPositionsSideBySide();
+                amendment.Windows.ResetPositionsSideBySide();
 
 
                 Globals.Ribbons.Ribbon1.CloseWindows();
@@ -426,9 +433,122 @@ namespace AxiomIRISRibbon.SForceEdit
             }
         }
 
+        public static void TrackDocument()
+        {
+            Word.Document agreement = null;
+            Word.Document amendment = null;
+            try
+            {
+                Word.Documents documents = Globals.ThisAddIn.Application.Documents;
+
+                DateTime lastAmendedDate = DateTime.MinValue;
+                // FIXME: Need better scheme to discover agreement and amendment
+                foreach (Word.Document d in documents)
+                {
+                    if (amendment == null && d.FullName.Contains("_Amendment")) amendment = d;
+                    else if (agreement == null && d.FullName.Contains("Version")) agreement = d;
+                    if (agreement != null && amendment != null) break;
+                }
+                agreement.TrackRevisions = false;
+                string ts = string.Empty;
+                if (amendment != null)
+                {
+                    ts = Globals.ThisAddIn.GetDocTimeStamp(amendment);
+                }
+                if (!string.IsNullOrEmpty(ts))
+                {
+                    lastAmendedDate = DateTime.ParseExact(ts, "yyyy-MM-dd HH:mm:ss.fff tt", null);
+                }
+                Globals.ThisAddIn.SetDocTimeStamp(amendment);
+                foreach (Word.ContentControl clause in agreement.ContentControls)
+                {
+                    //FIXME: Need better scheme to determine Header and Signature
+                    if (clause.Title.StartsWith("Header") || clause.Title.StartsWith("Signature")) continue;
+                    bool isAmendmentTemplateTrackEnabled = false;
+                    if (amendment.TrackRevisions == true)
+                    {
+                        amendment.TrackRevisions = false;
+                        isAmendmentTemplateTrackEnabled = true;
+                    }
+                    bool isAmended = false;
+                    if (clause.Range.Revisions.Count > 0)
+                    {
+                        foreach (Word.Revision r in clause.Range.Revisions)
+                        {
+                            if (lastAmendedDate < r.Date)
+                            {
+                                isAmended = true;
+                                break;
+                            }
+                        }
+                        if (!isAmended) continue;
+
+                        // FIXME: Optimize - replace repetative detection of marker
+                        // Locate insert marker in amendment document
+                        Word.Fields amdFields = amendment.Fields;
+                        Word.Range insMarker = null;
+                        Word.Range insPosition = null;
+                        foreach (Word.Field f in amdFields)
+                        {
+                            if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
+                            {
+                                insMarker = f.Result;
+                                f.Code.InsertBefore("\r\n");
+                                object wdth = "\r\n".Length;
+                                insPosition = f.Code.Previous(Word.WdUnits.wdCharacter, ref wdth);
+                                break;
+                            }
+                        }
+                        if (insMarker == null || insPosition == null)
+                        {
+                            MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
+                            return;
+                        }
+                        clause.Copy();
+                        insPosition.Paste();
+                        insPosition.InsertAfter(Environment.NewLine);
+                        if (isAmendmentTemplateTrackEnabled == true)
+                        {
+                            amendment.TrackRevisions = true;
+                        }
+                    }
+                }
+
+                amendment.TrackRevisions = false;
+
+                Word.Fields amdMergeFields = amendment.Fields;
+                Word.Range insAmendMarker = null;
+                //Word.Range insPosition = null;
+                foreach (Word.Field f in amdMergeFields)
+                {
+                    if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
+                    {
+                        insAmendMarker = f.Result;
+                        f.Code.InsertBefore("\r\n");
+                        object wdth = "\r\n".Length;
+                        //insPosition = f.Code.Previous(Word.WdUnits.wdCharacter, ref wdth);
+                        break;
+                    }
+                }
+                agreement.TrackRevisions = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error [AMND011] syncing amendment; " + ex.Message);
+            }
+            finally
+            {
+                if (agreement != null)
+                {
+                    agreement.TrackRevisions = true;
+                }
+            }
+        }
+
 
         // AH
         // FIXME: Refactor to controller class
+        /*
         public static void TrackDocument()
         {
             try
@@ -479,22 +599,21 @@ namespace AxiomIRISRibbon.SForceEdit
                     object wdth = "\r\n".Length;
                     Word.Range insPosition = insMarker.Previous(Word.WdUnits.wdCharacter, ref wdth);
                     // Copy the content control over
-                    /*
-                    object r = insPosition;
-                    Word.ContentControl amdClause = amendment.ContentControls.Add(clause.Type, ref r);
-                    amdClause.BuildingBlockCategory = clause.BuildingBlockCategory;
-                    amdClause.BuildingBlockType = clause.BuildingBlockType;
-                    amdClause.Checked = clause.Checked;
-                    amdClause.DateCalendarType = clause.DateCalendarType;
-                    amdClause.DateDisplayFormat = clause.DateDisplayFormat;
-                    amdClause.DateDisplayLocale = clause.DateDisplayLocale;
-                    amdClause.DateStorageFormat = clause.DateStorageFormat;
+            
+                    //object r = insPosition;
+                    //Word.ContentControl amdClause = amendment.ContentControls.Add(clause.Type, ref r);
+                    //amdClause.BuildingBlockCategory = clause.BuildingBlockCategory;
+                    //amdClause.BuildingBlockType = clause.BuildingBlockType;
+                    //amdClause.Checked = clause.Checked;
+                    //amdClause.DateCalendarType = clause.DateCalendarType;
+                    //amdClause.DateDisplayFormat = clause.DateDisplayFormat;
+                    //amdClause.DateDisplayLocale = clause.DateDisplayLocale;
+                    //amdClause.DateStorageFormat = clause.DateStorageFormat;
 
-                    amdClause.Title = clause.Title;
-                    amdClause.Tag = clause.Tag;
-                    amdClause.Range.Text = clause.Range.Text;
-                    */
-
+                    //amdClause.Title = clause.Title;
+                    //amdClause.Tag = clause.Tag;
+                    //amdClause.Range.Text = clause.Range.Text;
+                    
                     clause.Copy();
                     insPosition.Paste();
                 }
@@ -504,7 +623,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 MessageBox.Show("Error [AMND011] syncing amendment; " + ex.Message);
             }
         }
-            
+       */     
 
         public static void TrackDocumentOld()
         {

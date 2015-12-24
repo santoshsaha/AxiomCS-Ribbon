@@ -321,19 +321,12 @@ namespace AxiomIRISRibbon.SForceEdit
                 agreement.ActiveWindow.View.ShowRevisionsAndComments = true;
                 amendment.TrackRevisions = true;
 
-                //    agreement.Activate();
-                //    object o = amendment;
-                //    agreement.Windows.CompareSideBySideWith(ref o);
-                //    // Reposition side by side
-                //// FIXME: Side by side documents interchanged. Need to fix
-                //    agreement.Windows.ResetPositionsSideBySide();
-
-                amendment.Activate();
-                object o = agreement;
-                amendment.Windows.CompareSideBySideWith(ref o);
+                agreement.Activate();
+                object o = amendment;
+                agreement.Windows.CompareSideBySideWith(ref o);
                 // Reposition side by side
-                amendment.Windows.ResetPositionsSideBySide();
-
+                // FIXME: Side by side documents interchanged. Need to fix
+                //agreement.Windows.ResetPositionsSideBySide();
 
                 Globals.Ribbons.Ribbon1.CloseWindows();
                 this.windowAttachmentsView.Close();

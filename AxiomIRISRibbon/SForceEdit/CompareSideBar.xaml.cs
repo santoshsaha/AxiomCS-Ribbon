@@ -192,6 +192,12 @@ namespace AxiomIRISRibbon.SForceEdit
                     app.ActiveWindow.View.SplitSpecial = Word.WdSpecialPane.wdPaneRevisionsVert;
                     app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
 
+                    // Unlock agreement clauses for edit
+                    for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
+                    {
+                        wordTemplate.ContentControls[i].LockContents = false;
+                        wordTemplate.ContentControls[i].LockContentControl = false;
+                    }
 
                     app.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
                     app.ActiveWindow.Document.AcceptAllRevisions();

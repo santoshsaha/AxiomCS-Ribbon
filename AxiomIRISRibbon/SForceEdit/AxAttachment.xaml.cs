@@ -436,6 +436,16 @@ namespace AxiomIRISRibbon.SForceEdit
 
                         // Word!
                         Word.Document doc = Globals.ThisAddIn.Application.Documents.Add(dr.strRtn);
+
+                        //Code PES
+                        // Unlock for edits 
+                        for (int i = 1; i <= doc.ContentControls.Count; i++)
+                        {
+                            doc.ContentControls[i].LockContents = false;
+                            doc.ContentControls[i].LockContentControl = false;
+                        }
+                        //End Code
+
                         doc.Activate();
                         Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
                         

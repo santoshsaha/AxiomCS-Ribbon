@@ -304,11 +304,18 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
                 }
                 */
-                // Unlock for edits
+                // Unlock agreement for edits
                 for (int i = 1; i <= agreement.ContentControls.Count; i++)
                 {
                     agreement.ContentControls[i].LockContents = false;
                     agreement.ContentControls[i].LockContentControl = false;
+                }
+
+                // Unlock for edits
+                for (int i = 1; i <= amendment.ContentControls.Count; i++)
+                {
+                    amendment.ContentControls[i].LockContents = false;
+                    amendment.ContentControls[i].LockContentControl = false;
                 }
 
                 // Add property for saves
@@ -321,12 +328,15 @@ namespace AxiomIRISRibbon.SForceEdit
                 agreement.ActiveWindow.View.ShowRevisionsAndComments = true;
                 amendment.TrackRevisions = true;
 
-                agreement.Activate();
-                object o = amendment;
-                agreement.Windows.CompareSideBySideWith(ref o);
+                amendment.Activate();
+                object o = agreement;
+                amendment.Windows.CompareSideBySideWith(ref o);
                 // Reposition side by side
                 // FIXME: Side by side documents interchanged. Need to fix
-                //agreement.Windows.ResetPositionsSideBySide();
+                amendment.Windows.ResetPositionsSideBySide();
+
+
+               agreement.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
 
                 Globals.Ribbons.Ribbon1.CloseWindows();
                 this.windowAttachmentsView.Close();

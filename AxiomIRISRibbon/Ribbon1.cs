@@ -23,15 +23,15 @@ namespace AxiomIRISRibbon
 
         int _sfcount = 0;
         private Data D;
-       private string Id;
-       private bool IsTemplate;
-       private DataTable DTTemplate;
-       private Word.Document Doc;
-       private string _versionid;
-       private Data _d;
+        private string Id;
+        private bool IsTemplate;
+        private DataTable DTTemplate;
+        private Word.Document Doc;
+        private string _versionid;
+        private Data _d;
 
         private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
-        {            
+        {
             gpAdmin.Visible = false;
             gpData.Visible = false;
             gpDraft.Visible = false;
@@ -52,30 +52,35 @@ namespace AxiomIRISRibbon
             {
                 this.RibbonUI.ActivateTabMso("TabAddIns");
             }
-            catch(Exception ex){
+            catch (Exception ex)
+            {
 
             }
         }
 
 
-        public bool isUserAdmin(Data d){
+        public bool isUserAdmin(Data d)
+        {
             string profile = d.GetUserProfile();
             JToken s = Globals.ThisAddIn.GetSettings().GetGeneralSetting("AdminMenu");
-            if(s!=null){
-                if(s.Type == JTokenType.Array){
-                    foreach(string t in (JArray)s){
+            if (s != null)
+            {
+                if (s.Type == JTokenType.Array)
+                {
+                    foreach (string t in (JArray)s)
+                    {
                         if (t == profile) return true;
                     }
                 }
                 if (s.Type == JTokenType.String)
                 {
-                        if (s.ToString() == profile) return true;                    
+                    if (s.ToString() == profile) return true;
                 }
             }
 
             // Default so that these profiles always get them
             if (profile == "System Administrator" || profile == "Axiom Admin") return true;
-            
+
             return false;
         }
 
@@ -225,7 +230,8 @@ namespace AxiomIRISRibbon
 
         }
 
-        public void Logout(){
+        public void Logout()
+        {
             Globals.ThisAddIn.getData().Logout();
 
             CloseWindows();
@@ -237,22 +243,23 @@ namespace AxiomIRISRibbon
             gpAdmin.Visible = false;
             gpData.Visible = false;
             gpDraft.Visible = false;
-           
+
             btnLogout.Enabled = false;
             btnLogin.Enabled = true;
 
             btnReports.Enabled = false;
 
             //Code PES
-            gpIrisTrack.Visible = false; 
+            gpIrisTrack.Visible = false;
             grpAmendment.Visible = false;
             // End PES
         }
 
 
-        public void RefreshTemplatesList(){
+        public void RefreshTemplatesList()
+        {
             Data d = Globals.ThisAddIn.getData();
-           
+
             DataReturn dr = Utility.HandleData(d.GetTemplates(true));
             if (!dr.success) return;
 
@@ -297,7 +304,7 @@ namespace AxiomIRISRibbon
 
         private void btnClauses_Click(object sender, RibbonControlEventArgs e)
         {
-            Globals.ThisAddIn.OpenClause(true,true);
+            Globals.ThisAddIn.OpenClause(true, true);
         }
 
         private void btnElement_Click(object sender, RibbonControlEventArgs e)
@@ -306,7 +313,7 @@ namespace AxiomIRISRibbon
         }
 
         private void gContracts_Click(object sender, RibbonControlEventArgs e)
-        {                       
+        {
             Contract axC = new Contract();
 
             string tag = Convert.ToString(((RibbonGallery)sender).SelectedItem.Tag);
@@ -318,7 +325,7 @@ namespace AxiomIRISRibbon
                 TemplatePlaybookLink = atag[1];
             }
 
-            axC.Open("", TemplateId, Convert.ToString(((RibbonGallery)sender).SelectedItem.Label), TemplatePlaybookLink);                       
+            axC.Open("", TemplateId, Convert.ToString(((RibbonGallery)sender).SelectedItem.Label), TemplatePlaybookLink);
         }
 
         private void btnLogout_Click(object sender, RibbonControlEventArgs e)
@@ -328,7 +335,7 @@ namespace AxiomIRISRibbon
 
         private void btnOpenContract_Click(object sender, RibbonControlEventArgs e)
         {
-           Globals.ThisAddIn.OpenContract();
+            Globals.ThisAddIn.OpenContract();
         }
 
         private void btnConcepts_Click(object sender, RibbonControlEventArgs e)
@@ -402,7 +409,7 @@ namespace AxiomIRISRibbon
             Globals.ThisAddIn.CloseEditZoomWindows();
         }
 
-        public void SFDebug(string desc,string sql)
+        public void SFDebug(string desc, string sql)
         {
             if (btnTrack.Visible)
             {
@@ -410,7 +417,7 @@ namespace AxiomIRISRibbon
                 lbSFCount.Label = _sfcount.ToString();
 
                 RibbonDropDownItem i = Globals.Factory.GetRibbonFactory().CreateRibbonDropDownItem();
-                i.Label = _sfcount.ToString() + " " + desc;    
+                i.Label = _sfcount.ToString() + " " + desc;
                 i.Tag = sql;
                 gSFDebug.Items.Add(i);
             }
@@ -423,7 +430,7 @@ namespace AxiomIRISRibbon
                 _sfcount++;
                 lbSFCount.Label = _sfcount.ToString();
                 RibbonDropDownItem i = Globals.Factory.GetRibbonFactory().CreateRibbonDropDownItem();
-                i.Label = _sfcount.ToString() + " " + desc;                
+                i.Label = _sfcount.ToString() + " " + desc;
                 gSFDebug.Items.Add(i);
                 gSFDebug.SelectedItem = i;
             }
@@ -432,7 +439,7 @@ namespace AxiomIRISRibbon
 
         private void gSFDebug_Click(object sender, RibbonControlEventArgs e)
         {
-            System.Windows.Forms.MessageBox.Show(Convert.ToString(((RibbonGallery)sender).SelectedItem.Label) + "\n" + Convert.ToString(((RibbonGallery)sender).SelectedItem.Tag));            
+            System.Windows.Forms.MessageBox.Show(Convert.ToString(((RibbonGallery)sender).SelectedItem.Label) + "\n" + Convert.ToString(((RibbonGallery)sender).SelectedItem.Tag));
         }
 
 
@@ -497,13 +504,13 @@ namespace AxiomIRISRibbon
             Globals.ThisAddIn.HideWindows();
             Globals.ThisAddIn.OpenAbout();
         }
-             
+
         //Code PES
         private void btnTrack_DialogLauncherClick(object sender, RibbonControlEventArgs e)
         {
-           
 
-           CompareAmendment.TrackDocument();
+
+            CompareAmendment.TrackDocument();
         }
         private void btnExportToWord_Click(object sender, RibbonControlEventArgs e)
         {
@@ -574,7 +581,7 @@ namespace AxiomIRISRibbon
                     dlg.Filter = "Word Document (*.doc;*.docx;*.docm)|*.doc;*.docx;*.docx";
                     dlg.FileName = "ExportDocument-" + dlg.Title.Replace(" ", "");
                     dlg.ShowDialog();
-                    export.SaveAs2(dlg.FileName,ReadOnlyRecommended:false);
+                    export.SaveAs2(dlg.FileName, ReadOnlyRecommended: false);
                     Globals.ThisAddIn.ProcessingStop("Finished");
 
                 }
@@ -596,7 +603,7 @@ namespace AxiomIRISRibbon
                 object oMissing = System.Reflection.Missing.Value;
                 Word.Document template = Globals.ThisAddIn.Application.ActiveDocument;
                 //  string docName = Globals.ThisAddIn.GetDocName(template);
-
+               bool isAmend= Globals.ThisAddIn.Application.ActiveDocument.FullName.ToLower().Contains("amendment");
                 Word.Document export = Globals.ThisAddIn.Application.Documents.Add();
                 //   To hide active word doc.
                 //    export.ActiveWindow.Visible = false;
@@ -619,6 +626,8 @@ namespace AxiomIRISRibbon
                     }
                 }
 
+                export.TrackRevisions = export.TrackRevisions == true ? false : false;
+               
 
                 foreach (Word.Section section in export.Sections)
                 {
@@ -628,10 +637,14 @@ namespace AxiomIRISRibbon
                     //float margin = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.Document.OMathLeftMargin ;
                     float margin = 70.0f;
                     int usableHeight = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.UsableHeight;
-
+                    
                     int width = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.Width;
                     int usableWidth = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.UsableWidth;
 
+                    if (!isAmend)
+                    {
+                        export.Revisions.AcceptAll();
+                    }
                     logoWatermark = section.Headers[Word.WdHeaderFooterIndex.wdHeaderFooterPrimary].Shapes.AddTextEffect(Microsoft.Office.Core.MsoPresetTextEffect.msoTextEffect1, "Draft", "Arial", 50, Microsoft.Office.Core.MsoTriState.msoCTrue, Microsoft.Office.Core.MsoTriState.msoFalse, Convert.ToSingle(margin), Convert.ToSingle(height / 2));
 
                     logoWatermark.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
@@ -675,7 +688,7 @@ namespace AxiomIRISRibbon
                 export.SaveAs(ref outputFileName, ref fileFormat, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                     ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                     ref oMissing, ref oMissing, ref oMissing);
-                              
+
                 // Close the Word document, but leave the Word application open.
                 // doc has to be cast to type _Document so that it will find the
                 // correct Close method.  
@@ -687,7 +700,7 @@ namespace AxiomIRISRibbon
             catch (Exception ex) { }
         }
 
-   
+
         private void btnAmend_Click(object sender, RibbonControlEventArgs e)
         {
             try
@@ -719,7 +732,7 @@ namespace AxiomIRISRibbon
                     amend.Show();
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 System.Windows.Forms.MessageBox.Show(ex.Message, "Create Amendment");
             }
@@ -727,27 +740,28 @@ namespace AxiomIRISRibbon
 
         private void btnRevertClause_Click(object sender, RibbonControlEventArgs e)
         {
-            try {
-             
+            try
+            {
+
                 Word.Document docToRevert = Globals.ThisAddIn.Application.ActiveDocument;
                 foreach (Word.ContentControl cc in docToRevert.Range().ContentControls)
                 {
                     if (cc.Tag != null)
-                    { 
-                if(    cc.Range.Sections !=null)
-                {}
+                    {
+                        if (cc.Range.Sections != null)
+                        { }
+                    }
                 }
-                }
-            
+
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-            
+
             }
         }
 
         //End PES
 
-      
+
     }
 }

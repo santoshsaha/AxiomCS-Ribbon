@@ -348,7 +348,7 @@ namespace AxiomIRISRibbon.SForceEdit
         }
         // AH
 
-     
+
 
 
 
@@ -406,7 +406,7 @@ namespace AxiomIRISRibbon.SForceEdit
             }
         }
 
-       
+
         public static void OpenExistingAmendment(string documentPath, string templatePath, string documentAttachmentId, string templateAttachmentId, string documentName,
         string templateName, string versionId)
         {
@@ -508,6 +508,7 @@ namespace AxiomIRISRibbon.SForceEdit
                             return;
                         }
                         clause.Copy();
+                        insPosition.Collapse();
                         insPosition.Paste();
                         insPosition.InsertAfter(Environment.NewLine);
                         if (isAmendmentTemplateTrackEnabled == true)
@@ -701,33 +702,33 @@ namespace AxiomIRISRibbon.SForceEdit
                 ///FIXME: Needs to change for paragraphs without clauses
                 ///
                 /// 
-                    //foreach (Word.Paragraph p in objtempDocAmendment.Paragraphs)
-                    //{
-                    //    bool isTemplateTrackenabled = false;
-                    //    if (objtempAmendmentTemplate.TrackRevisions == true)
-                    //    {
-                    //        objtempAmendmentTemplate.TrackRevisions = false;
-                    //        isTemplateTrackenabled = true;
-                    //    }
+                //foreach (Word.Paragraph p in objtempDocAmendment.Paragraphs)
+                //{
+                //    bool isTemplateTrackenabled = false;
+                //    if (objtempAmendmentTemplate.TrackRevisions == true)
+                //    {
+                //        objtempAmendmentTemplate.TrackRevisions = false;
+                //        isTemplateTrackenabled = true;
+                //    }
 
-                    //    if (p.Range.ParentContentControl!=null) continue;
+                //    if (p.Range.ParentContentControl!=null) continue;
 
-                    //    if (p.Range.Revisions.Count > 0)
-                    //    {
-                    //        p.Range.Copy();
-                    //        rngInsert.PasteSpecial();
-                    //    }
+                //    if (p.Range.Revisions.Count > 0)
+                //    {
+                //        p.Range.Copy();
+                //        rngInsert.PasteSpecial();
+                //    }
 
-                    //    if (isTemplateTrackenabled == true)
-                    //    {
-                    //        objtempAmendmentTemplate.TrackRevisions = true;
-                    //    }
-                    //}
+                //    if (isTemplateTrackenabled == true)
+                //    {
+                //        objtempAmendmentTemplate.TrackRevisions = true;
+                //    }
+                //}
                 ///
                 ///
 
 
-              
+
 
                 //Remove Markup from template doc
                 objtempAmendmentTemplate.TrackRevisions = false;
@@ -741,7 +742,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 objtempAmendmentTemplate.TrackRevisions = true;
                 // End Remove Markup
 
-             
+
 
             }
             catch (Exception exe)
@@ -759,7 +760,7 @@ namespace AxiomIRISRibbon.SForceEdit
             }
         }
 
-     
+
         public DataReturn SaveCombinedDoc(string newAttachmentId, string fileAmendmentTemplatePath)
         {
             DataReturn dr = new DataReturn();

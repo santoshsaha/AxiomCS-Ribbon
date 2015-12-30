@@ -161,6 +161,13 @@ namespace AxiomIRISRibbon.SForceEdit
 
                     //  Compare code
                     wordTemplate.Compare(_fileName, missing, Word.WdCompareTarget.wdCompareTargetNew, true, true, false, true, false);
+                    // Unlock agreement clauses for edit; Must be done on the active window document
+                    // Some clauses (EventsOfDefault) do not unlock when unlocking directly using the Document reference
+                    foreach (Word.ContentControl cc in app.ActiveDocument.ContentControls)
+                    {
+                        cc.LockContents = false;
+                        cc.LockContentControl = false;
+                    }
                     app.ActiveWindow.View.SplitSpecial = Word.WdSpecialPane.wdPaneRevisionsVert;
                     app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
                     app.ActiveDocument.TrackRevisions = true;
@@ -169,18 +176,9 @@ namespace AxiomIRISRibbon.SForceEdit
                     // FIXME: Perhaps not required if track changes turned off when generating version 1 agreement doc (New from Existing)
                     app.ActiveDocument.AcceptAllRevisionsShown();
 
-
                     //Code to resize review panel
                     app.ActiveWindow.Document.Frameset.ChildFramesetItem[2].WidthType = Word.WdFramesetSizeType.wdFramesetSizeTypePercent;
-                    app.ActiveWindow.Document.Frameset.ChildFramesetItem[2].Width = 82;  // Standrd size 75. + will reduce size and - will increase size
-
-
-                    // Unlock agreement clauses for edit
-                    for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
-                    {
-                        wordTemplate.ContentControls[i].LockContents = false;
-                        wordTemplate.ContentControls[i].LockContentControl = false;
-                    }
+                    app.ActiveWindow.Document.Frameset.ChildFramesetItem[2].Width = 82;  // Standard size 75. + will reduce size and - will increase size
 
                     app.Activate();
                     // Russel Dec11 - add in the Doc Id to the comparison doc

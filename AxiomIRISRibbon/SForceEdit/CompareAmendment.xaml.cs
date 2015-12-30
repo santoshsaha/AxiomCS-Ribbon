@@ -536,6 +536,14 @@ namespace AxiomIRISRibbon.SForceEdit
                     {
                         foreach (Word.Paragraph p in r.Range.Paragraphs)
                         {
+                            // Skip if already seen; Paragraphs do not have unique ids
+                            // Use the range for now, but BEWARE - the id is unique only locally.
+                            // If net content is inserted before the paragraph in the agreement doc, 
+                            // the range will shift
+                            string id = p.Range.Start + "*" + p.Range.End;
+                            if (seen.Contains(id)) continue;
+                            seen.Add(id);
+
                             p.Range.Copy();
                             insPosition.Collapse();
                             insPosition.Paste();
@@ -554,10 +562,8 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
 
                 // Move insert marker
-                amendment.TrackRevisions = false;
                 Word.Fields amdMergeFields = amendment.Fields;
                 Word.Range insAmendMarker = null;
-                //Word.Range insPosition = null;
                 foreach (Word.Field f in amdMergeFields)
                 {
                     if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
@@ -567,7 +573,6 @@ namespace AxiomIRISRibbon.SForceEdit
                         break;
                     }
                 }
-                amendment.TrackRevisions = true;
             }
             catch (Exception ex)
             {

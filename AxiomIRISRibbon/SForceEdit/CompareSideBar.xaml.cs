@@ -108,7 +108,6 @@ namespace AxiomIRISRibbon.SForceEdit
                     DataReturn drAttachemnts = AxiomIRISRibbon.Utility.HandleData(_d.GetTemplateAttach(TemplateId));
                     if (!drAttachemnts.success) return;
 
-
                     DataTable dtAttachments = drAttachemnts.dt;
                     string fileTemplate = "";
                     foreach (DataRow rw in dtAttachments.Rows)
@@ -123,54 +122,30 @@ namespace AxiomIRISRibbon.SForceEdit
                     Word.Application app = Globals.ThisAddIn.Application;
 
                     wordAttachment = app.Documents[app.ActiveDocument.FullName]; // Document already open
-                    wordAttachment.TrackRevisions = false;
-                    wordAttachment.ShowRevisions = false;
-                    wordAttachment.AcceptAllRevisions();
-
-                    // To unlock Clauses
-                    /*                   for (int i = 1; i <= wordAttachment.ContentControls.Count; i++)
-                                       {
-                                           wordAttachment.ContentControls[i].LockContents = false;
-                                           wordAttachment.ContentControls[i].LockContentControl = false;
-
-                                       }
-
-                   */
-
 
                     object objTemplate = fileTemplate;
-
-                    // Template was not loading in right side, if file size is more. So added thread.sleep
+                    // FIXME: Template was not loading in right side, if file size is more. So added thread.sleep
                     System.Threading.Thread.Sleep(8000);
 
                     wordTemplate = app.Documents.Open(ref objTemplate, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
+  
+                    // Unlock clauses in template - track changes in agreement requires unlocked clauses
+                    // Right side is RO in Document.Compare, so template still cannot be modified
+                    for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
+                    {
+                        wordTemplate.ContentControls[i].LockContents = false;
+                        wordTemplate.ContentControls[i].LockContentControl = false;
+                    }
 
-
-                    // To unlock Clauses
-                    /*                for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
-                                    {
-                                        wordTemplate.ContentControls[i].LockContents = false;
-                                        wordTemplate.ContentControls[i].LockContentControl = false;
-
-                                    }
-                */
                     // Code to remove   the document modified by -- This code will reset all the properties in the document
-
-                    wordTemplate.RemoveDocumentInformation(Microsoft.Office.Interop.Word.WdRemoveDocInfoType.wdRDIDocumentProperties);
+                    //wordTemplate.RemoveDocumentInformation(Microsoft.Office.Interop.Word.WdRemoveDocInfoType.wdRDIDocumentProperties);
 
                     // End Code
 
                     //Compare
-                    // Globals.ThisAddIn.AddDocId(wordTemplate, "Compare", "");
                     Globals.ThisAddIn.AddDocId(wordTemplate, "Contract", "", "Compare");
-                    wordTemplate.ActiveWindow.View.ShowRevisionsAndComments = false;
-                    wordTemplate.TrackRevisions = true;
-                    wordTemplate.ShowRevisions = false;
-
-                    wordTemplate.AcceptAllRevisions();
-
-
+                    
                     //added below lines to close the open file before opening the split screen
                     foreach (Word.Document d in app.Documents)
                     {
@@ -184,13 +159,15 @@ namespace AxiomIRISRibbon.SForceEdit
                         }
                     }
 
-
-
-
                     //  Compare code
-                    wordTemplate.Compare(_fileName, missing, Word.WdCompareTarget.wdCompareTargetNew, true, true, false, false, false);
+                    wordTemplate.Compare(_fileName, missing, Word.WdCompareTarget.wdCompareTargetNew, true, true, false, true, false);
                     app.ActiveWindow.View.SplitSpecial = Word.WdSpecialPane.wdPaneRevisionsVert;
                     app.ActiveWindow.ShowSourceDocuments = Word.WdShowSourceDocuments.wdShowSourceDocumentsOriginal;
+                    app.ActiveDocument.TrackRevisions = true;
+                    app.ActiveDocument.TrackMoves = true;
+                    app.ActiveDocument.TrackFormatting = true;
+                    // FIXME: Perhaps not required if track changes turned off when generating version 1 agreement doc (New from Existing)
+                    app.ActiveDocument.AcceptAllRevisionsShown();
 
                     // Unlock agreement clauses for edit
                     for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
@@ -198,9 +175,6 @@ namespace AxiomIRISRibbon.SForceEdit
                         wordTemplate.ContentControls[i].LockContents = false;
                         wordTemplate.ContentControls[i].LockContentControl = false;
                     }
-
-                    app.ActiveWindow.View.RevisionsFilter.Markup = Word.WdRevisionsMarkup.wdRevisionsMarkupNone;
-                    app.ActiveWindow.Document.AcceptAllRevisions();
 
                     app.Activate();
                     // Russel Dec11 - add in the Doc Id to the comparison doc
@@ -210,20 +184,13 @@ namespace AxiomIRISRibbon.SForceEdit
                     var docTemplateClose = (Word._Document)wordTemplate;
                     docTemplateClose.Close(SaveChanges: false);
 
-
-                    // System.Runtime.InteropServices.Marshal.ReleaseComObject(newdoc);
-                    //  docclose = (Microsoft.Office.Interop.Word._Document)olddoc;
-                    //  docclose.Close(SaveChanges: false);
-                    //  System.Runtime.InteropServices.Marshal.ReleaseComObject(olddoc);
-
-
                     //End Compare
                     Globals.Ribbons.Ribbon1.CloseWindows();
 
                 }
                 else
                 {
-                    MessageBox.Show("Please select one template");
+                    MessageBox.Show("Please select a template");
 
                 }
             }
@@ -237,7 +204,8 @@ namespace AxiomIRISRibbon.SForceEdit
                 btnCompare.IsEnabled = true;
             }
         }
-   
+
+  
         public static bool SaveCompare(bool ForceSave, bool SaveDoc)
         {
             try

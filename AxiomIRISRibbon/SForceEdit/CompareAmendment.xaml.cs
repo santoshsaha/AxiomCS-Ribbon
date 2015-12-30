@@ -504,6 +504,7 @@ namespace AxiomIRISRibbon.SForceEdit
                             seen.Add(cc.ID);
 
                             cc.Copy();
+                            insPosition.Collapse();
                             insPosition.Paste();
 
                             // FIXME: Optimize - replace repetative detection of marker
@@ -528,19 +529,15 @@ namespace AxiomIRISRibbon.SForceEdit
                         seen.Add(cc.ID);
 
                         cc.Copy();
-                        //insPosition.SetRange(1330, 1331);
-                        try
-                        {
-                            insPosition.Paste();
-                        }
-                        catch (Exception ignore) { } // AH: Intentionally ignore until fix found for failure
+                        insPosition.Collapse(); // Required to prevent Command Failed error on Paste under certain circumstances
+                        insPosition.Paste();
                     }
                     else if (r.Range.Paragraphs.Count > 0)
                     {
                         foreach (Word.Paragraph p in r.Range.Paragraphs)
                         {
                             p.Range.Copy();
-                            //insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                            insPosition.Collapse();
                             insPosition.Paste();
                             insPosition = GetAmendmentDocumentInsertPosition(amendment);
                             if (insPosition == null)

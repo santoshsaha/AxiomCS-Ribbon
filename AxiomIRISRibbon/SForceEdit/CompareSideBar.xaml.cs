@@ -169,6 +169,12 @@ namespace AxiomIRISRibbon.SForceEdit
                     // FIXME: Perhaps not required if track changes turned off when generating version 1 agreement doc (New from Existing)
                     app.ActiveDocument.AcceptAllRevisionsShown();
 
+
+                    //Code to resize review panel
+                    app.ActiveWindow.Document.Frameset.ChildFramesetItem[2].WidthType = Word.WdFramesetSizeType.wdFramesetSizeTypePercent;
+                    app.ActiveWindow.Document.Frameset.ChildFramesetItem[2].Width = 82;  // Standrd size 75. + will reduce size and - will increase size
+
+
                     // Unlock agreement clauses for edit
                     for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
                     {

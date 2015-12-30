@@ -1064,7 +1064,7 @@ namespace AxiomIRISRibbon.ContractEdit
             DataReturn versionmax = _d.GetVersionMax(_matterid);
             string vmax = versionmax.dt.Rows[0][0].ToString();
             double vmaxint = 1;
-            if (vmax != null)
+            if (!String.IsNullOrEmpty(vmax))
             {
                 try
                 {

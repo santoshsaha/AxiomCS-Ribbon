@@ -334,7 +334,6 @@ namespace AxiomIRISRibbon.SForceEdit
                 // FIXME: Side by side documents interchanged. Need to fix
                 amendment.Windows.ResetPositionsSideBySide();
 
-
                agreement.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
 
                 Globals.Ribbons.Ribbon1.CloseWindows();
@@ -452,126 +451,102 @@ namespace AxiomIRISRibbon.SForceEdit
                     else if (agreement == null && d.FullName.Contains("Version")) agreement = d;
                     if (agreement != null && amendment != null) break;
                 }
-                //agreement.TrackRevisions = false;
                 string ts = string.Empty;
                 if (amendment != null)
                 {
                     ts = Globals.ThisAddIn.GetDocTimeStamp(amendment);
                 }
+                // It is critical to turn off tracking when moving changes over for
+                // markup to show correctly in the amendment document
+                agreement.TrackRevisions = false;
+                amendment.TrackRevisions = false;
                 if (!string.IsNullOrEmpty(ts))
                 {
                     lastAmendedDate = DateTime.ParseExact(ts, "yyyy-MM-dd HH:mm:ss.fff tt", null);
                 }
                 Globals.ThisAddIn.SetDocTimeStamp(amendment);
 
+                HashSet<string> seen = new HashSet<string>();
                 foreach (Word.Revision r in agreement.Revisions)
                 {
                     if (lastAmendedDate > r.Date) continue;
 
-                    // If range has content controls, handle each individually
-                    if (r.Range.ContentControls != null && r.Range.ContentControls.Count > 0)
+                    Word.Range insPosition = GetAmendmentDocumentInsertPosition(amendment);
+                    if (insPosition == null)
+                    {
+                        MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
+                        return;
+                    }
+
+                    // FIXME: Handle deleted revision
+                    if (r.Type == Word.WdRevisionType.wdRevisionDelete)
+                    {
+                    }
+
+                    // If whitespace, insert only that space, ignoring the paragraph and surrounding text
+                    if (r.Range.Text.Trim() == String.Empty)
+                    {
+                        insPosition.InsertBefore(r.Range.Text);
+                    }
+                    // If range has content controls, handle each
+                    else if (r.Range.ContentControls !=null && r.Range.ContentControls.Count > 0)
                     {
                         foreach (Word.ContentControl cc in r.Range.ContentControls)
                         {
                             //FIXME: Need better scheme to determine Header and Signature
                             if (cc.Title.StartsWith("Header") || cc.Title.StartsWith("Signature")) continue;
 
-                            // Skip nested content controls - text copied over from parent already
+                            // If CC is a child content control, skip - handle move via parent
                             if (cc.ParentContentControl != null) continue;
 
+                            // Skip if already seen
+                            if (seen.Contains(cc.ID)) continue;
+                            seen.Add(cc.ID);
+
+                            cc.Copy();
+                            insPosition.Paste();
+
                             // FIXME: Optimize - replace repetative detection of marker
-                            // Locate insert marker in amendment document
-                            Word.Fields amdFields = amendment.Fields;
-                            Word.Range insMarker = null;
-                            Word.Range insPosition = null;
-                            foreach (Word.Field f in amdFields)
-                            {
-                                if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
-                                {
-                                    insMarker = f.Result;
-                                    f.Code.InsertBefore("\r\n");
-                                    object wdth = "\r\n".Length;
-                                    insPosition = f.Code.Previous(Word.WdUnits.wdCharacter, ref wdth);
-                                    break;
-                                }
-                            }
-                            if (insMarker == null || insPosition == null)
+                            insPosition = GetAmendmentDocumentInsertPosition(amendment);
+                            if (insPosition == null)
                             {
                                 MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
                                 return;
                             }
-                            cc.Copy();
-                            insPosition.Collapse();
-                            insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
-                            insPosition.InsertAfter(Environment.NewLine);
                         }
+                    }
+                    // If range is inside a content control, bring over the entire content control
+                    else if (r.Range.ParentContentControl != null)
+                    {
+                        Word.ContentControl cc = r.Range.ParentContentControl;
+
+                        //FIXME: Need better scheme to determine Header and Signature
+                        if (cc.Title.StartsWith("Header") || cc.Title.StartsWith("Signature")) continue;
+
+                        // Skip if already seen
+                        if (seen.Contains(cc.ID)) continue;
+                        seen.Add(cc.ID);
+
+                        cc.Copy();
+                        //insPosition.SetRange(1330, 1331);
+                        try
+                        {
+                            insPosition.Paste();
+                        }
+                        catch (Exception ignore) { } // AH: Intentionally ignore until fix found for failure
                     }
                     else if (r.Range.Paragraphs.Count > 0)
                     {
-                        // FIXME: Handle deleted revision
-                        if (r.Type == Word.WdRevisionType.wdRevisionDelete)
+                        foreach (Word.Paragraph p in r.Range.Paragraphs)
                         {
-                            /*
-                            // FIXME: Optimize - replace repetative detection of marker
-                            // Locate insert marker in amendment document
-                            Word.Fields amdFields = amendment.Fields;
-                            Word.Range insMarker = null;
-                            Word.Range insPosition = null;
-                            foreach (Word.Field f in amdFields)
-                            {
-                                if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
-                                {
-                                    insMarker = f.Result;
-                                    f.Code.InsertBefore("\r\n");
-                                    object wdth = "\r\n".Length;
-                                    insPosition = f.Code.Previous(Word.WdUnits.wdCharacter, ref wdth);
-                                    break;
-                                }
-                            }
-                            if (insMarker == null || insPosition == null)
+                            p.Range.Copy();
+                            //insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                            insPosition.Paste();
+                            insPosition = GetAmendmentDocumentInsertPosition(amendment);
+                            if (insPosition == null)
                             {
                                 MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
                                 return;
-                            }
-                            insPosition.InsertBefore(r.Range.Text);
-                            //insPosition.Delete(Word.WdUnits.wdCharacter, r.Range.Text.Length);
-                            */ 
-                        }
-                        else
-                        {
-                            foreach (Word.Paragraph p in r.Range.Paragraphs)
-                            {
-                                // FIXME: Optimize - replace repetative detection of marker
-                                // Locate insert marker in amendment document
-                                Word.Fields amdFields = amendment.Fields;
-                                Word.Range insMarker = null;
-                                Word.Range insPosition = null;
-                                foreach (Word.Field f in amdFields)
-                                {
-                                    if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
-                                    {
-                                        insMarker = f.Result;
-                                        f.Code.InsertBefore("\r\n");
-                                        object wdth = "\r\n".Length;
-                                        insPosition = f.Code.Previous(Word.WdUnits.wdCharacter, ref wdth);
-                                        break;
-                                    }
-                                }
-                                if (insMarker == null || insPosition == null)
-                                {
-                                    MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
-                                    return;
-                                }
-                                // If whitespace, insert only that space, ignoring the paragraph
-                                if (r.Range.Text.Trim() == String.Empty)
-                                {
-                                    insPosition.InsertBefore(r.Range.Text);
-                                }
-                                else
-                                {
-                                    p.Range.Copy();
-                                    insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
-                                }
                             }
                         }
                     }
@@ -591,9 +566,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
                     {
                         insAmendMarker = f.Result;
-                        f.Code.InsertBefore("\r\n");
-                        object wdth = "\r\n".Length;
-                        //insPosition = f.Code.Previous(Word.WdUnits.wdCharacter, ref wdth);
+                        f.Code.InsertBefore(Environment.NewLine);
                         break;
                     }
                 }
@@ -605,13 +578,31 @@ namespace AxiomIRISRibbon.SForceEdit
             }
             finally
             {
-                if (agreement != null)
-                {
-                    agreement.TrackRevisions = true;
-                }
+                if (agreement != null) agreement.TrackRevisions = true;
+                if (amendment != null) amendment.TrackRevisions = true;
             }
         }
 
+
+        private static Word.Range GetAmendmentDocumentInsertPosition(Word.Document amendment)
+        {
+            // Locate insert marker in amendment document
+            Word.Fields amdFields = amendment.Fields;
+            Word.Range insMarker = null;
+            Word.Range insPosition = null;
+            foreach (Word.Field f in amdFields)
+            {
+                if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
+                {
+                    insMarker = f.Result;
+                    f.Code.InsertBefore(Environment.NewLine);
+                    object wdth = Environment.NewLine.Length;
+                    insPosition = f.Code.Previous(Word.WdUnits.wdCharacter, ref wdth);
+                    return insPosition;
+                }
+            }
+            return null;
+        }
 
         // AH
         // FIXME: Refactor to controller class

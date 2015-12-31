@@ -483,13 +483,8 @@ namespace AxiomIRISRibbon.SForceEdit
                     {
                     }
 
-                    // If whitespace, insert only that space, ignoring the paragraph and surrounding text
-                    if (r.Range.Text.Trim() == String.Empty)
-                    {
-                        insPosition.InsertBefore(r.Range.Text);
-                    }
                     // If range has content controls, handle each
-                    else if (r.Range.ContentControls !=null && r.Range.ContentControls.Count > 0)
+                    if (r.Range.ContentControls !=null && r.Range.ContentControls.Count > 0)
                     {
                         foreach (Word.ContentControl cc in r.Range.ContentControls)
                         {
@@ -505,7 +500,8 @@ namespace AxiomIRISRibbon.SForceEdit
 
                             cc.Copy();
                             insPosition.Collapse();
-                            insPosition.Paste();
+                            insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                            insPosition.InsertAfter(Environment.NewLine);
 
                             // FIXME: Optimize - replace repetative detection of marker
                             insPosition = GetAmendmentDocumentInsertPosition(amendment);
@@ -530,7 +526,8 @@ namespace AxiomIRISRibbon.SForceEdit
 
                         cc.Copy();
                         insPosition.Collapse(); // Required to prevent Command Failed error on Paste under certain circumstances
-                        insPosition.Paste();
+                        insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                        insPosition.InsertAfter(Environment.NewLine);
                     }
                     else if (r.Range.Paragraphs.Count > 0)
                     {
@@ -546,7 +543,8 @@ namespace AxiomIRISRibbon.SForceEdit
 
                             p.Range.Copy();
                             insPosition.Collapse();
-                            insPosition.Paste();
+                            insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                            insPosition.InsertAfter(Environment.NewLine);
                             insPosition = GetAmendmentDocumentInsertPosition(amendment);
                             if (insPosition == null)
                             {

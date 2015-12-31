@@ -137,6 +137,9 @@ namespace AxiomIRISRibbon
         {
             //Logout
             _sf.Logout();
+            //Code PES 
+            //Setting _loggedin as false to fix following: "About" popup not visible after logout.
+            _sf._loggedin = false;
         }
 
         public string GetUser()

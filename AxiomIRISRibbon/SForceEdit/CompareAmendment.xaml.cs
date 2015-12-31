@@ -498,6 +498,21 @@ namespace AxiomIRISRibbon.SForceEdit
                             if (seen.Contains(cc.ID)) continue;
                             seen.Add(cc.ID);
 
+                            //Delete if clause already present in amend
+                            string amendId,agrmntId = cc.ID;
+                            if (amendment.ContentControls.Count > 0)
+                            {
+                                foreach (Word.ContentControl amendClause in amendment.ContentControls)                                {
+                                    amendId = amendClause.ID;
+                                    if (amendId.Equals(agrmntId))
+                                    {
+                                        amendClause.Delete(true);
+                                        
+                                    }
+                                }
+                            }
+
+
                             cc.Copy();
                             insPosition.Collapse();
                             insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
@@ -523,6 +538,21 @@ namespace AxiomIRISRibbon.SForceEdit
                         // Skip if already seen
                         if (seen.Contains(cc.ID)) continue;
                         seen.Add(cc.ID);
+
+                        //Delete if clause already present in amend
+                        string amendId, agrmntId = cc.ID;
+                        if (amendment.ContentControls.Count > 0)
+                        {
+                            foreach (Word.ContentControl amendClause in amendment.ContentControls)
+                            {
+                                amendId = amendClause.Range.ParentContentControl.ID;
+                                if (amendId.Equals(agrmntId))
+                                {
+                                    amendClause.Delete(true);
+
+                                }
+                            }
+                        }
 
                         cc.Copy();
                         insPosition.Collapse(); // Required to prevent Command Failed error on Paste under certain circumstances

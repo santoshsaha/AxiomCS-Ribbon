@@ -467,6 +467,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 Globals.ThisAddIn.SetDocTimeStamp(amendment);
 
                 HashSet<string> seen = new HashSet<string>();
+                bool isReplace=false;
                 foreach (Word.Revision r in agreement.Revisions)
                 {
                     if (lastAmendedDate > r.Date) continue;
@@ -488,6 +489,7 @@ namespace AxiomIRISRibbon.SForceEdit
                     {
                         foreach (Word.ContentControl cc in r.Range.ContentControls)
                         {
+                            isReplace=false;
                             //FIXME: Need better scheme to determine Header and Signature
                             if (cc.Title.StartsWith("Header") || cc.Title.StartsWith("Signature")) continue;
 
@@ -502,12 +504,14 @@ namespace AxiomIRISRibbon.SForceEdit
                             string amendId,agrmntId = cc.ID;
                             if (amendment.ContentControls.Count > 0)
                             {
-                                foreach (Word.ContentControl amendClause in amendment.ContentControls)                                {
+                                foreach (Word.ContentControl amendClause in amendment.ContentControls)
+                                {
                                     amendId = amendClause.ID;
                                     if (amendId.Equals(agrmntId))
                                     {
+                                        insPosition = amendment.Range(amendClause.Range.Start, amendClause.Range.End);
                                         amendClause.Delete(true);
-                                        
+                                        isReplace = true;
                                     }
                                 }
                             }
@@ -516,10 +520,15 @@ namespace AxiomIRISRibbon.SForceEdit
                             cc.Copy();
                             insPosition.Collapse();
                             insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
-                            insPosition.InsertAfter(Environment.NewLine);
 
+                            //To avoid adding extra space , in case of replacement.
+                            if (!isReplace)
+                            {
+                                insPosition.InsertAfter(Environment.NewLine);
+                            }
+                            
                             // FIXME: Optimize - replace repetative detection of marker
-                            insPosition = GetAmendmentDocumentInsertPosition(amendment);
+                             insPosition = GetAmendmentDocumentInsertPosition(amendment);
                             if (insPosition == null)
                             {
                                 MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
@@ -531,6 +540,8 @@ namespace AxiomIRISRibbon.SForceEdit
                     else if (r.Range.ParentContentControl != null)
                     {
                         Word.ContentControl cc = r.Range.ParentContentControl;
+
+                        isReplace = false;
 
                         //FIXME: Need better scheme to determine Header and Signature
                         if (cc.Title.StartsWith("Header") || cc.Title.StartsWith("Signature")) continue;
@@ -548,8 +559,9 @@ namespace AxiomIRISRibbon.SForceEdit
                                 amendId = amendClause.Range.ParentContentControl.ID;
                                 if (amendId.Equals(agrmntId))
                                 {
+                                    insPosition = amendment.Range(amendClause.Range.Start, amendClause.Range.End);
                                     amendClause.Delete(true);
-
+                                    isReplace = true;
                                 }
                             }
                         }
@@ -557,7 +569,12 @@ namespace AxiomIRISRibbon.SForceEdit
                         cc.Copy();
                         insPosition.Collapse(); // Required to prevent Command Failed error on Paste under certain circumstances
                         insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
-                        insPosition.InsertAfter(Environment.NewLine);
+
+                        //To avoid adding extra space , in case of replacement.
+                        if (!isReplace)
+                        {
+                            insPosition.InsertAfter(Environment.NewLine);
+                        }
                     }
                     else if (r.Range.Paragraphs.Count > 0)
                     {

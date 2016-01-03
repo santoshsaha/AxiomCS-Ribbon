@@ -147,17 +147,17 @@ namespace AxiomIRISRibbon.SForceEdit
                     Globals.ThisAddIn.AddDocId(wordTemplate, "Contract", "", "Compare");
                     
                     //added below lines to close the open file before opening the split screen
-                    foreach (Word.Document d in app.Documents)
+                    // First collect files to close and then close; closing files while iterating 
+                    // through app.Documents enumerable removes from collection and files are missed
+                    List<Word._Document> docsToClose = new List<Word._Document>();
+                    foreach (Word._Document d in app.Documents)
                     {
-                        if (d.FullName != fileTemplate)
-                        {
-
-                            object saveOption = Word.WdSaveOptions.wdDoNotSaveChanges;
-                            object originalFormat = Word.WdOriginalFormat.wdOriginalDocumentFormat;
-                            object routeDocument = false;
-                            ((Word._Document)d).Close(ref saveOption, ref originalFormat, ref routeDocument);
-                        }
+                        if (d.FullName != fileTemplate) docsToClose.Add(d);
                     }
+                    object saveOption = Word.WdSaveOptions.wdDoNotSaveChanges;
+                    object originalFormat = Word.WdOriginalFormat.wdOriginalDocumentFormat;
+                    object routeDocument = false;
+                    foreach (Word._Document d in docsToClose) d.Close(ref saveOption, ref originalFormat, ref routeDocument);
 
                     //  Compare code
                     wordTemplate.Compare(_fileName, missing, Word.WdCompareTarget.wdCompareTargetNew, true, true, false, true, false);

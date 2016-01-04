@@ -304,20 +304,18 @@ namespace AxiomIRISRibbon.SForceEdit
                     }
                 }
                 */
-                // Unlock agreement for edits
-                for (int i = 1; i <= agreement.ContentControls.Count; i++)
+                // Unlock agreement clauses for edits
+                foreach (Word.ContentControl cc in agreement.ContentControls)
                 {
-                    agreement.ContentControls[i].LockContents = false;
-                    agreement.ContentControls[i].LockContentControl = false;
+                    cc.LockContents = false;
+                    cc.LockContentControl = false;
                 }
-
-                // Unlock for edits
-                for (int i = 1; i <= amendment.ContentControls.Count; i++)
+                // Unlock amendment clauses for edits
+                foreach (Word.ContentControl cc in amendment.ContentControls)
                 {
-                    amendment.ContentControls[i].LockContents = false;
-                    amendment.ContentControls[i].LockContentControl = false;
+                    cc.LockContents = false;
+                    cc.LockContentControl = false;
                 }
-
                 // Add property for saves
                 Globals.ThisAddIn.AddDocId(amendment, "Contract", "", "AmendmentTemplate");
                 Globals.ThisAddIn.AddDocId(agreement, "Contract", "", "AmendmentDocument");

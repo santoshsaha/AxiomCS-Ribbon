@@ -132,12 +132,11 @@ namespace AxiomIRISRibbon.SForceEdit
   
                     // Unlock clauses in template - track changes in agreement requires unlocked clauses
                     // Right side is RO in Document.Compare, so template still cannot be modified
-                    for (int i = 1; i <= wordTemplate.ContentControls.Count; i++)
+                    foreach (Word.ContentControl cc in wordTemplate.ContentControls)
                     {
-                        wordTemplate.ContentControls[i].LockContents = false;
-                        wordTemplate.ContentControls[i].LockContentControl = false;
+                        cc.LockContents = false;
+                        cc.LockContentControl = false;
                     }
-
                     // Code to remove   the document modified by -- This code will reset all the properties in the document
                     //wordTemplate.RemoveDocumentInformation(Microsoft.Office.Interop.Word.WdRemoveDocInfoType.wdRDIDocumentProperties);
 

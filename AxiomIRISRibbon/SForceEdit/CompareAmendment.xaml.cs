@@ -332,7 +332,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 // FIXME: Side by side documents interchanged. Need to fix
                 amendment.Windows.ResetPositionsSideBySide();
 
-               agreement.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
+                agreement.ActiveWindow.View.Type = Word.WdViewType.wdPrintView;
 
                 Globals.Ribbons.Ribbon1.CloseWindows();
                 this.windowAttachmentsView.Close();
@@ -437,6 +437,7 @@ namespace AxiomIRISRibbon.SForceEdit
         {
             Word.Document agreement = null;
             Word.Document amendment = null;
+            Word.ContentControl deletedClause;
             try
             {
                 Word.Documents documents = Globals.ThisAddIn.Application.Documents;
@@ -465,29 +466,24 @@ namespace AxiomIRISRibbon.SForceEdit
                 Globals.ThisAddIn.SetDocTimeStamp(amendment);
 
                 HashSet<string> seen = new HashSet<string>();
-                bool isReplace=false;
+                bool isReplace = false;
                 foreach (Word.Revision r in agreement.Revisions)
                 {
                     if (lastAmendedDate > r.Date) continue;
 
-                    Word.Range insPosition = GetAmendmentDocumentInsertPosition(amendment);
+                    Word.Range insPosition = GetAmendmentDocumentInsertPosition(amendment,true);
                     if (insPosition == null)
                     {
                         MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
                         return;
                     }
 
-                    // FIXME: Handle deleted revision
-                    if (r.Type == Word.WdRevisionType.wdRevisionDelete)
-                    {
-                    }
-
                     // If range has content controls, handle each
-                    if (r.Range.ContentControls !=null && r.Range.ContentControls.Count > 0)
+                    if (r.Range.ContentControls != null && r.Range.ContentControls.Count > 0)
                     {
                         foreach (Word.ContentControl cc in r.Range.ContentControls)
                         {
-                            isReplace=false;
+                            isReplace = false;
                             //FIXME: Need better scheme to determine Header and Signature
                             if (cc.Title.StartsWith("Header") || cc.Title.StartsWith("Signature")) continue;
 
@@ -497,9 +493,8 @@ namespace AxiomIRISRibbon.SForceEdit
                             // Skip if already seen
                             if (seen.Contains(cc.ID)) continue;
                             seen.Add(cc.ID);
-
                             //Delete if clause already present in amend
-                            string amendId,agrmntId = cc.ID;
+                            string amendId, agrmntId = cc.ID;
                             if (amendment.ContentControls.Count > 0)
                             {
                                 foreach (Word.ContentControl amendClause in amendment.ContentControls)
@@ -513,20 +508,32 @@ namespace AxiomIRISRibbon.SForceEdit
                                     }
                                 }
                             }
-
-
-                            cc.Copy();
-                            insPosition.Collapse();
-                            insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
-
-                            //To avoid adding extra space , in case of replacement.
-                            if (!isReplace)
+                            //FIXME: Need better scheme to determine whether the whole clause is deleted or not
+                            if (r.Type == Word.WdRevisionType.wdRevisionDelete && cc.Range.Start == (r.Range.Start + 1) && cc.Range.End == (r.Range.End - 1))
                             {
-                                insPosition.InsertAfter(Environment.NewLine);
+                                insPosition = GetAmendmentDocumentInsertPosition(amendment, false);
+                                insPosition.Collapse();
+                                deletedClause = amendment.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, Range: insPosition);
+                                deletedClause.Title = cc.Title;
+                                deletedClause.Range.Text = "This clause has been deleted";
+                                if (!isReplace)
+                                {
+                                    insPosition.InsertAfter(Environment.NewLine);
+                                }
                             }
-                            
+                            else
+                            {
+                                cc.Copy();
+                                insPosition.Collapse();
+                                insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                                //To avoid adding extra space , in case of replacement.
+                                if (!isReplace)
+                                {
+                                    insPosition.InsertAfter(Environment.NewLine);
+                                }
+                            }
                             // FIXME: Optimize - replace repetative detection of marker
-                             insPosition = GetAmendmentDocumentInsertPosition(amendment);
+                            insPosition = GetAmendmentDocumentInsertPosition(amendment,true);
                             if (insPosition == null)
                             {
                                 MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
@@ -590,7 +597,7 @@ namespace AxiomIRISRibbon.SForceEdit
                             insPosition.Collapse();
                             insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
                             insPosition.InsertAfter(Environment.NewLine);
-                            insPosition = GetAmendmentDocumentInsertPosition(amendment);
+                            insPosition = GetAmendmentDocumentInsertPosition(amendment,true);
                             if (insPosition == null)
                             {
                                 MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
@@ -629,26 +636,42 @@ namespace AxiomIRISRibbon.SForceEdit
         }
 
 
-        private static Word.Range GetAmendmentDocumentInsertPosition(Word.Document amendment)
+        private static Word.Range GetAmendmentDocumentInsertPosition(Word.Document amendment,bool beforeMarker)
         {
             // Locate insert marker in amendment document
             Word.Fields amdFields = amendment.Fields;
             Word.Range insMarker = null;
             Word.Range insPosition = null;
-            foreach (Word.Field f in amdFields)
+            if (beforeMarker)
             {
-                if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
+                foreach (Word.Field f in amdFields)
                 {
-                    insMarker = f.Result;
-                    f.Code.InsertBefore(Environment.NewLine);
-                    object wdth = Environment.NewLine.Length;
-                    insPosition = f.Code.Previous(Word.WdUnits.wdCharacter, ref wdth);
-                    return insPosition;
+                    if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
+                    {
+                        insMarker = f.Result;
+                        f.Code.InsertBefore(Environment.NewLine);
+                        object wdth = Environment.NewLine.Length;
+                        insPosition = f.Code.Previous(Word.WdUnits.wdCharacter, ref wdth);
+                        return insPosition;
+                    }
+                } 
+            }
+            else
+            {
+                foreach (Word.Field f in amdFields)
+                {
+                    if (f.Type == Word.WdFieldType.wdFieldMergeField && f.Result != null && f.Result.Text == "«AxiomMarker»")
+                    {
+                        insMarker = f.Result;
+                        f.Code.InsertAfter(Environment.NewLine);
+                        object wdth = Environment.NewLine.Length;
+                        insPosition = f.Code.Next(Word.WdUnits.wdCharacter, ref wdth);
+                        return insPosition;
+                    }
                 }
             }
             return null;
         }
-
         // AH
         // FIXME: Refactor to controller class
         /*

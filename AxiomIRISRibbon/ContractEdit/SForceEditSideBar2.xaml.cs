@@ -1267,6 +1267,11 @@ namespace AxiomIRISRibbon.ContractEdit
 
             Globals.ThisAddIn.ProcessingUpdate("Load Contract Data");
             this.LoadContractData(VersionId, VersionName);
+
+            //Code PES
+            //Call Method to unlock clauses in right sidebar
+                 this.UnLockAllClauses();
+            //End code
         }
 
 
@@ -3525,6 +3530,49 @@ namespace AxiomIRISRibbon.ContractEdit
             Globals.ThisAddIn.ScreenUpdatingOn();
             this._doc.Characters.First.Select();
         }
+
+        //Code PES
+        //Method to unlock clauses in sidebar
+        public void UnLockAllClauses()
+        {
+
+            Globals.ThisAddIn.ProcessingUpdate("Unlock Clause Values");
+            Globals.ThisAddIn.ScreenUpdatingOff();
+            //First the clause selection
+            foreach (object o in Questions.Children)
+            {
+
+                //Now step through the options and pick the right one
+                StackPanel spCL = (StackPanel)((Expander)((Grid)o).Children[0]).Content;
+
+                foreach (object o1 in spCL.Children)
+                {
+                    StackPanel sp = (StackPanel)o1;
+                    if ((string)sp.Tag == "rbsp")
+                    {
+                        //this is the radiobutton stack panel
+                        ClauseRadio rb1 = (ClauseRadio)sp.Children[0];
+                        if (_attachedmode)
+                        {
+
+                            //Set the clause to unlocked and update the button
+                            rb1.unlock = true;
+                            StackPanel spRb = (StackPanel)rb1.Parent;
+                            StackPanel spCl = (StackPanel)spRb.Parent;
+                            Button b = (Button)((Grid)((Expander)spCl.Parent).Parent).Children[3];
+                            Image icon = (Image)b.Content;
+                            icon.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/unlocksmall.png", UriKind.Relative));
+                            b.ToolTip = "Revert Clause back to default and lock";
+                            b.IsEnabled = false;  // Disable lock button.
+                        }
+                    }
+                }
+            }
+            Globals.ThisAddIn.ScreenUpdatingOn();
+            this._doc.Characters.First.Select();
+        }
+        //End code
+
 
 
         public void LoadContractDataFromNegotiatedDoc(string Id, string DocName)

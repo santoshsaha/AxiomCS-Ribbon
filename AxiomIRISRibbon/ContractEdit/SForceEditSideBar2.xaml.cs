@@ -1100,6 +1100,11 @@ namespace AxiomIRISRibbon.ContractEdit
             Globals.ThisAddIn.ProcessingUpdate("Initiate Elements");
             this.InitiateElements();
 
+            //Code PES
+            //Call Method to unlock clauses in right sidebar
+            this.UnLockAllClauses();
+            //End code
+
             // Russel Nov 11, v1.2 Demo Changes
             // need to save the elements when creating a new version so the first set get saved
             // *but* this is too slow - better to do when you hit save the first time

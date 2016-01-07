@@ -139,7 +139,17 @@ namespace AxiomIRISRibbon.SForceEdit
                     //don't get it to set the defaults if there are going to be values to load
                     u.BuildSideBarNewVersion(TemplateId, TemplateName, TemplatePlaybookLink, _id, _name);
                 }
-
+                //Code PES
+                // Unlock agreement clauses for edits
+                if (doc != null)
+                {
+                    foreach (Word.ContentControl cc in doc.ContentControls)
+                    {
+                        cc.LockContents = false;
+                        cc.LockContentControl = false;
+                    }
+                }
+                //End Code
                 //Scroll to the top
                 Globals.ThisAddIn.Application.ActiveWindow.DisplayVerticalScrollBar = true;
                 Globals.ThisAddIn.Application.ActiveWindow.VerticalPercentScrolled = 0;

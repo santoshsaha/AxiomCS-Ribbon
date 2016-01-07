@@ -610,8 +610,6 @@ namespace AxiomIRISRibbon
                 Word.Range source = template.Range(template.Content.Start, template.Content.End);
                 export.Range(export.Content.Start).InsertXML(source.WordOpenXML);
 
-                Word.Shape logoWatermark = null;
-
                 foreach (Word.ContentControl cc in export.ContentControls)
                 {
                     cc.LockContentControl = false;
@@ -626,50 +624,40 @@ namespace AxiomIRISRibbon
                     }
                 }
 
+                // Turn off tracking and accept all changes before export
                 export.TrackRevisions = export.TrackRevisions == true ? false : false;
-               
+                if (!isAmend) export.Revisions.AcceptAll();
 
-                foreach (Word.Section section in export.Sections)
-                {
-                    int height = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.Height;
+                // follows from a recorded macro that inserts a watermark
+                // Turn off different first page header to make watermark visible on first page
+                // This is the real fix for this issue
+                export.PageSetup.DifferentFirstPageHeaderFooter = (int)Microsoft.Office.Core.MsoTriState.msoFalse;
+                export.Sections[1].Range.Select();
+                export.ActiveWindow.ActivePane.View.SeekView = Word.WdSeekView.wdSeekPrimaryHeader;
+                Word.Selection selection = export.ActiveWindow.Selection;
+                selection.HeaderFooter.Shapes.AddTextEffect(Microsoft.Office.Core.MsoPresetTextEffect.msoTextEffect1,
+                                                             "Draft", "Arial", 50, Microsoft.Office.Core.MsoTriState.msoTrue,
+                                                             Microsoft.Office.Core.MsoTriState.msoFalse,
+                                                             0, 0).Select();
+                selection.ShapeRange.Name = "Axiom_DRAFT_WM";
+                selection.ShapeRange.TextEffect.NormalizedHeight = Microsoft.Office.Core.MsoTriState.msoFalse;
+                selection.ShapeRange.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
+                selection.ShapeRange.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
+                selection.ShapeRange.Fill.Solid();
+                selection.ShapeRange.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray30;
+                selection.ShapeRange.Fill.Transparency = 0;
+                selection.ShapeRange.Rotation = 315;
+                selection.ShapeRange.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue;
+                selection.ShapeRange.Height = Globals.ThisAddIn.Application.InchesToPoints(2.4f);
+                selection.ShapeRange.Width = Globals.ThisAddIn.Application.InchesToPoints(6f);
+                selection.ShapeRange.WrapFormat.AllowOverlap = (int)Microsoft.Office.Core.MsoTriState.msoFalse;
+                selection.ShapeRange.WrapFormat.Type = Word.WdWrapType.wdWrapNone;
+                selection.ShapeRange.RelativeHorizontalPosition = Word.WdRelativeHorizontalPosition.wdRelativeHorizontalPositionMargin;
+                selection.ShapeRange.RelativeVerticalPosition = Word.WdRelativeVerticalPosition.wdRelativeVerticalPositionMargin;
+                selection.ShapeRange.Left = (float)Word.WdShapePosition.wdShapeCenter;
+                selection.ShapeRange.Top = (float)Word.WdShapePosition.wdShapeCenter;
+                export.ActiveWindow.ActivePane.View.SeekView = Word.WdSeekView.wdSeekMainDocument;
 
-                    //FIXME: Need to find a better way to position the marker at centre
-                    //float margin = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.Document.OMathLeftMargin ;
-                    float margin = 70.0f;
-                    int usableHeight = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.UsableHeight;
-                    
-                    int width = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.Width;
-                    int usableWidth = Globals.ThisAddIn.Application.ActiveDocument.ActiveWindow.UsableWidth;
-
-                    if (!isAmend)
-                    {
-                        export.Revisions.AcceptAll();
-                    }
-                    logoWatermark = section.Headers[Word.WdHeaderFooterIndex.wdHeaderFooterPrimary].Shapes.AddTextEffect(Microsoft.Office.Core.MsoPresetTextEffect.msoTextEffect1, "Draft", "Arial", 50, Microsoft.Office.Core.MsoTriState.msoCTrue, Microsoft.Office.Core.MsoTriState.msoFalse, Convert.ToSingle(margin), Convert.ToSingle(height / 2));
-
-                    logoWatermark.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
-                    logoWatermark.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
-                    logoWatermark.Fill.Solid();
-                    logoWatermark.Fill.Transparency = 0.0f;
-                    //logoWatermark.Fill. = 0.2f;
-                    logoWatermark.WrapFormat.AllowOverlap = 0;
-
-                    logoWatermark.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray20;
-                    logoWatermark.Fill.ForeColor.RGB = (Int32)Word.WdColor.wdColorGray30;
-
-                    logoWatermark.RelativeHorizontalPosition = Word.WdRelativeHorizontalPosition.wdRelativeHorizontalPositionMargin;
-                    logoWatermark.RelativeVerticalPosition = Word.WdRelativeVerticalPosition.wdRelativeVerticalPositionMargin;
-
-                    logoWatermark.Height = Globals.ThisAddIn.Application.InchesToPoints(2.4f);
-                    logoWatermark.Width = Globals.ThisAddIn.Application.InchesToPoints(6f);
-
-
-
-                    logoWatermark.Rotation = -45;
-                    logoWatermark.ZOrder(Microsoft.Office.Core.MsoZOrderCmd.msoBringToFront);
-                    logoWatermark.WrapFormat.Type = Word.WdWrapType.wdWrapNone;
-
-                }
                 export.Activate();
 
                 object fileFormat = Word.WdSaveFormat.wdFormatPDF;
@@ -682,9 +670,10 @@ namespace AxiomIRISRibbon
 
                 dlg.Title = Convert.ToString(month + day + hour + min + sec);
                 dlg.Filter = "Word Document (*.pdf)|*.pdf";
-                dlg.FileName = "Template-" + dlg.Title.Replace(" ", "");
+                dlg.FileName = export.Name + "-" + dlg.Title.Replace(" ", "");
                 dlg.ShowDialog();
                 object outputFileName = dlg.FileName;
+
                 export.SaveAs(ref outputFileName, ref fileFormat, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                     ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                     ref oMissing, ref oMissing, ref oMissing);
@@ -695,7 +684,6 @@ namespace AxiomIRISRibbon
 
                 object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
                 ((Word._Document)export).Close(ref saveChanges, ref oMissing, ref oMissing);
-                export = null;
             }
             catch (Exception ex) { }
         }

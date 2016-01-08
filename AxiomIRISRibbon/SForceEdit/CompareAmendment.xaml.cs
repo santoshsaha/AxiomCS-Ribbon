@@ -463,7 +463,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 {
                     lastAmendedDate = DateTime.ParseExact(ts, "yyyy-MM-dd HH:mm:ss.fff tt", null);
                 }
-                Globals.ThisAddIn.SetDocTimeStamp(amendment);
+             
 
                 HashSet<string> seen = new HashSet<string>();
                 bool isReplace = false;
@@ -505,6 +505,7 @@ namespace AxiomIRISRibbon.SForceEdit
                                         insPosition = amendment.Range(amendClause.Range.Start, amendClause.Range.End);
                                         amendClause.Delete(true);
                                         isReplace = true;
+                                        break;
                                     }
                                 }
                             }
@@ -525,7 +526,8 @@ namespace AxiomIRISRibbon.SForceEdit
                             {
                                 cc.Copy();
                                 insPosition.Collapse();
-                                insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                               // insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                                insPosition.PasteSpecial();
                                 //To avoid adding extra space , in case of replacement.
                                 if (!isReplace)
                                 {
@@ -567,13 +569,15 @@ namespace AxiomIRISRibbon.SForceEdit
                                     insPosition = amendment.Range(amendClause.Range.Start, amendClause.Range.End);
                                     amendClause.Delete(true);
                                     isReplace = true;
+                                    break;
                                 }
                             }
                         }
 
                         cc.Copy();
                         insPosition.Collapse(); // Required to prevent Command Failed error on Paste under certain circumstances
-                        insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                        //insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                        insPosition.PasteSpecial();
 
                         //To avoid adding extra space , in case of replacement.
                         if (!isReplace)
@@ -595,7 +599,9 @@ namespace AxiomIRISRibbon.SForceEdit
 
                             p.Range.Copy();
                             insPosition.Collapse();
-                            insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                           // insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                            insPosition.PasteSpecial();
+
                             insPosition.InsertAfter(Environment.NewLine);
                             insPosition = GetAmendmentDocumentInsertPosition(amendment,true);
                             if (insPosition == null)
@@ -610,6 +616,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         MessageBox.Show("Error [AMDN015] while syncing; Range has no context: " + r.Range.Text);
                     }
                 }
+                Globals.ThisAddIn.SetDocTimeStamp(amendment);
 
                 // Move insert marker
                 Word.Fields amdMergeFields = amendment.Fields;

@@ -2824,8 +2824,10 @@ namespace AxiomIRISRibbon.ContractEdit
                 StackPanel spCl = (StackPanel)spRb.Parent;
                 Button b = (Button)((Grid)((Expander)spCl.Parent).Parent).Children[3];
                 Image icon = (Image)b.Content;
-                icon.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/locksmall.png", UriKind.Relative));
-                rb1.unlock = false;
+
+                //PES : Set the clause to unlocked
+                //icon.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("/AxiomIRISRibbon;component/Resources/locksmall.png", UriKind.Relative));
+                //rb1.unlock = false;
 
 
                 // Russel 11 Nov 2015 V1.2.0 - Requests for Demo

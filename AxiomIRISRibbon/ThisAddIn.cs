@@ -1956,8 +1956,8 @@ namespace AxiomIRISRibbon
                                 cc.DateDisplayFormat = format;
                                 cc.LockContents = false;
                                 cc.LockContentControl = true;
-
-                                if (cc.Range.Text.Trim() != value)
+                                //PES : Code change to handle object refrence error added : cc.Range.Text == null 
+                                if (cc.Range.Text == null || cc.Range.Text.Trim() != value)
                                 {
                                     // ok basic formatting support
                                     Word.Font f = cc.Range.Font.Duplicate;
@@ -2238,9 +2238,13 @@ namespace AxiomIRISRibbon
                             // update the tag
                             cc.Tag = "Concept|" + conceptid + "|" + clauseid + "|" + lastmodified;
 
-                            //relock
-                            cc.LockContents = true;
-                            cc.LockContentControl = true;
+                            ////relock
+                            //cc.LockContents = true;
+                            //cc.LockContentControl = true;
+
+                            //PES : Unlock
+                            cc.LockContents = false;
+                            cc.LockContentControl = false;
                         }
                     }
 

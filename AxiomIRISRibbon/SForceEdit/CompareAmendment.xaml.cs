@@ -465,7 +465,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 }
                 Dictionary<string, int> agreementClauses = new Dictionary<string, int>();
                 //Dictionary<string, int> amendClauses = new Dictionary<string, int>();
-                List<AmendClause> amendClausesWithActualOrder = new List<AmendClause>();
+                List<AmendClause> amendClauses = new List<AmendClause>();
                 if (agreement.Range().ContentControls != null && agreement.Range().ContentControls.Count > 0)
                 {
                     int order = 0;
@@ -492,22 +492,20 @@ namespace AxiomIRISRibbon.SForceEdit
                         c.Clause = cc;
                         if (agreementClauses.ContainsKey(cc.ID))
                         {
-                            c.OriginalOrderNumber = agreementClauses[cc.ID];
+                            c.InitialPosition = agreementClauses[cc.ID];
                         }
 
-                        amendClausesWithActualOrder.Add(c);
+                        amendClauses.Add(c);
 
                     }
                 }
-
-
 
                 HashSet<string> seen = new HashSet<string>();
                 bool isReplace = false;
                 foreach (Word.Revision r in agreement.Revisions)
                 {
                     if (lastAmendedDate > r.Date) continue;
-                    Globals.ThisAddIn.SetDocTimeStamp(amendment, DateTime.Now);
+                    Globals.ThisAddIn.SetDocTimeStamp(amendment);
                     Word.Range insPosition = null;
 
                     insPosition = GetAmendmentDocumentInsertPosition(amendment, true);
@@ -573,9 +571,9 @@ namespace AxiomIRISRibbon.SForceEdit
                                     {
                                         orderNumber = agreementClauses[cc.ID];
                                     }
-                                    if (amendClausesWithActualOrder != null && amendClausesWithActualOrder.Count > 0)
+                                    if (amendClauses != null && amendClauses.Count > 0)
                                     {
-                                        newInsPosition = GetAmendmentDocumentInsertPosition(amendClausesWithActualOrder, orderNumber, amendment);
+                                        newInsPosition = GetAmendmentDocumentInsertPosition(amendClauses, orderNumber,amendment);
                                         if (newInsPosition != null)
                                         {
                                             insPosition = newInsPosition;
@@ -640,9 +638,9 @@ namespace AxiomIRISRibbon.SForceEdit
                             {
                                 orderNumber = agreementClauses[cc.ID];
                             }
-                            if (amendClausesWithActualOrder != null && amendClausesWithActualOrder.Count > 0)
+                            if (amendClauses != null && amendClauses.Count > 0)
                             {
-                                newInsPosition = GetAmendmentDocumentInsertPosition(amendClausesWithActualOrder, orderNumber, amendment);
+                                newInsPosition = GetAmendmentDocumentInsertPosition(amendClauses, orderNumber,amendment);
                                 if (newInsPosition != null)
                                 {
                                     insPosition = newInsPosition;
@@ -725,21 +723,12 @@ namespace AxiomIRISRibbon.SForceEdit
             object wdth = Environment.NewLine.Length;
             for (int i = 0; i < clauses.Count; i++)
             {
-                if (clauses[i].OriginalOrderNumber > orderNumber)
+                if (clauses[i].InitialPosition > orderNumber)
                 {
-                    if (i == 0)
-                    {
-                        insertAfter = clauses[i].OriginalOrderNumber;
-                        clauses[i].Clause.Range.InsertBefore(Environment.NewLine);
-                        insPosition = clauses[i].Clause.Range.Previous(Word.WdUnits.wdCharacter, ref wdth);
-                    }
-                    else
-                    {
-                        insertAfter = clauses[i - 1].OriginalOrderNumber;
-                        Word.Range rng = amend.Range(clauses[i - 1].Clause.Range.Start, clauses[i - 1].Clause.Range.End + 1);
-                        rng.InsertAfter(Environment.NewLine);
-                        insPosition = rng.Next(Word.WdUnits.wdCharacter, ref wdth);
-                    }
+                    insertAfter = clauses[i].InitialPosition;
+                    Word.Range rng = amend.Range(clauses[i].Clause.Range.Start - 1, clauses[i].Clause.Range.End);
+                    rng.InsertBefore(Environment.NewLine);
+                    insPosition = clauses[i].Clause.Range.Previous(Word.WdUnits.wdCharacter, ref wdth);
                     return insPosition;
                 }
             }
@@ -1114,7 +1103,7 @@ namespace AxiomIRISRibbon.SForceEdit
         {
             public int CurrentOrder { get; set; }
             public Word.ContentControl Clause { get; set; }
-            public int OriginalOrderNumber { get; set; }
+            public int InitialPosition { get; set; }
         }
     }
 }

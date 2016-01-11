@@ -463,15 +463,55 @@ namespace AxiomIRISRibbon.SForceEdit
                 {
                     lastAmendedDate = DateTime.ParseExact(ts, "yyyy-MM-dd HH:mm:ss.fff tt", null);
                 }
-             
+                Dictionary<string, int> agreementClauses = new Dictionary<string, int>();
+                //Dictionary<string, int> amendClauses = new Dictionary<string, int>();
+                List<AmendClause> amendClausesWithActualOrder = new List<AmendClause>();
+                if (agreement.Range().ContentControls != null && agreement.Range().ContentControls.Count > 0)
+                {
+                    int order = 0;
+                    foreach (Word.ContentControl cc in agreement.Range().ContentControls)
+                    {
+                        if (cc.Title.StartsWith("Header") || cc.Title.StartsWith("Signature")) continue;
+                        if (cc.ParentContentControl != null) continue;
+                        order++;
+                        agreementClauses.Add(cc.ID, order);
+                    }
+                }
+                if (amendment.Range().ContentControls != null && amendment.Range().ContentControls.Count > 0)
+                {
+                    int order = 0;
+                    foreach (Word.ContentControl cc in amendment.Range().ContentControls)
+                    {
+                        if (cc.Title.StartsWith("Header") || cc.Title.StartsWith("Signature")) continue;
+                        if (cc.ParentContentControl != null) continue;
+                        order++;
+                        //amendClauses.Add(cc.ID, order);
+
+                        AmendClause c = new AmendClause();
+                        c.CurrentOrder = order;
+                        c.Clause = cc;
+                        if (agreementClauses.ContainsKey(cc.ID))
+                        {
+                            c.OriginalOrderNumber = agreementClauses[cc.ID];
+                        }
+
+                        amendClausesWithActualOrder.Add(c);
+
+                    }
+                }
+
+
 
                 HashSet<string> seen = new HashSet<string>();
                 bool isReplace = false;
                 foreach (Word.Revision r in agreement.Revisions)
                 {
                     if (lastAmendedDate > r.Date) continue;
+                    Globals.ThisAddIn.SetDocTimeStamp(amendment, DateTime.Now);
+                    Word.Range insPosition = null;
 
-                    Word.Range insPosition = GetAmendmentDocumentInsertPosition(amendment,true);
+                    insPosition = GetAmendmentDocumentInsertPosition(amendment, true);
+
                     if (insPosition == null)
                     {
                         MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
@@ -516,7 +556,7 @@ namespace AxiomIRISRibbon.SForceEdit
                                 insPosition.Collapse();
                                 deletedClause = amendment.ContentControls.Add(Word.WdContentControlType.wdContentControlRichText, Range: insPosition);
                                 deletedClause.Title = cc.Title;
-                                deletedClause.Range.Text = "This clause has been deleted";
+                                deletedClause.Range.Text = cc.Title + " : This clause has been deleted";
                                 if (!isReplace)
                                 {
                                     insPosition.InsertAfter(Environment.NewLine);
@@ -524,9 +564,28 @@ namespace AxiomIRISRibbon.SForceEdit
                             }
                             else
                             {
+
+                                if (!isReplace)
+                                {
+                                    Word.Range newInsPosition = null;
+                                    int orderNumber = 0;
+                                    if (agreementClauses.ContainsKey(cc.ID))
+                                    {
+                                        orderNumber = agreementClauses[cc.ID];
+                                    }
+                                    if (amendClausesWithActualOrder != null && amendClausesWithActualOrder.Count > 0)
+                                    {
+                                        newInsPosition = GetAmendmentDocumentInsertPosition(amendClausesWithActualOrder, orderNumber, amendment);
+                                        if (newInsPosition != null)
+                                        {
+                                            insPosition = newInsPosition;
+                                        }
+                                    }
+                                }
+
                                 cc.Copy();
                                 insPosition.Collapse();
-                               // insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                                // insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
                                 insPosition.PasteSpecial();
                                 //To avoid adding extra space , in case of replacement.
                                 if (!isReplace)
@@ -535,7 +594,7 @@ namespace AxiomIRISRibbon.SForceEdit
                                 }
                             }
                             // FIXME: Optimize - replace repetative detection of marker
-                            insPosition = GetAmendmentDocumentInsertPosition(amendment,true);
+                            insPosition = GetAmendmentDocumentInsertPosition(amendment, true);
                             if (insPosition == null)
                             {
                                 MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
@@ -573,7 +632,23 @@ namespace AxiomIRISRibbon.SForceEdit
                                 }
                             }
                         }
-
+                        if (!isReplace)
+                        {
+                            Word.Range newInsPosition = null;
+                            int orderNumber = 0;
+                            if (agreementClauses.ContainsKey(cc.ID))
+                            {
+                                orderNumber = agreementClauses[cc.ID];
+                            }
+                            if (amendClausesWithActualOrder != null && amendClausesWithActualOrder.Count > 0)
+                            {
+                                newInsPosition = GetAmendmentDocumentInsertPosition(amendClausesWithActualOrder, orderNumber, amendment);
+                                if (newInsPosition != null)
+                                {
+                                    insPosition = newInsPosition;
+                                }
+                            }
+                        }
                         cc.Copy();
                         insPosition.Collapse(); // Required to prevent Command Failed error on Paste under certain circumstances
                         //insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
@@ -599,11 +674,11 @@ namespace AxiomIRISRibbon.SForceEdit
 
                             p.Range.Copy();
                             insPosition.Collapse();
-                           // insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
+                            // insPosition.PasteAndFormat(Word.WdRecoveryType.wdFormatOriginalFormatting);
                             insPosition.PasteSpecial();
 
                             insPosition.InsertAfter(Environment.NewLine);
-                            insPosition = GetAmendmentDocumentInsertPosition(amendment,true);
+                            insPosition = GetAmendmentDocumentInsertPosition(amendment, true);
                             if (insPosition == null)
                             {
                                 MessageBox.Show("Error [AMND012] while syncing; No insert marker found in amendment document");
@@ -616,7 +691,6 @@ namespace AxiomIRISRibbon.SForceEdit
                         MessageBox.Show("Error [AMDN015] while syncing; Range has no context: " + r.Range.Text);
                     }
                 }
-                Globals.ThisAddIn.SetDocTimeStamp(amendment);
 
                 // Move insert marker
                 Word.Fields amdMergeFields = amendment.Fields;
@@ -642,8 +716,36 @@ namespace AxiomIRISRibbon.SForceEdit
             }
         }
 
+        private static Word.Range GetAmendmentDocumentInsertPosition(List<AmendClause> clauses, int orderNumber, Word.Document amend)
+        {
+            Word.Range insPosition = null;
 
-        private static Word.Range GetAmendmentDocumentInsertPosition(Word.Document amendment,bool beforeMarker)
+            int insertAfter = 0;
+            // Sor the list before doing this
+            object wdth = Environment.NewLine.Length;
+            for (int i = 0; i < clauses.Count; i++)
+            {
+                if (clauses[i].OriginalOrderNumber > orderNumber)
+                {
+                    if (i == 0)
+                    {
+                        insertAfter = clauses[i].OriginalOrderNumber;
+                        clauses[i].Clause.Range.InsertBefore(Environment.NewLine);
+                        insPosition = clauses[i].Clause.Range.Previous(Word.WdUnits.wdCharacter, ref wdth);
+                    }
+                    else
+                    {
+                        insertAfter = clauses[i - 1].OriginalOrderNumber;
+                        Word.Range rng = amend.Range(clauses[i - 1].Clause.Range.Start, clauses[i - 1].Clause.Range.End + 1);
+                        rng.InsertAfter(Environment.NewLine);
+                        insPosition = rng.Next(Word.WdUnits.wdCharacter, ref wdth);
+                    }
+                    return insPosition;
+                }
+            }
+            return null;
+        }
+        private static Word.Range GetAmendmentDocumentInsertPosition(Word.Document amendment, bool beforeMarker)
         {
             // Locate insert marker in amendment document
             Word.Fields amdFields = amendment.Fields;
@@ -661,7 +763,7 @@ namespace AxiomIRISRibbon.SForceEdit
                         insPosition = f.Code.Previous(Word.WdUnits.wdCharacter, ref wdth);
                         return insPosition;
                     }
-                } 
+                }
             }
             else
             {
@@ -756,7 +858,7 @@ namespace AxiomIRISRibbon.SForceEdit
                 MessageBox.Show("Error [AMND011] syncing amendment; " + ex.Message);
             }
         }
-       */     
+       */
 
         public static void TrackDocumentOld()
         {
@@ -1008,6 +1110,11 @@ namespace AxiomIRISRibbon.SForceEdit
             }
         }
 
-
+        public class AmendClause
+        {
+            public int CurrentOrder { get; set; }
+            public Word.ContentControl Clause { get; set; }
+            public int OriginalOrderNumber { get; set; }
+        }
     }
 }

@@ -2145,7 +2145,7 @@ namespace AxiomIRISRibbon
                                     scratch.SaveAs2(FileName: scratchfilename, FileFormat: Word.WdSaveFormat.wdFormatXMLDocument, CompatibilityMode: Word.WdCompatibilityMode.wdCurrent);                                    
                                     // this is how you do it as a pure compare - Word.Document compare = Application.CompareDocuments(oldclause, scratch,Granularity:Word.WdGranularity.wdGranularityCharLevel);
                                     
-                                    oldclause.Compare(scratchfilename, CompareTarget: Word.WdCompareTarget.wdCompareTargetCurrent, AddToRecentFiles: false);                                    
+                                    oldclause.Compare(scratchfilename, CompareTarget: Word.WdCompareTarget.wdCompareTargetCurrent, AddToRecentFiles: false, IgnoreAllComparisonWarnings:true );                                    
                                     oldclause.ActiveWindow.Visible = false;
 
                                     // Activate the doc - switch of tracking and insert the marked up dif

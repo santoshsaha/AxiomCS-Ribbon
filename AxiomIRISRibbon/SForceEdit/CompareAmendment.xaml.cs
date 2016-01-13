@@ -138,6 +138,8 @@ namespace AxiomIRISRibbon.SForceEdit
                                      _d.CreateVersion(String.Empty, _strToAgreementId, _strTemplate, _versionName, Convert.ToString(_versionNumber), _allDr));
                 _newVersionId = created.id;
 
+                _d.SaveVersionClause(_versionid, _newVersionId);
+
                 // Bring over all attachments in last version
                 DataReturn dr = AxiomIRISRibbon.Utility.HandleData(_d.GetVersionAllAttachments(_versionid));
                 if (!dr.success)
